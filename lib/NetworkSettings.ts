@@ -1,16 +1,16 @@
 import KnownInternalNames from "./knownIds";
 
+export enum DepositType {
+    Manual = 'manual',
+    Wallet = 'wallet'
+}
+
 type NetworkItemSettings = {
     [network: string]: {
         apiUri: string,
         appUri?: string,
         linkUri?: string
     }
-}
-
-export enum DepositType {
-    Manual = 'manual',
-    Wallet = 'wallet'
 }
 
 const destinationOrder = [
@@ -73,10 +73,6 @@ export default class NetworkSettings {
     public static KnownSettings: { [network: string]: NetworkSettings } = {};
 
     public static ImmutableXSettings: NetworkItemSettings
-
-    public static RhinoFiSettings: NetworkItemSettings
-
-    public static DydxSettings: NetworkItemSettings
 
     private static _isInitialized = false;
     public static Initialize() {
@@ -231,23 +227,6 @@ export default class NetworkSettings {
             [KnownInternalNames.Networks.ImmutableXGoerli]: {
                 apiUri: "https://api.sandbox.x.immutable.com/v1",
                 linkUri: "https://link.sandbox.x.immutable.com"
-            }
-        }
-        NetworkSettings.RhinoFiSettings = {
-            [KnownInternalNames.Networks.RhinoFiMainnet]: {
-                apiUri: "https://api.rhino.fi/v1/trading/registrations",
-                appUri: "https://app.rhinofi.com/",
-            }
-        }
-
-        NetworkSettings.DydxSettings = {
-            [KnownInternalNames.Networks.DydxMainnet]: {
-                apiUri: "https://api.dydx.exchange/v3/users/exists?ethereumAddress=",
-                appUri: "https://trade.dydx.exchange/",
-            },
-            [KnownInternalNames.Networks.DydxGoerli]: {
-                apiUri: "https://api.stage.dydx.exchange/v3/users/exists?ethereumAddress=",
-                appUri: "https://trade.stage.dydx.exchange/",
             }
         }
 

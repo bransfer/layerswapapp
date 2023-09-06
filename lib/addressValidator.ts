@@ -1,6 +1,4 @@
 import { keccak256 } from "js-sha3";
-import { CryptoNetwork } from "../Models/CryptoNetwork";
-import { Exchange } from "../Models/Exchange";
 import KnownInternalNames from "./knownIds";
 import { validateAndParseAddress } from "./starkNetAddressValidator";
 import { PublicKey } from '@solana/web3.js'
@@ -28,7 +26,7 @@ export function isValidAddress(address: string, network: Layer): boolean {
         }
         return false
     }
-    else if (network?.internal_name === KnownInternalNames.Networks.SolanaMainnet || network?.internal_name === KnownInternalNames.Networks.SolanaTestnet) {
+    else if (network?.internal_name === KnownInternalNames.Networks.SolanaMainnet || network?.internal_name === KnownInternalNames.Networks.SolanaTestnet || network?.internal_name === KnownInternalNames.Networks.SolanaDevnet) {
         try {
             let pubkey = new PublicKey(address)
             let isSolana = PublicKey.isOnCurve(pubkey.toBuffer())

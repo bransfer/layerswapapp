@@ -1,10 +1,8 @@
 import { FormikErrors } from "formik";
 import { SwapFormValues } from "../components/DTOs/SwapFormValues";
-import { BlacklistedAddress } from "../Models/BlacklistedAddress";
 import { LayerSwapSettings } from "../Models/LayerSwapSettings";
 import { isValidAddress } from "./addressValidator";
 import { CalculateMaxAllowedAmount, CalculateMinAllowedAmount } from "./fees";
-import { Layer } from "../Models/Layer";
 import { QueryParams } from "../Models/QueryParams";
 
 export default function MainStepValidation({ settings, query }: { settings: LayerSwapSettings, query: QueryParams }): ((values: SwapFormValues) => FormikErrors<SwapFormValues>) {
@@ -42,9 +40,6 @@ export default function MainStepValidation({ settings, query }: { settings: Laye
             else if (!isValidAddress(values.destination_address, values.to)) {
                 errors.destination_address = `Enter a valid ${values.to?.display_name} address`;
             }
-            else if (!values.from?.isExchange && isBlacklistedAddress(settings.blacklisted_addresses, values.to, values.destination_address)) {
-                errors.destination_address = `You can not transfer to this address`;
-            }
         }
 
         if (Object.keys(errors).length === 0) return errors
@@ -56,10 +51,4 @@ export default function MainStepValidation({ settings, query }: { settings: Laye
         }
         return Object.assign(errorsOrder, errors);
     };
-}
-export function isBlacklistedAddress(blacklisted_addresses: BlacklistedAddress[], network: Layer, address: string) {
-    return blacklisted_addresses?.some(ba =>
-        (!ba.network
-            || ba.network === network?.internal_name)
-        && ba.address?.toLowerCase() === address?.toLowerCase());
 }

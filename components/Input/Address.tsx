@@ -17,7 +17,6 @@ import RainbowKit from "../Swap/Withdraw/Wallet/RainbowKit";
 import { useAccount } from "wagmi";
 import { disconnect as wagmiDisconnect } from '@wagmi/core'
 import shortenAddress from "../utils/ShortenAddress";
-import { isBlacklistedAddress } from "../../lib/mainStepValidator";
 import AddressIcon from "../AddressIcon";
 import { GetDefaultNetwork } from "../../helpers/settingsHelper";
 import { connect, disconnect as starknetDisconnect } from "get-starknet";
@@ -130,9 +129,6 @@ const Address: FC<Input> = forwardRef<HTMLInputElement, Input>(
         let errorMessage = '';
         if (inputValue && !isValidAddress(inputValue, destination)) {
             errorMessage = `Enter a valid ${values.to?.display_name} address`
-        }
-        else if (inputValue && destination?.isExchange && isBlacklistedAddress(settings.blacklisted_addresses, destination, inputValue)) {
-            errorMessage = `You can not transfer to this address`
         }
 
         const handleInputChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {

@@ -104,6 +104,8 @@ export default class KnownInternalNames {
 
         public static readonly SolanaTestnet: string = "SOLANA_TESTNET";
 
+        public static readonly SolanaDevnet: string = "SOLANA_DEVNET";
+
         public static readonly SorareStage: string = "SORARE_MAINNET";
 
         public static readonly KCCMainnet: string = "KCC_MAINNET";
