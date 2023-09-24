@@ -1,6 +1,6 @@
 import { X } from 'lucide-react'
 import { FC } from 'react'
-import { usePersistedState } from '../hooks/usePersistedState';
+import { useBrowserStorage } from '../hooks/useBrowserStorage';
 interface BannerProps {
     mobileMessage: string;
     desktopMessage: string;
@@ -10,7 +10,7 @@ interface BannerProps {
 
 const Banner: FC<BannerProps> = ({ localStorageId, desktopMessage, mobileMessage, className }) => {
     const localStorageItemKey = `HideBanner-${localStorageId}`;
-    let [isVisible, setIsVisible] = usePersistedState(true, localStorageItemKey);
+    let [isVisible, setIsVisible] = useBrowserStorage(localStorageItemKey, true);
     if (!isVisible) {
         return <></>
     }

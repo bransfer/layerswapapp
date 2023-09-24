@@ -4,7 +4,6 @@ import { useQueryState } from '../../../../context/query';
 import { useSettingsState } from '../../../../context/settings';
 import { useSwapDataState, useSwapDataUpdate } from '../../../../context/swap';
 import { useInterval } from '../../../../hooks/useInterval';
-import { Configs, usePersistedState } from '../../../../hooks/usePersistedState';
 import { CalculateMinimalAuthorizeAmount } from '../../../../lib/fees';
 import { parseJwt } from '../../../../lib/jwtParser';
 import LayerSwapApiClient, { WithdrawType } from '../../../../lib/layerSwapApiClient';
@@ -19,6 +18,8 @@ import { Layer } from '../../../../Models/Layer';
 import { ArrowLeft } from 'lucide-react';
 import IconButton from '../../../buttons/iconButton';
 import { motion } from 'framer-motion';
+import { useBrowserStorage } from '../../../../hooks/useBrowserStorage';
+import { Configs } from '../../../../lib/LocalConfigs';
 
 type Props = {
     onAuthorized: () => void,
@@ -31,7 +32,7 @@ const Authorize: FC<Props> = ({ onAuthorized, stickyFooter, onDoNotConnect, hide
     const { swap } = useSwapDataState()
     const { setWithdrawType } = useSwapDataUpdate()
     const { layers, currencies, discovery } = useSettingsState()
-    let [localConfigs, setLocalConfigs] = usePersistedState<Configs>({}, 'configs')
+    let [localConfigs, setLocalConfigs] = useBrowserStorage<Configs>('configs', {})
 
     const [carouselFinished, setCarouselFinished] = useState(localConfigs.alreadyFamiliarWithCoinbaseConnect)
     const [authWindow, setAuthWindow] = useState<Window>()
@@ -68,6 +69,7 @@ const Authorize: FC<Props> = ({ onAuthorized, stickyFooter, onDoNotConnect, hide
         if (authWindowHref && authWindowHref?.indexOf(window.location.origin) !== -1) {
             const authWindowURL = new URL(authWindowHref)
             const authorizedAmount = authWindowURL.searchParams.get("send_limit_amount")
+            alert(authorizedAmount);
             setAuthorizedAmount(Number(authorizedAmount))
             authWindow?.close()
         }
@@ -95,6 +97,11 @@ const Authorize: FC<Props> = ({ onAuthorized, stickyFooter, onDoNotConnect, hide
             }
         }
     }, [authorizedAmount, minimalAuthorizeAmount, onAuthorized])
+
+    useEffect(() => { 
+        console.log(query?.send_limit_amount);
+        query?.send_limit_amount && Number(query?.send_limit_amount) > 0 && setAuthorizedAmount(Number(query?.send_limit_amount));
+     }, [query?.send_limit_amount])
 
     const handleConnect = useCallback(() => {
         try {

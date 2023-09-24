@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from 'react'
-import { usePersistedState } from '../hooks/usePersistedState';
 import { QueryParams } from '../Models/QueryParams';
+import { useBrowserStorage } from '../hooks/useBrowserStorage';
 
 const STORAGE_KEY = "settings_query_params"
 
@@ -8,7 +8,7 @@ export const QueryStateContext = React.createContext<QueryParams>(null);
 
 const QueryProvider: FC<{ query: QueryParams, children?: React.ReactNode }> = ({ query, children }) => {
 
-  const [data, setData] = usePersistedState<QueryParams>(mapLegacyQueryParams(query), STORAGE_KEY, 'sessionStorage');
+  const [data, setData] = useBrowserStorage<QueryParams>(STORAGE_KEY, mapLegacyQueryParams(query), 'sessionStorage');
 
   useEffect(() => {
     const emptyParams = new QueryParams()

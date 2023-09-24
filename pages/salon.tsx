@@ -18,6 +18,7 @@ export default function Salon({ settings }: InferGetServerSidePropsType<typeof g
             return
         if (temp_data.swap_id) {
             clearTempData()
+            temp_data.query.send_limit_amount = router.query.send_limit_amount.toString();
             router.push({
                 pathname: `/swap/${temp_data.swap_id}`,
                 query: { ...(temp_data?.query || {}), coinbase_redirect: true }
