@@ -78,14 +78,14 @@ const Withdraw: FC = () => {
                 content: <WalletTransferContent />,
                 footer: <WalletTransfer />
             },
-            // {
-            //     id: WithdrawType.Coinbase,
-            //     label: "Automatically",
-            //     enabled: sourceIsCoinbase && sourceLayerIsEthereum,
-            //     icon: <WalletIcon className='stroke-2 w-6 h-6 -ml-0.5' />,
-            //     content: <WalletTransferContent />,
-            //     footer: <Coinbase />
-            // },
+            {
+                id: WithdrawType.Coinbase,
+                label: "Automatically",
+                enabled: sourceIsCoinbase && sourceLayerIsEthereum,
+                icon: <WalletIcon className='stroke-2 w-6 h-6 -ml-0.5' />,
+                content: <WalletTransferContent />,
+                footer: <Coinbase />
+            },
             {
                 id: WithdrawType.Manually,
                 label: "Manually",

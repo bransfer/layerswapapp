@@ -82,7 +82,7 @@ const Authorize: FC<Props> = ({ onAuthorized, hideHeader }) => {
                 return
             }
             const { sub } = parseJwt(access_token) || {}
-            const encoded = btoa(JSON.stringify({ SwapId: swap?.id, UserId: sub, RedirectUrl: `${window.location.origin}/salon` }))
+            const encoded = btoa(JSON.stringify({ SwapId: swap?.id, UserId: Number(sub), RedirectUrl: `${window.location.origin}/salon` }))
             const authWindow = OpenLink({ link: authorize_url + encoded, query: router.query, swapId: swap.id })
             setAuthWindow(authWindow)
         }

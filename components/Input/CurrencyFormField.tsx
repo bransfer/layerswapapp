@@ -174,10 +174,12 @@ const CurrencyFormField: FC<{ direction: string }> = ({ direction }) => {
                 && !destinationRoutes?.data
                     ?.filter(r => r.network === to?.internal_name)
                     ?.some(r => r.asset === toCurrency?.asset)) {
-                setFieldValue(name, null)
+                const derfaultValue = destinationRoutes?.data?.find(r =>
+                    fromCurrency?.asset === r.asset && r.network === to?.internal_name)
+                setFieldValue(name, derfaultValue)
             }
         }
-    }, [fromCurrency, currencyGroup, name, to, destinationRoutes, destRoutesError,])
+    }, [fromCurrency, currencyGroup, name, destinationRoutes, destRoutesError])
 
     useEffect(() => {
         if (name === "fromCurrency" && fromCurrency) {
@@ -185,10 +187,12 @@ const CurrencyFormField: FC<{ direction: string }> = ({ direction }) => {
                 && !sourceRoutes?.data
                     ?.filter(r => r.network === from?.internal_name)
                     ?.some(r => r.asset === fromCurrency?.asset)) {
-                setFieldValue(name, null)
+                const derfaultValue = sourceRoutes?.data?.find(r =>
+                    toCurrency?.asset === r.asset && r.network === from?.internal_name)
+                setFieldValue(name, derfaultValue)
             }
         }
-    }, [toCurrency, currencyGroup, name, from, sourceRoutes, sourceRoutesError])
+    }, [toCurrency, currencyGroup, name, sourceRoutes, sourceRoutesError])
 
     const value = currencyMenuItems?.find(x => x.id == currencyAsset);
 
