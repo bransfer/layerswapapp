@@ -29,7 +29,7 @@ const CurrencyFormField: FC<{ direction: string }> = ({ direction }) => {
     } = useFormikContext<SwapFormValues>();
 
     const { to, fromCurrency, toCurrency, from, currencyGroup, toExchange, fromExchange } = values
-    const { resolveImgSrc, assetGroups } = useSettingsState();
+    const { resolveImgSrc, layers } = useSettingsState();
     const name = direction === 'from' ? 'fromCurrency' : 'toCurrency';
     const query = useQueryState()
     const { balances } = useBalancesState()
@@ -169,27 +169,37 @@ const CurrencyFormField: FC<{ direction: string }> = ({ direction }) => {
     }, [from, query])
 
     useEffect(() => {
-        if (name === "toCurrency" && toCurrency) {
+        if (name === "toCurrency") {
             if (destinationRoutes?.data
                 && !destinationRoutes?.data
                     ?.filter(r => r.network === to?.internal_name)
                     ?.some(r => r.asset === toCurrency?.asset)) {
-                const derfaultValue = destinationRoutes?.data?.find(r =>
-                    fromCurrency?.asset === r.asset && r.network === to?.internal_name)
-                setFieldValue(name, derfaultValue)
+
+                const derfaultValue = currencyMenuItems
+                    .filter(mi => mi.isAvailable
+                        && destinationRoutes.data
+                            ?.some(r => r.asset === mi.baseObject.asset
+                                && r.network === to?.internal_name))
+                    ?.[0]?.baseObject
+                setFieldValue(name, derfaultValue || null)
             }
         }
     }, [fromCurrency, currencyGroup, name, destinationRoutes, destRoutesError])
 
     useEffect(() => {
-        if (name === "fromCurrency" && fromCurrency) {
+        if (name === "fromCurrency") {
             if (sourceRoutes?.data
                 && !sourceRoutes?.data
                     ?.filter(r => r.network === from?.internal_name)
                     ?.some(r => r.asset === fromCurrency?.asset)) {
-                const derfaultValue = sourceRoutes?.data?.find(r =>
-                    toCurrency?.asset === r.asset && r.network === from?.internal_name)
-                setFieldValue(name, derfaultValue)
+                const derfaultValue = currencyMenuItems
+                    .filter(mi => mi.isAvailable
+                        && sourceRoutes.data
+                            ?.some(r => r.asset === mi.baseObject.asset
+                                && r.network === from?.internal_name))
+                    ?.[0]?.baseObject
+
+                setFieldValue(name, derfaultValue || null)
             }
         }
     }, [toCurrency, currencyGroup, name, sourceRoutes, sourceRoutesError])
