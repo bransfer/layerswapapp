@@ -26,6 +26,7 @@ export class PersistantQueryParams {
     actionButtonText?: string = "";
     theme?: string = "";
     appName?: string = "";
+    hideLogo?: boolean = false
 
     // Obsolate
     sourceExchangeName?: string = "";

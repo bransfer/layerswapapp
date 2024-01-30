@@ -2,16 +2,15 @@ import { useRouter } from "next/router"
 import { useCallback, useEffect, useState } from "react"
 import LayerSwapApiClient, { SwapItem, SwapStatusInNumbers, TransactionType } from "../../lib/layerSwapApiClient"
 import SpinIcon from "../icons/spinIcon"
-import { ArrowRight, ChevronRight, ExternalLink, Eye, RefreshCcw, Scroll, X } from 'lucide-react';
+import { ArrowRight, ChevronRight, Eye, RefreshCcw, Scroll } from 'lucide-react';
 import SwapDetails from "./SwapDetailsComponent"
 import { useSettingsState } from "../../context/settings"
 import Image from 'next/image'
 import { classNames } from "../utils/classNames"
-import SubmitButton, { DoubleLineText } from "../buttons/submitButton"
+import SubmitButton from "../buttons/submitButton"
 import { SwapHistoryComponentSceleton } from "../Sceletons"
 import StatusIcon, { } from "./StatusIcons"
 import toast from "react-hot-toast"
-import { SwapStatus } from "../../Models/SwapStatus"
 import ToggleButton from "../buttons/toggleButton";
 import Modal from "../modal/modal";
 import HeaderWithMenu from "../HeaderWithMenu";
@@ -23,7 +22,7 @@ import { truncateDecimals } from "../utils/RoundDecimals";
 function TransactionsHistory() {
   const [page, setPage] = useState(0)
   const settings = useSettingsState()
-  const { layers, resolveImgSrc } = settings
+  const { layers, resolveImgSrc, exchanges } = settings
   const [isLastPage, setIsLastPage] = useState(false)
   const [swaps, setSwaps] = useState<SwapItem[]>()
   const [loading, setLoading] = useState(false)
@@ -186,13 +185,20 @@ function TransactionsHistory() {
                               destination_network: destination_network_internal_name,
                               source_network: source_network_internal_name,
                               destination_exchange: destination_exchange_internal_name,
-                              source_network_asset
+                              source_network_asset,
+                              destination_network_asset
                             } = swap
 
-                            const source = layers.find(e => e.internal_name === source_network_internal_name)
-                            const source_currency = source?.assets?.find(c => c.asset === source_network_asset)
-                            const destination = layers.find(n => n.internal_name === destination_network_internal_name)
+                            const sourceNetwork = layers.find(e => e.internal_name === source_network_internal_name)
+                            const sourceCurrency = sourceNetwork?.assets?.find(c => c.asset === source_network_asset)
+                            const destinationNetwork = layers.find(n => n.internal_name === destination_network_internal_name)
+                            const destinationCurrency = destinationNetwork?.assets.find(a => a.asset === destination_network_asset)
                             const output_transaction = swap.transactions.find(t => t.type === TransactionType.Output)
+
+                            const sourceExchange = exchanges.find(e => e.internal_name === source_exchange_internal_name)
+                            const destExchange = exchanges.find(e => e.internal_name === destination_exchange_internal_name)
+
+
                             return <tr onClick={() => handleopenSwapDetails(swap)} key={swap.id}>
 
                               <td
@@ -203,10 +209,10 @@ function TransactionsHistory() {
                               >
                                 <div className="text-primary-text flex items-center">
                                   <div className="flex-shrink-0 h-5 w-5 relative">
-                                    {source &&
+                                    {sourceNetwork &&
                                       <Image
-                                        src={resolveImgSrc(source)}
-                                        alt="From Logo"
+                                        src={resolveImgSrc(sourceExchange || sourceNetwork)}
+                                        alt="Source Logo"
                                         height="60"
                                         width="60"
                                         className="rounded-md object-contain"
@@ -215,10 +221,10 @@ function TransactionsHistory() {
                                   </div>
                                   <ArrowRight className="h-4 w-4 mx-2" />
                                   <div className="flex-shrink-0 h-5 w-5 relative block">
-                                    {destination &&
+                                    {destinationNetwork &&
                                       <Image
-                                        src={resolveImgSrc(destination)}
-                                        alt="To Logo"
+                                        src={resolveImgSrc(destExchange || destinationNetwork)}
+                                        alt="Destination Logo"
                                         height="60"
                                         width="60"
                                         className="rounded-md object-contain"
@@ -244,18 +250,23 @@ function TransactionsHistory() {
                                 )}
                               >
                                 <div className="flex justify-between items-center cursor-pointer" onClick={(e) => { handleopenSwapDetails(swap); e.preventDefault() }}>
-                                  <div className="">
+                                  <div>
+                                    <div className="text text-secondary-text text-left">
+                                      <span>
+                                        {truncateDecimals(swap.requested_amount, sourceCurrency?.precision)}
+                                      </span>
+                                      <span className="ml-1">{sourceCurrency?.display_asset ?? sourceCurrency?.asset}</span>
+                                    </div>
                                     {
-                                      swap?.status == 'completed' ?
-                                        <span className="ml-1 md:ml-0">
-                                          {output_transaction ? truncateDecimals(output_transaction?.amount, source_currency?.precision) : '-'}
-                                        </span>
-                                        :
-                                        <span>
-                                          {truncateDecimals(swap.requested_amount, source_currency?.precision)}
-                                        </span>
+                                      output_transaction ?
+                                        <div className="text-secprimary-text text-left text-base">
+                                          <span>
+                                            {truncateDecimals(output_transaction?.amount, sourceCurrency?.precision)}
+                                          </span>
+                                          <span className="ml-1">{destinationCurrency?.display_asset ?? destinationCurrency?.asset}</span>
+                                        </div>
+                                        : <div className="text-left text-base">-</div>
                                     }
-                                    <span className="ml-1">{swap.destination_network_asset}</span>
                                   </div>
                                   <ChevronRight className="h-5 w-5" />
                                 </div>

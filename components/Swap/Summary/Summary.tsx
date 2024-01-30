@@ -110,7 +110,7 @@ const Summary: FC<SwapInfoProps> = ({ sourceCurrency, destinationCurrency, sourc
                         </div>
                     </div>
                     <div className="flex flex-col items-end">
-                        <p className="text-primary-text text-sm">{truncateDecimals(requestedAmount, sourceCurrency.precision)} {sourceCurrency.asset}</p>
+                        <p className="text-primary-text text-sm">{truncateDecimals(requestedAmount, sourceCurrency.precision)} {sourceCurrency.display_asset ?? sourceCurrency.asset}</p>
                         <p className="text-secondary-text text-sm flex justify-end">${requestedAmountInUsd}</p>
                     </div>
                 </div>
@@ -131,7 +131,7 @@ const Summary: FC<SwapInfoProps> = ({ sourceCurrency, destinationCurrency, sourc
                     {
                         fee != undefined && receiveAmount != undefined ?
                             <div className="flex flex-col justify-end">
-                                <p className="text-primary-text text-sm">{truncateDecimals(receiveAmount, destinationCurrency.precision)} {destinationCurrency.asset}</p>
+                                <p className="text-primary-text text-sm">{truncateDecimals(receiveAmount, destinationCurrency.precision)} {destinationCurrency.display_asset ?? destinationCurrency.asset}</p>
                                 <p className="text-secondary-text text-sm flex justify-end">${receiveAmountInUsd}</p>
                             </div>
                             :
@@ -152,7 +152,7 @@ const Summary: FC<SwapInfoProps> = ({ sourceCurrency, destinationCurrency, sourc
                                 <p>Refuel</p>
                             </div>
                             <div className="flex flex-col">
-                                <p className="text-primary-text text-sm">{truncatedRefuelAmount} {nativeCurrency?.asset}</p>
+                                <p className="text-primary-text text-sm">{truncatedRefuelAmount} {nativeCurrency.display_asset ?? nativeCurrency?.asset}</p>
                                 <p className="text-secondary-text text-sm flex justify-end">${refuelAmountInUsd}</p>
                             </div>
                         </div>

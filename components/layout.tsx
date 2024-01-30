@@ -78,6 +78,7 @@ export default function Layout({ children, settings, themeData }: Props) {
     ...(router.query.lockAsset === 'true' ? { lockAsset: true } : {}),
     ...(router.query.lockFromAsset === 'true' ? { lockFromAsset: true } : {}),
     ...(router.query.lockToAsset === 'true' ? { lockToAsset: true } : {}),
+    ...(router.query.hideLogo === 'true' ? { hideLogo: true } : {}),
 
   };
   

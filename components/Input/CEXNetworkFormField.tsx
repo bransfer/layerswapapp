@@ -1,6 +1,5 @@
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../shadcn/select"
 import { useFormikContext } from "formik";
-import { forwardRef, useCallback, useEffect } from "react";
+import { forwardRef, useCallback, useEffect, useState } from "react";
 import { useSettingsState } from "../../context/settings";
 import { SwapFormValues } from "../DTOs/SwapFormValues";
 import { SelectMenuItem } from "../Select/Shared/Props/selectMenuItem";
@@ -13,7 +12,8 @@ import { isValidAddress } from "../../lib/addressValidator";
 import shortenAddress from "../utils/ShortenAddress";
 import Link from "next/link";
 import { SortingByOrder } from "../../lib/sorting";
-import { Info } from "lucide-react";
+import { Check, ChevronRight, Info } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "../shadcn/popover";
 
 type SwapDirection = "from" | "to";
 type Props = {
@@ -26,6 +26,7 @@ const CEXNetworkFormField = forwardRef(function CEXNetworkFormField({ direction 
         setFieldValue,
     } = useFormikContext<SwapFormValues>();
     const name = direction
+    const [showModal, setShowModal] = useState(false)
 
     const {
         from,
@@ -91,6 +92,7 @@ const CEXNetworkFormField = forwardRef(function CEXNetworkFormField({ direction 
         const currency = layer?.assets.find(a => a.asset === item.baseObject.asset)
         setFieldValue(name, layer, true)
         setFieldValue(`${name}Currency`, currency, true)
+        setShowModal(false)
     }, [name])
 
     //TODO set default currency & reset currency if not available
@@ -135,11 +137,30 @@ const CEXNetworkFormField = forwardRef(function CEXNetworkFormField({ direction 
         <label htmlFor={name} className="block text-secondary-text">
             {direction === 'from' ? 'Transfer via' : 'Receive in'}
         </label>
-        <div className="w-fit" ref={ref} >
-            <Select value={value?.id} onValueChange={(v) => handleSelect(menuItems.find(m => m.id === v)!)}>
-                <SelectTrigger className="w-full border-none !text-primary-text !h-fit !p-0">
-                    <SelectValue />
-                </SelectTrigger>
+        <Popover open={showModal} onOpenChange={() => setShowModal(!showModal)}>
+            <div>
+                <PopoverTrigger className="w-fit border-none !text-primary-text !h-fit !p-0">
+                    <div className="flex items-center gap-1">
+                        <div className="mt-1">
+                            <div className="inline-flex items-center gap-1 w-full">
+                                <div className="flex-shrink-0 h-5 w-5 relative">
+                                    <Image
+                                        src={resolveImgSrc(network)}
+                                        alt="Network Logo"
+                                        height="40"
+                                        width="40"
+                                        loading="eager"
+                                        className="rounded-md object-contain" />
+                                </div>
+                                <p>{network?.display_name}</p>
+                            </div>
+                        </div>
+                        <div className="inline-flex items-center justify-self-end gap-1 text-secondary-text">
+                            ({currency?.asset})
+                        </div>
+                        <ChevronRight className="h-4 w-4 text-primary-text" />
+                    </div>
+                </PopoverTrigger>
                 {
                     currency?.contract_address && isValidAddress(currency.contract_address, network) && network &&
                     <div className="flex items-center justify-end">
@@ -148,60 +169,65 @@ const CEXNetworkFormField = forwardRef(function CEXNetworkFormField({ direction 
                         </Link>
                     </div>
                 }
-                <SelectContent>
-                    <SelectGroup>
-                        <SelectLabel className="!text-primary-text">Networks</SelectLabel>
-                        <div className="rounded-md bg-secondary-600 p-4 max-w-xs m-2">
-                            <div className="flex text-secondary-text">
-                                <div className="flex-shrink-0">
-                                    <Info className="h-4 w-4 mt-0.5" aria-hidden="true" />
-                                </div>
-                                <div className="ml-3">
-                                    <div className="text-sm">
-                                        {
-                                            direction === 'from' ?
-                                                <p>Please note that you should initiate the withdrawal from your exchange account via the selected network. In case of transferring via another network, your assets may be lost.</p>
-                                                :
-                                                <p>Please note that funds will be sent to your exchange account via the selected network. Before transferring, double check that the exchange supports the network/asset pair.</p>
-                                        }
-                                    </div>
+            </div>
+            <PopoverContent className="w-fit">
+                <div className="max-w-xs m-2">
+                    <div className="!text-primary-text font-medium pb-2">Networks</div>
+                    <div className="rounded-md bg-secondary-600 p-4 ">
+                        <div className="flex text-secondary-text">
+                            <div className="flex-shrink-0">
+                                <Info className="h-4 w-4 mt-0.5" aria-hidden="true" />
+                            </div>
+                            <div className="ml-3">
+                                <div className="text-sm">
+                                    {
+                                        direction === 'from' ?
+                                            <p>Please note that you should initiate the withdrawal from your exchange account via the selected network. In case of transferring via another network, your assets may be lost.</p>
+                                            :
+                                            <p>Please note that funds will be sent to your exchange account via the selected network. Before transferring, double check that the exchange supports the network/asset pair.</p>
+                                    }
                                 </div>
                             </div>
                         </div>
-                        {
-                            menuItems.sort((a, b) => a.order - b.order)?.map((route, index) => {
-                                const network = layers.find(l => l.internal_name === route.baseObject.network)
-                                const currency = network?.assets.find(a => a.asset === route.baseObject.asset)
+                    </div>
+                </div>
 
-                                return (
-                                    <SelectItem key={index} value={route.id}>
-                                        <div className="flex justify-between items-center gap-1 grow w-full">
-                                            <div className="justify-between grow w-full mt-1">
-                                                <div className="inline-flex items-center gap-1 w-full">
-                                                    <div className="flex-shrink-0 h-5 w-5 relative">
-                                                        <Image
-                                                            src={resolveImgSrc(network)}
-                                                            alt="Network Logo"
-                                                            height="40"
-                                                            width="40"
-                                                            loading="eager"
-                                                            className="rounded-md object-contain" />
-                                                    </div>
-                                                    <p>{network?.display_name}</p>
-                                                </div>
-                                            </div>
-                                            <div className="inline-flex items-center justify-self-end gap-1 text-secondary-text">
-                                                ({currency?.asset})
-                                            </div>
-                                        </div>
-                                    </SelectItem>
-                                )
-                            })
-                        }
-                    </SelectGroup>
-                </SelectContent>
-            </Select>
-        </div>
+                <div className="overflow-y-auto max-h-[200px] styled-scroll">
+                    {
+                        menuItems.sort((a, b) => a.order - b.order)?.map((route, index) => {
+                            const network = layers.find(l => l.internal_name === route.baseObject.network)
+                            const currency = network?.assets.find(a => a.asset === route.baseObject.asset)
+
+                            return (
+                                <div key={index} onClick={() => handleSelect(route)} className={`flex items-center w-full p-2 hover:bg-secondary-700 cursor-pointer`}>
+                                    {
+                                        value === route &&
+                                        <Check className="h-4 w-4 mr-2" />
+                                    }
+                                    <div className="flex-shrink-0 h-6 w-6 relative">
+                                        {<Image
+                                            src={resolveImgSrc(network)}
+                                            alt="Project Logo"
+                                            height="40"
+                                            width="40"
+                                            loading="eager"
+                                            className="rounded-md object-contain" />}
+                                    </div>
+                                    <div className="ml-2 flex items-center gap-3 justify-between w-full">
+                                        <p className='text-md font-medium'>
+                                            {network?.display_name}
+                                        </p>
+                                        <p className="text-primary-text-muted">
+                                            ({currency?.asset})
+                                        </p>
+                                    </div>
+                                </div>
+                            )
+                        })
+                    }
+                </div>
+            </PopoverContent>
+        </Popover>
     </div>)
 })
 
@@ -229,7 +255,7 @@ function GenerateMenuItems(
             }
             return item;
         }).sort(SortingByOrder)
-    const res = menuItems.slice(0, 4)
+    const res = menuItems
     return res
 }
 

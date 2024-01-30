@@ -26,6 +26,7 @@ export class CryptoNetwork {
 
 export class NetworkCurrency {
     asset: string;
+    display_asset: string | null
     //TODO may be plain string
     contract_address: `0x${string}` | null | undefined;
     decimals: number;

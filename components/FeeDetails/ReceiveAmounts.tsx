@@ -66,7 +66,7 @@ export const ReceiveAmounts: FC<WillReceiveProps> = ({ receive_amount, currency,
             {
                 receiveAmountInUsd !== undefined && Number(receiveAmountInUsd) > 0 &&
                 < p className="text-secondary-text text-xs flex justify-end mr-0.5 font-medium">
-                    (${receiveAmountInUsd})
+                    ${receiveAmountInUsd}
                 </p>
             }
         </div>

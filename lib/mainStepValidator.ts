@@ -22,7 +22,7 @@ export default function MainStepValidation({ maxAllowedAmount, minAllowedAmount 
         if (!amount) {
             errors.amount = 'Enter an amount';
         }
-        if (!/^[0-9]*[.,]?[0-9]*$/i.test(amount.toString())) {
+        if (amount && !/^[0-9]*[.,]?[0-9]*$/i.test(amount.toString())) {
             errors.amount = 'Invalid amount';
         }
         if (amount < 0) {

@@ -360,6 +360,7 @@ export const Settings: LayerSwapSettings = {
             "created_date": "2023-12-27T16:46:50.617075+00:00",
             "currencies": [
                 {
+                    "display_asset": null,
                     "asset": "USDC",
                     "contract_address": "0x05a8b3e116670381596e169c09de832f0055a4408464dc2cdadaca3d0aa3993a",
                     "decimals": 6,
@@ -370,6 +371,7 @@ export const Settings: LayerSwapSettings = {
                     "group_name": "USDC"
                 },
                 {
+                    "display_asset": null,
                     "asset": "ETH",
                     "contract_address": "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
                     "decimals": 18,
@@ -403,6 +405,7 @@ export const Settings: LayerSwapSettings = {
             "created_date": "2023-12-27T16:46:50.617075+00:00",
             "currencies": [
                 {
+                    "display_asset": null,
                     "asset": "ETH",
                     "contract_address": null,
                     "decimals": 18,
@@ -413,6 +416,7 @@ export const Settings: LayerSwapSettings = {
                     "group_name": "ETH"
                 },
                 {
+                    "display_asset": null,
                     "asset": "USDC.ero",
                     "contract_address": "0x0bbe6b2a1440bf6175468c66efcf9669d74b67ff",
                     "decimals": 6,
@@ -423,6 +427,7 @@ export const Settings: LayerSwapSettings = {
                     "group_name": null
                 },
                 {
+                    "display_asset": null,
                     "asset": "USDC",
                     "contract_address": "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d",
                     "decimals": 6,
@@ -456,6 +461,7 @@ export const Settings: LayerSwapSettings = {
             "created_date": "2023-12-27T16:46:50.617075+00:00",
             "currencies": [
                 {
+                    "display_asset": null,
                     "asset": "ETH",
                     "contract_address": null,
                     "decimals": 18,
@@ -466,6 +472,7 @@ export const Settings: LayerSwapSettings = {
                     "group_name": "ETH"
                 },
                 {
+                    "display_asset": null,
                     "asset": "USDC",
                     "contract_address": "0xF6c4b249CbCBC46f4f29F39ea69aCf68f07CF473",
                     "decimals": 6,
@@ -501,6 +508,7 @@ export const Settings: LayerSwapSettings = {
             "created_date": "2023-12-27T16:46:50.617075+00:00",
             "currencies": [
                 {
+                    "display_asset": null,
                     "asset": "ETH",
                     "contract_address": null,
                     "decimals": 18,
@@ -534,6 +542,7 @@ export const Settings: LayerSwapSettings = {
             "created_date": "2023-12-27T16:46:50.617075+00:00",
             "currencies": [
                 {
+                    "display_asset": null,
                     "asset": "ETH",
                     "contract_address": null,
                     "decimals": 18,
@@ -569,6 +578,7 @@ export const Settings: LayerSwapSettings = {
             "created_date": "2023-12-27T16:46:50.617075+00:00",
             "currencies": [
                 {
+                    "display_asset": null,
                     "asset": "USDC",
                     "contract_address": "0x7E07E15D2a87A24492740D16f5bdF58c16db0c4E",
                     "decimals": 6,
@@ -579,6 +589,7 @@ export const Settings: LayerSwapSettings = {
                     "group_name": "USDC"
                 },
                 {
+                    "display_asset": null,
                     "asset": "ETH",
                     "contract_address": null,
                     "decimals": 18,
@@ -610,6 +621,7 @@ export const Settings: LayerSwapSettings = {
             "created_date": "2023-12-27T16:46:50.617075+00:00",
             "currencies": [
                 {
+                    "display_asset": null,
                     "asset": "ETH",
                     "contract_address": null,
                     "decimals": 18,
@@ -635,6 +647,7 @@ export const Settings: LayerSwapSettings = {
             "created_date": "2023-12-27T16:46:50.617075+00:00",
             "currencies": [
                 {
+                    "display_asset": null,
                     "asset": "EVMOS",
                     "contract_address": null,
                     "decimals": 18,
@@ -664,6 +677,7 @@ export const Settings: LayerSwapSettings = {
             "created_date": "2023-12-27T16:46:50.617075+00:00",
             "currencies": [
                 {
+                    "display_asset": null,
                     "asset": "SOL",
                     "contract_address": null,
                     "decimals": 9,
@@ -674,6 +688,7 @@ export const Settings: LayerSwapSettings = {
                     "group_name": null
                 },
                 {
+                    "display_asset": null,
                     "asset": "USDC",
                     "contract_address": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr" as any,
                     "decimals": 6,
@@ -703,6 +718,7 @@ export const Settings: LayerSwapSettings = {
             "created_date": "2023-12-27T16:46:50.617075+00:00",
             "currencies": [
                 {
+                    "display_asset": null,
                     "asset": "USDC",
                     "contract_address": null,
                     "decimals": 6,
@@ -732,6 +748,7 @@ export const Settings: LayerSwapSettings = {
             "created_date": "2023-12-27T16:46:50.617075+00:00",
             "currencies": [
                 {
+                    "display_asset": null,
                     "asset": "tIMX",
                     "contract_address": null,
                     "decimals": 18,
@@ -767,6 +784,7 @@ export const Settings: LayerSwapSettings = {
             "created_date": "2024-01-10T10:17:29.071644+00:00",
             "currencies": [
                 {
+                    "display_asset": null,
                     "asset": "ETH",
                     "contract_address": "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
                     "decimals": 18,
@@ -777,6 +795,7 @@ export const Settings: LayerSwapSettings = {
                     "group_name": "ETH"
                 },
                 {
+                    "display_asset": null,
                     "asset": "ARUSDC",
                     "contract_address": "0x04a762673b08014b8e7a969f94cc752a93b8ae209ace1aa01fea14a22f8a865c",
                     "decimals": 6,
@@ -806,6 +825,7 @@ export const Settings: LayerSwapSettings = {
             "created_date": "2024-01-12T15:15:58.168996+00:00",
             "currencies": [
                 {
+                    "display_asset": null,
                     "asset": "TMETIS",
                     "contract_address": null,
                     "decimals": 18,

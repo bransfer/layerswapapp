@@ -103,7 +103,7 @@ const LockedAsset = ({ value }: { value: ISelectMenuItem }) => {
     return (
         <div className="rounded-lg focus-peer:ring-primary focus-peer:border-secondary-400 focus-peer:border focus-peer:ring-1 focus:outline-none disabled:cursor-not-allowed relative grow h-12 flex items-center text-left justify-bottom w-full pl-3 pr-2 py-2 bg-secondary-600 border border-secondary-500 font-semibold align-sub ">
             <div className='w-full border-transparent bg-transparent font-semibold rounded-md'>
-                <span className="flex items-center">
+                <span className="flex items-center text-xs md:text-base">
                     <div className="flex-shrink-0 h-6 w-6 relative">
                         {
                             value?.imgSrc && <Image
