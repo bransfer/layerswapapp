@@ -8,8 +8,6 @@ export function generateSwapInitialValues(settings: LayerSwapAppSettings, queryP
     const { destAddress, amount, fromAsset, toAsset, from, to, lockFromAsset, lockToAsset, addressSource } = queryParams
     const { layers, exchanges, sourceRoutes, destinationRoutes } = settings || {}
 
-    const shouldManipulateCurrency = addressSource === 'ea7df14a1597407f9f755f05e25bab42' && from === 'ARBITRUM_MAINNET' && fromAsset === 'USDC'
-
     const lockedSourceCurrency = lockFromAsset ?
         layers.find(l => l.internal_name === to)
             ?.assets?.find(c => c?.asset?.toUpperCase() === fromAsset?.toUpperCase())
@@ -46,9 +44,9 @@ export function generateSwapInitialValues(settings: LayerSwapAppSettings, queryP
     let initialAddress =
         destAddress && initialDestination && isValidAddress(destAddress, destinationLayer) ? destAddress : "";
 
-    let initialSourceCurrency = shouldManipulateCurrency ? filteredSourceCurrencies?.find(c => c.asset === 'USDC.e') :
-        (filteredSourceCurrencies?.find(c => c.asset?.toUpperCase() == fromAsset?.toUpperCase())
-            || filteredSourceCurrencies?.[0])
+    let initialSourceCurrency =
+        filteredSourceCurrencies?.find(c => c.asset?.toUpperCase() == fromAsset?.toUpperCase())
+        || filteredSourceCurrencies?.[0]
 
     let initialDestinationCurrency =
         filteredDestinationCurrencies?.find(c => c.asset?.toUpperCase() == toAsset?.toUpperCase())

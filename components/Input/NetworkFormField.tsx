@@ -56,7 +56,6 @@ const NetworkFormField = forwardRef(function NetworkFormField({ direction, label
     const {
         values,
         setFieldValue,
-        setFieldError
     } = useFormikContext<SwapFormValues>();
     const name = direction
 
@@ -135,6 +134,8 @@ const NetworkFormField = forwardRef(function NetworkFormField({ direction, label
         x.id == (direction === 'from' ? fromExchange : toExchange)?.internal_name);
 
     const handleSelect = useCallback((item: SelectMenuItem<Layer | Exchange>) => {
+        if (item.baseObject.internal_name === value?.baseObject.internal_name)
+            return
         if (!item.isAvailable.value && item.isAvailable.disabledReason == LayerDisabledReason.InvalidRoute) {
             setFieldValue(name === "from" ? "to" : "from", null)
             setFieldValue(name === "from" ? "toExchange" : "fromExchange", null)
@@ -151,7 +152,7 @@ const NetworkFormField = forwardRef(function NetworkFormField({ direction, label
                 setFieldValue(`${name}Currency`, groupSubstitute, true)
             }
         }
-    }, [name, assetGroups, toCurrency, fromCurrency])
+    }, [name, assetGroups, toCurrency, fromCurrency, value])
 
     return (<div className={`p-3 bg-secondary-700 ${className}`}>
         <label htmlFor={name} className="block font-semibold text-secondary-text text-xs">

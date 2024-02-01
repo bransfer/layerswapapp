@@ -26,7 +26,6 @@ export const swap: SwapItem = {
             "to": "0x5da5c2a98e26fd28914b91212b1232d58eb9bbab",
             "created_date": "2023-08-16T16:31:50.028165+00:00",
             "transaction_id": "0x40eb981625e69775664049fb930d489ff766a906c0528ffdb32715636d145962",
-            "explorer_url": "https://goerli.etherscan.io/tx/0x40eb981625e69775664049fb930d489ff766a906c0528ffdb32715636d145962",
             "confirmations": 3,
             "max_confirmations": 3,
             "amount": 0.0015,
@@ -34,15 +33,12 @@ export const swap: SwapItem = {
             "type": TransactionType.Input,
             "usd_value": 2.728530,
             "status": TransactionStatus.Pending,
-            "account_explorer_url": ''
         },
         {
-            "account_explorer_url": '',
             "from": "0x5da5c2a98e26fd28914b91212b1232d58eb9bbab",
             "to": "0x142c03fc8fd30d11ed17ef0f48a9941fd4a66953",
             "created_date": "2023-08-16T16:33:23.4937+00:00",
             "transaction_id": "0xae9231b805139bee7e92ddae631b13bb2d13a09e106826b4f08e8efa965d1c27",
-            "explorer_url": "https://goerli.arbiscan.io/tx/0xae9231b805139bee7e92ddae631b13bb2d13a09e106826b4f08e8efa965d1c27",
             "confirmations": 28,
             "max_confirmations": 12,
             "amount": 0.00093,
@@ -55,7 +51,6 @@ export const swap: SwapItem = {
             "amount": 0.000271,
             "confirmations": 15,
             "created_date": "2023-08-15T15:38:46.036437+00:00",
-            "explorer_url": "https://goerli.arbiscan.io/tx/0x673d993640252bc40e7f69291a341deea2bb5250e8b13531b9e1412e326c5c42",
             "from": "0xe66aa98b55c5a55c9af9da12fe39b8868af9a346",
             "max_confirmations": 12,
             "to": "0x142c03fc8fd30d11ed17ef0f48a9941fd4a66953",
@@ -64,7 +59,6 @@ export const swap: SwapItem = {
             "usd_price": 1840.02,
             "usd_value": 0.49864542,
             "status": TransactionStatus.Pending,
-            "account_explorer_url": ''
         }
     ]
 }
@@ -90,12 +84,10 @@ export const failedSwap: SwapItem = {
     "fail_reason": "",
     "transactions": [
         {
-            "account_explorer_url": '',
             "from": "0x142c03fc8fd30d11ed17ef0f48a9941fd4a66953",
             "to": "0x5da5c2a98e26fd28914b91212b1232d58eb9bbab",
             "created_date": "2023-08-30T09:07:34.213877+00:00",
             "transaction_id": "0x43b595400b4e61560846f87115f5b0273ae5f6f1a390f107dca722115a0cd2bf",
-            "explorer_url": "https://goerli.etherscan.io/tx/0x43b595400b4e61560846f87115f5b0273ae5f6f1a390f107dca722115a0cd2bf",
             "confirmations": 3,
             "max_confirmations": 3,
             "amount": 0.0018,
@@ -128,12 +120,10 @@ export const failedSwapOutOfRange: SwapItem = {
     "fail_reason": "received_more_than_valid_range",
     "transactions": [
         {
-            "account_explorer_url": '',
             "from": "0x142c03fc8fd30d11ed17ef0f48a9941fd4a66953",
             "to": "0x21d35f8d47a20a9e652a8eb35ebcbffffa50059c",
             "created_date": "2023-08-29T14:17:14.689017+00:00",
             "transaction_id": "0x81677f514f897fd49f5d3fab1c6e09c13aa4613cd1a98749e0f3899cd331cd7a",
-            "explorer_url": "https://goerli.etherscan.io/tx/0x81677f514f897fd49f5d3fab1c6e09c13aa4613cd1a98749e0f3899cd331cd7a",
             "confirmations": 0,
             "max_confirmations": 3,
             "amount": 0.11,
@@ -146,7 +136,6 @@ export const failedSwapOutOfRange: SwapItem = {
             "amount": 0.000271,
             "confirmations": 15,
             "created_date": "2023-08-15T15:38:46.036437+00:00",
-            "explorer_url": "https://goerli.arbiscan.io/tx/0x673d993640252bc40e7f69291a341deea2bb5250e8b13531b9e1412e326c5c42",
             "from": "0xe66aa98b55c5a55c9af9da12fe39b8868af9a346",
             "max_confirmations": 12,
             "to": "0x142c03fc8fd30d11ed17ef0f48a9941fd4a66953",
@@ -155,7 +144,6 @@ export const failedSwapOutOfRange: SwapItem = {
             "status": TransactionStatus.Pending,
             "usd_price": 1840.02,
             "usd_value": 0.49864542,
-            "account_explorer_url": ''
         }
     ]
 }

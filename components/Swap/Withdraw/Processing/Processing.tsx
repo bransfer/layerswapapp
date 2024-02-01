@@ -167,7 +167,7 @@ const Processing: FC<Props> = ({ settings, swap }) => {
                     <span>Transaction: </span>
                     <div className='underline hover:no-underline flex items-center space-x-1'>
                         {swapRefuelTransaction && <>
-                            <a target={"_blank"} href={swapRefuelTransaction?.explorer_url}>{shortenAddress(swapRefuelTransaction?.transaction_id)}</a>
+                            <a target={"_blank"} href={output_tx_explorer?.replace("{0}", swapRefuelTransaction.transaction_id)}>{shortenAddress(swapRefuelTransaction?.transaction_id)}</a>
                             <ExternalLink className='h-4' />
                         </>}
                     </div>

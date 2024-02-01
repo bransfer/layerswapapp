@@ -7,7 +7,7 @@ import {
     CommandList,
     CommandWrapper
 } from '../../shadcn/command'
-import React from "react";
+import React, { useCallback } from "react";
 import useWindowDimensions from '../../../hooks/useWindowDimensions';
 import SelectItem from '../Shared/SelectItem';
 import { SelectProps } from '../Shared/Props/SelectProps'
@@ -37,7 +37,10 @@ export class SelectMenuItemGroup {
 export default function CommandSelect({ values, value, setValue, show, setShow, searchHint, valueGrouper, isLoading }: CommandSelectProps) {
     const { isDesktop } = useWindowDimensions();
     let groups: SelectMenuItemGroup[] = valueGrouper(values);
-
+    const handleSelectValue = useCallback((item: ISelectMenuItem) => {
+        setValue(item)
+        setShow(false)
+    }, [setValue])
     return (
         <Modal height='full' show={show} setShow={setShow} modalId='comandSelect'>
             {show ?
@@ -56,10 +59,7 @@ export default function CommandSelect({ values, value, setValue, show, setShow, 
                                 return (
                                     <CommandGroup key={group.name} heading={group.name}>
                                         {group.items.map(item =>
-                                            <CommandItem disabled={!item.isAvailable.value} value={item.name} key={item.id} onSelect={() => {
-                                                setValue(item)
-                                                setShow(false)
-                                            }}>
+                                            <CommandItem disabled={!item.isAvailable.value} value={item.name} key={item.id} onSelect={() => handleSelectValue(item)}>
                                                 <SelectItem item={item} />
                                             </CommandItem>)
                                         }

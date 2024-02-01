@@ -34,20 +34,8 @@ export default function useImxBalance(): BalanceProvider {
 
     }
 
-    // Transfers in imx are free
-    const getGas = async ({ currency }: GasProps) => {
-
-        return [{
-            token: currency.asset,
-            gas: 0,
-            request_time: new Date().toJSON()
-        }]
-
-    }
-
     return {
         getBalance,
-        getGas,
         supportedNetworks
     }
 }

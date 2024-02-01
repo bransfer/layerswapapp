@@ -5,7 +5,7 @@ export class PersistantQueryParams {
     lockAddress?: boolean = false;
     lockFrom?: boolean = false;
     lockTo?: boolean = false;
-    
+
     lockFromAsset?: boolean = false;
     lockToAsset?: boolean = false;
 

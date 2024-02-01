@@ -197,8 +197,6 @@ export type Transaction = {
     transaction_id: string,
     confirmations: number,
     max_confirmations: number,
-    explorer_url: string,
-    account_explorer_url: string,
     usd_value: number,
     usd_price: number,
     status: TransactionStatus,

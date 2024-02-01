@@ -34,7 +34,7 @@ export default function CommandSelectWrapper<T>({
     const handleSelect = useCallback((item: SelectMenuItem<T>) => {
         setValue(item)
         setShowModal(false)
-    }, [])
+    }, [setValue])
 
     return (
         <>

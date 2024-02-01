@@ -18,7 +18,7 @@ const DetailedEstimates: FC = () => {
                 Fee
             </label>
             <div className="text-right">
-                {isFeeLoading ? <div className='h-[10px] w-10 inline-flex bg-gray-500 rounded-sm animate-pulse' /> : <span>{parsedFee || '-'}</span>} <span>{currencyName}</span>
+                {isFeeLoading ? <div className='h-[10px] w-10 inline-flex bg-gray-500 rounded-sm animate-pulse' /> : <span>{parsedFee || '-'}</span>} <span>{parsedFee ? currencyName : ''}</span>
             </div>
         </div>
     </div>

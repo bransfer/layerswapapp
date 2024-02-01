@@ -40,7 +40,8 @@ const Address: FC<Input> = forwardRef<HTMLInputElement, Input>(function Address
     const [wrongNetwork, setWrongNetwork] = useState(false)
     const inputReference = useRef<HTMLInputElement>(null);
     const destination = values.to
-    const valid_addresses = address_book?.filter(a => a.networks?.some(n => destination?.internal_name === n) && isValidAddress(a.address, destination)) || []
+    const destinationExchange = values.toExchange
+    const valid_addresses = address_book?.filter(a => destinationExchange ? a.exchanges.some(e => destinationExchange.internal_name === e) : a.networks?.some(n => destination?.internal_name === n) && isValidAddress(a.address, destination)) || []
 
     const { setDepositeAddressIsfromAccount, setAddressConfirmed } = useSwapDataUpdate()
     const placeholder = "Enter your address here"
@@ -213,7 +214,7 @@ const Address: FC<Input> = forwardRef<HTMLInputElement, Input>(function Address
                         && !inputValue
                         && destination
                         && provider
-                        && !connectedWallet 
+                        && !connectedWallet
                         && !values.toExchange &&
                         <div onClick={() => { connectWallet(provider.name) }} className={`min-h-12 text-left cursor-pointer space-x-2 border border-secondary-500 bg-secondary-700/70  flex text-sm rounded-md items-center w-full transform transition duration-200 px-2 py-1.5 hover:border-secondary-500 hover:bg-secondary-700 hover:shadow-xl`}>
                             <div className='flex text-primary-text flex-row items-left bg-secondary-400 px-2 py-1 rounded-md'>

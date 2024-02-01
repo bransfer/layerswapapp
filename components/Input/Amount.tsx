@@ -26,13 +26,14 @@ const AmountField = forwardRef(function AmountField(_, ref: any) {
     const query = useQueryState()
 
     const gasAmount = gases[from?.internal_name || '']?.find(g => g?.token === fromCurrency?.asset)?.gas || 0
-
     const name = "amount"
     const walletBalance = walletAddress && balances[walletAddress]?.find(b => b?.network === from?.internal_name && b?.token === fromCurrency?.asset)
     let maxAllowedAmount: number | null = maxAmountFromApi || 0
     if (query.balances && fromCurrency) {
         try {
-            let balancesTyped = upperCaseKeys(JSON.parse(query.balances))
+            const balancesFromQueries = new URL(window.location.href.replaceAll('&quot;', '"')).searchParams.get('balances');
+            const parsedBalances = balancesFromQueries && JSON.parse(balancesFromQueries)
+            let balancesTyped = parsedBalances
             if (balancesTyped && balancesTyped[fromCurrency.asset] && balancesTyped[fromCurrency.asset] > Number(minAllowedAmount)) {
                 maxAllowedAmount = Math.min(maxAllowedAmount, balancesTyped[fromCurrency.asset]);
             }

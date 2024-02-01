@@ -90,12 +90,10 @@ const Comp: FC<{ settings: any, swap: SwapItem, failedSwap?: SwapItem, failedSwa
 }
 
 const DUMMY_TRANSACTION = {
-    account_explorer_url: "",
     from: "0x5da5c2a98e26fd28914b91212b1232d58eb9bbab",
     to: "0x142c03fc8fd30d11ed17ef0f48a9941fd4a66953",
     created_date: "2023-08-16T16:33:23.4937+00:00",
     transaction_id: "0xae9231b805139bee7e92ddae631b13bb2d13a09e106826b4f08e8efa965d1c27",
-    explorer_url: "https://goerli.arbiscan.io/tx/0xae9231b805139bee7e92ddae631b13bb2d13a09e106826b4f08e8efa965d1c27",
     confirmations: 28,
     max_confirmations: 12,
     amount: 0.00093,

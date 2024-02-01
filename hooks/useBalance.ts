@@ -10,11 +10,14 @@ import { BalanceProvider } from "../Models/Balance"
 import useWallet from "./useWallet"
 import { useBalancesState, useBalancesUpdate } from "../context/balances"
 import { NetworkCurrency } from "../Models/CryptoNetwork"
+import useQueryBalances from "../lib/balances/query/useQueryBalances"
+import { useQueryState } from "../context/query"
 
 
 export default function useBalanceProvider() {
 
     const BalanceProviders: BalanceProvider[] = [
+        useQueryBalances(),
         useEVMBalance(),
         useOptimismBalance(),
         useStarknetBalance(),
@@ -25,6 +28,7 @@ export default function useBalanceProvider() {
     ]
 
     const { balances, gases } = useBalancesState()
+    const query = useQueryState()
 
     const {
         setIsBalanceLoading,
@@ -38,25 +42,26 @@ export default function useBalanceProvider() {
     const fetchBalance = async (network: Layer) => {
         const provider = getAutofillProvider(network)
         const wallet = provider?.getConnectedWallet()
+        const address = query.account || wallet?.address
 
-        const balance = balances[wallet?.address || '']?.find(b => b?.network === network?.internal_name)
+        const balance = balances[address || '']?.find(b => b?.network === network?.internal_name)
         const isBalanceOutDated = !balance || new Date().getTime() - (new Date(balance.request_time).getTime() || 0) > 10000
 
         if (network
             && isBalanceOutDated
-            && wallet?.address) {
+            && address) {
             setIsBalanceLoading(true)
 
-            const walletBalances = balances[wallet.address]
+            const walletBalances = balances[address]
             const filteredBalances = walletBalances?.some(b => b?.network === network?.internal_name) ? walletBalances?.filter(b => b?.network !== network.internal_name) : walletBalances || []
 
             const provider = getBalanceProvider(network)
             const ercAndNativeBalances = await provider?.getBalance({
                 layer: network,
-                address: wallet?.address
+                address: address
             }) || []
 
-            setAllBalances((data) => ({ ...data, [wallet?.address]: filteredBalances?.concat(ercAndNativeBalances) }))
+            setAllBalances((data) => ({ ...data, [address]: filteredBalances?.concat(ercAndNativeBalances) }))
             setIsBalanceLoading(false)
         }
     }
@@ -82,7 +87,7 @@ export default function useBalanceProvider() {
             setIsGasLoading(true)
             try {
                 const provider = getBalanceProvider(network)
-                const gas = await provider?.getGas({
+                const gas = provider?.getGas && await provider?.getGas({
                     layer: network,
                     address: wallet?.address as `0x${string}`,
                     currency,

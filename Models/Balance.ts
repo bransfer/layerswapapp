@@ -37,7 +37,7 @@ export type Gas = {
 }
 
 export type BalanceProvider = {
-    getBalance: ({ layer, address }: BalanceProps) => Promise<Balance[] | undefined> | undefined | void,
-    getGas: ({ layer, address, currency, userDestinationAddress, wallet }: GasProps) => Promise<Gas[] | undefined> | undefined | void,
+    getBalance: ({ layer, address }: BalanceProps) => Promise<Balance[] | undefined> | Balance[] | undefined | void,
+    getGas?: ({ layer, address, currency, userDestinationAddress, wallet }: GasProps) => Promise<Gas[] | undefined> | undefined | void,
     supportedNetworks: string[],
 }

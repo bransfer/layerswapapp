@@ -37,7 +37,9 @@ const MinMax = ({ onAddressGet }: { onAddressGet: (address: string) => void }) =
     let maxAllowedAmount: number | null = maxAmountFromApi || 0
     if (query.balances && fromCurrency) {
         try {
-            let balancesTyped = upperCaseKeys(JSON.parse(query.balances))
+            const balancesFromQueries = new URL(window.location.href.replaceAll('&quot;', '"')).searchParams.get('balances');
+            const parsedBalances = balancesFromQueries && JSON.parse(balancesFromQueries)
+            let balancesTyped = parsedBalances
             if (balancesTyped && balancesTyped[fromCurrency.asset] && balancesTyped[fromCurrency.asset] > Number(minAllowedAmount)) {
                 maxAllowedAmount = Math.min(maxAllowedAmount, balancesTyped[fromCurrency.asset]);
             }
