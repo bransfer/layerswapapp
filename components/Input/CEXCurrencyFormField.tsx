@@ -97,6 +97,41 @@ const CurrencyGroupFormField: FC<{ direction: string }> = ({ direction }) => {
     const value = currencyMenuItems?.find(x => x.id == currencyGroup?.name);
 
     useEffect(() => {
+        if (direction === "to") {
+            if (destinationRoutes?.data
+                && !destinationRoutes?.data
+                    ?.filter(r => r.network === to?.internal_name)
+                    ?.some(r => r.asset === toCurrency?.asset)) {
+
+                const derfaultValue = currencyMenuItems
+                    ?.filter(mi => mi.isAvailable
+                        && destinationRoutes.data
+                            ?.some(r => r.asset === mi.baseObject.name))
+                    ?.[0]?.baseObject
+                setFieldValue(name, derfaultValue || null)
+            }
+        }
+    }, [fromCurrency, currencyGroup, name, destinationRoutes])
+
+    useEffect(() => {
+        if (direction === "from") {
+            if (sourceRoutes?.data
+                && !sourceRoutes?.data
+                    ?.filter(r => r.network === from?.internal_name)
+                    ?.some(r => r.asset === fromCurrency?.asset)) {
+                const derfaultValue = currencyMenuItems
+                    ?.filter(mi => mi.isAvailable
+                        && sourceRoutes.data
+                            ?.some(r => r.asset === mi.baseObject.name))
+                    ?.[0]?.baseObject
+
+                setFieldValue(name, derfaultValue || null)
+            }
+        }
+    }, [toCurrency, currencyGroup, name, sourceRoutes])
+
+
+    useEffect(() => {
         if (value) return
         setFieldValue(name, currencyMenuItems?.[0].baseObject)
     }, [])

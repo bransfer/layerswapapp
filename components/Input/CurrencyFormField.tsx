@@ -176,7 +176,7 @@ const CurrencyFormField: FC<{ direction: string }> = ({ direction }) => {
                     ?.some(r => r.asset === toCurrency?.asset)) {
 
                 const derfaultValue = currencyMenuItems
-                    .filter(mi => mi.isAvailable
+                    ?.filter(mi => mi.isAvailable
                         && destinationRoutes.data
                             ?.some(r => r.asset === mi.baseObject.asset
                                 && r.network === to?.internal_name))
@@ -193,7 +193,7 @@ const CurrencyFormField: FC<{ direction: string }> = ({ direction }) => {
                     ?.filter(r => r.network === from?.internal_name)
                     ?.some(r => r.asset === fromCurrency?.asset)) {
                 const derfaultValue = currencyMenuItems
-                    .filter(mi => mi.isAvailable
+                    ?.filter(mi => mi.isAvailable
                         && sourceRoutes.data
                             ?.some(r => r.asset === mi.baseObject.asset
                                 && r.network === from?.internal_name))
