@@ -13,7 +13,6 @@ import { NetworkCurrency } from "../Models/CryptoNetwork"
 import useQueryBalances from "../lib/balances/query/useQueryBalances"
 import { useQueryState } from "../context/query"
 
-
 export default function useBalanceProvider() {
 
     const BalanceProviders: BalanceProvider[] = [
@@ -37,7 +36,7 @@ export default function useBalanceProvider() {
         setAllGases
     } = useBalancesUpdate()
 
-    const { getAutofillProvider } = useWallet()
+    const { getAutofillProvider, wallets } = useWallet()
 
     const fetchBalance = async (network: Layer) => {
         const provider = getAutofillProvider(network)

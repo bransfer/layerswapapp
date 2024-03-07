@@ -22,6 +22,8 @@ const BalanceComponent = dynamic(() => import("./dynamic/Balance"), {
     loading: () => <></>,
 });
 
+const CurrencyDetails = dynamic(() => import("./dynamic/CurrencyFormItems"), {});
+
 const CurrencyFormField: FC<{ direction: string }> = ({ direction }) => {
     const {
         values,
@@ -116,7 +118,8 @@ const CurrencyFormField: FC<{ direction: string }> = ({ direction }) => {
         direction === "from" ? sourceRoutes?.data : destinationRoutes?.data,
         direction,
         balances[walletAddress || ''],
-        query
+        query,
+        direction === 'from' ? from?.internal_name : to?.internal_name
     )
     const currencyAsset = direction === 'from' ? fromCurrency?.asset : toCurrency?.asset;
 
@@ -198,7 +201,10 @@ const CurrencyFormField: FC<{ direction: string }> = ({ direction }) => {
 
     return (
         <div className="relative">
-            <BalanceComponent values={values} direction={direction} onLoad={(v) => setWalletAddress(v)} />
+            {
+                (direction == "from" ? values.from : values.to) &&
+                <BalanceComponent values={values} direction={direction} onLoad={(v) => setWalletAddress(v)} />
+            }
             <PopoverSelectWrapper
                 placeholder="Asset"
                 values={currencyMenuItems}
@@ -217,7 +223,8 @@ export function GenerateCurrencyMenuItems(
     routes?: { network: string, asset: string }[],
     direction?: string,
     balances?: Balance[],
-    query?: QueryParams): SelectMenuItem<NetworkCurrency>[] {
+    query?: QueryParams,
+    network?: string): SelectMenuItem<NetworkCurrency>[] {
     const { to, from } = values
     const lockAsset = direction === 'from' ? query?.lockFromAsset
         : query?.lockToAsset
@@ -240,8 +247,6 @@ export function GenerateCurrencyMenuItems(
     return currencies?.map(c => {
         const currency = c
         const displayName = currency.display_asset ?? currency.asset;
-        const balance = balances?.find(b => b?.token === c?.asset && (direction === 'from' ? from : to)?.internal_name === b.network)
-        const formatted_balance_amount = balance ? Number(truncateDecimals(balance?.amount, c.precision)) : ''
 
         const res: SelectMenuItem<NetworkCurrency> = {
             baseObject: c,
@@ -250,7 +255,7 @@ export function GenerateCurrencyMenuItems(
             order: CurrencySettings.KnownSettings[c.asset]?.Order ?? 5,
             imgSrc: resolveImgSrc && resolveImgSrc(c),
             isAvailable: currencyIsAvailable(c),
-            details: `${formatted_balance_amount}`,
+            menuItemDetails: <CurrencyDetails values={values} network={network} currency={c} />,
             type: "currency"
         };
 
