@@ -3676,6 +3676,22 @@
     "@stablelib/random" "^1.0.2"
     "@stablelib/wipe" "^1.0.1"
 
+"@starknet-react/chains@^0.1.7":
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/@starknet-react/chains/-/chains-0.1.7.tgz#58503379e2ffabe33b4f6e0f2aef775e84745a4d"
+  integrity sha512-UNh97I1SvuJKaAhKOmpEk8JcWuZWMlPG/ba2HcvFYL9x/47BKndJ+Da9V+iJFtkHUjreVnajT1snsaz1XMG+UQ==
+
+"@starknet-react/core@^2.3.0":
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@starknet-react/core/-/core-2.3.0.tgz#3fa9a664569cb7dd3f6da68ec6af00cb03fc73f1"
+  integrity sha512-8g9d0Gs811gJnQJHVMxQoXYhv+y5/qug7NQ0lnJ51uytdBhr/Zz5wgeTHW4ZQ5Igljyvf+ks+yhp4P1iSvnSqA==
+  dependencies:
+    "@starknet-react/chains" "^0.1.7"
+    "@tanstack/react-query" "^5.0.1"
+    eventemitter3 "^5.0.1"
+    immutable "^4.3.4"
+    zod "^3.22.2"
+
 "@storybook/addon-actions@7.6.7":
   version "7.6.7"
   resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-7.6.7.tgz#2985d5417c65a9a0bce75a487b09bf1d1140b943"
@@ -4654,6 +4670,11 @@
   resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-4.36.1.tgz#79f8c1a539d47c83104210be2388813a7af2e524"
   integrity sha512-DJSilV5+ytBP1FbFcEJovv4rnnm/CokuVvrBEtW/Va9DvuJ3HksbXUJEpI0aV1KtuL4ZoO9AVE6PyNLzF7tLeA==
 
+"@tanstack/query-core@5.25.0":
+  version "5.25.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.25.0.tgz#e08ed0a9fad34c8005d1a282e57280031ac50cdc"
+  integrity sha512-vlobHP64HTuSE68lWF1mEhwSRC5Q7gaT+a/m9S+ItuN+ruSOxe1rFnR9j0ACWQ314BPhBEVKfBQ6mHL0OWfdbQ==
+
 "@tanstack/query-persist-client-core@4.36.1":
   version "4.36.1"
   resolved "https://registry.yarnpkg.com/@tanstack/query-persist-client-core/-/query-persist-client-core-4.36.1.tgz#4d7284994bdc2a15fe6cbe7161be21e03033fe12"
@@ -4682,6 +4703,13 @@
   dependencies:
     "@tanstack/query-core" "4.36.1"
     use-sync-external-store "^1.2.0"
+
+"@tanstack/react-query@^5.0.1":
+  version "5.25.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.25.0.tgz#f4dac794cf10dd956aa56dbbdf67049a5ba2669d"
+  integrity sha512-u+n5R7mLO7RmeiIonpaCRVXNRWtZEef/aVZ/XGWRPa7trBIvGtzlfo0Ah7ZtnTYfrKEVwnZ/tzRCBcoiqJ/tFw==
+  dependencies:
+    "@tanstack/query-core" "5.25.0"
 
 "@tanstack/react-virtual@^3.0.0-beta.60":
   version "3.0.1"
@@ -10682,6 +10710,11 @@ immer@^9.0.21:
   resolved "https://registry.yarnpkg.com/immer/-/immer-9.0.21.tgz#1e025ea31a40f24fb064f1fef23e931496330176"
   integrity sha512-bc4NBHqOqSfRW7POMkHd51LvClaeMXpm8dx0e8oE2GORbq5aRK7Bxl4FyzVLdGtLmvLKL7BTDBG5ACQm4HWjTA==
 
+immutable@^4.3.4:
+  version "4.3.5"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-4.3.5.tgz#f8b436e66d59f99760dc577f5c99a4fd2a5cc5a0"
+  integrity sha512-8eabxkth9gZatlwl5TBuJnCsoTADlL6ftEr7A4qgdaTsPyreilDSnUk57SO+jfKcNtxPa22U5KK6DSeAYhpBJw==
+
 import-fresh@^3.2.1, import-fresh@^3.3.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/import-fresh/-/import-fresh-3.3.0.tgz#37162c25fcb9ebaa2e6e53d5b4d88ce17d9e0c2b"
@@ -15279,10 +15312,10 @@ starknet@^5.19.5:
     pako "^2.0.4"
     url-join "^4.0.1"
 
-starknetkit@^1.1.3:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/starknetkit/-/starknetkit-1.1.3.tgz#9afb441afd609fd33551c0d765924ab9c621a58e"
-  integrity sha512-yUYk2bfB2tmqujwDqh8quaX6+vFUn+kV4/pgi4PD/WsYEvTmfIcoxhmDdxiYZMbcdUn32D9IVHbJm7JuyzXQNA==
+starknetkit@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/starknetkit/-/starknetkit-1.1.4.tgz#d135a87c8adebe88971b5258e97b244d24fef2f8"
+  integrity sha512-KZ/OvhtGEJPyAXKS6Dht5DL6CtjUtGDfNuzaX1bsYawGgnftOOZ0DXD2SBOQ6ErYLKELbVv3RKBlHs6KonORcQ==
   dependencies:
     "@trpc/client" "^10.38.1"
     "@trpc/server" "^10.38.1"
@@ -17791,7 +17824,7 @@ zksync@^0.13.1:
     websocket-as-promised "^1.1.0"
     zksync-crypto "^0.6.1"
 
-zod@^3.21.4:
+zod@^3.21.4, zod@^3.22.2:
   version "3.22.4"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.22.4.tgz#f31c3a9386f61b1f228af56faa9255e845cf3fff"
   integrity sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==

@@ -21,6 +21,7 @@ import RainbowKit from "./RainbowKit";
 import Solana from "./SolanaProvider";
 import { IsExtensionError } from "../helpers/errorHelper";
 // import { datadogRum } from '@datadog/browser-rum';
+import StarknetProvider from './utils/starknet-provider'
 
 type Props = {
   children: JSX.Element | JSX.Element[];
@@ -138,9 +139,11 @@ export default function Layout({ children, settings, themeData }: Props) {
                   <RainbowKit>
                     <Solana>
                       <FeeProvider>
-                        {process.env.NEXT_PUBLIC_IN_MAINTANANCE === 'true' ?
-                          <MaintananceContent />
-                          : children}
+                        <StarknetProvider>
+                          {process.env.NEXT_PUBLIC_IN_MAINTANANCE === 'true' ?
+                            <MaintananceContent />
+                            : children}
+                        </StarknetProvider>
                       </FeeProvider>
                     </Solana>
                   </RainbowKit>
