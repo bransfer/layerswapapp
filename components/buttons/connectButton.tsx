@@ -35,6 +35,7 @@ const ConnectButton = ({
 }) => {
     const { connectWallet, wallets } = useWallet();
     const [open, setOpen] = useState<boolean>();
+
     const { isMobile } = useWindowDimensions();
 
     const knownConnectors = [
@@ -115,7 +116,7 @@ const ConnectButton = ({
                         key={index}
                         className="w-full h-full hover:bg-secondary-600 rounded py-2 px-3"
                         onClick={() => {
-                            connectWallet(connector.id);
+                            connectWallet(connector.id)
                             setOpen(false);
                             onClose && onClose();
                         }}

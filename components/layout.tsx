@@ -138,13 +138,13 @@ export default function Layout({ children, settings, themeData }: Props) {
                 <TonConnectProvider basePath={basePath} themeData={themeData}>
                   <RainbowKit>
                     <Solana>
-                      <FeeProvider>
-                        <StarknetProvider>
+                      <StarknetProvider>
+                        <FeeProvider>
                           {process.env.NEXT_PUBLIC_IN_MAINTANANCE === 'true' ?
                             <MaintananceContent />
                             : children}
-                        </StarknetProvider>
-                      </FeeProvider>
+                        </FeeProvider>
+                      </StarknetProvider>
                     </Solana>
                   </RainbowKit>
                 </TonConnectProvider>

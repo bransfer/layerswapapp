@@ -3681,10 +3681,10 @@
   resolved "https://registry.yarnpkg.com/@starknet-react/chains/-/chains-0.1.7.tgz#58503379e2ffabe33b4f6e0f2aef775e84745a4d"
   integrity sha512-UNh97I1SvuJKaAhKOmpEk8JcWuZWMlPG/ba2HcvFYL9x/47BKndJ+Da9V+iJFtkHUjreVnajT1snsaz1XMG+UQ==
 
-"@starknet-react/core@^2.3.0":
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/@starknet-react/core/-/core-2.3.0.tgz#3fa9a664569cb7dd3f6da68ec6af00cb03fc73f1"
-  integrity sha512-8g9d0Gs811gJnQJHVMxQoXYhv+y5/qug7NQ0lnJ51uytdBhr/Zz5wgeTHW4ZQ5Igljyvf+ks+yhp4P1iSvnSqA==
+"@starknet-react/core@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@starknet-react/core/-/core-2.4.0.tgz#bf70fb67b7706473540d8760f042bd5e3bffc0b3"
+  integrity sha512-86Xjr48hF1bnKeKnR/zpNnZdYMOchfdj8eU3az47KdjHpo5RQZf0baVre8E+sFWmzoDeSsq3iH7m/Epx+srMig==
   dependencies:
     "@starknet-react/chains" "^0.1.7"
     "@tanstack/react-query" "^5.0.1"
@@ -15299,7 +15299,7 @@ standard-as-callback@^2.1.0:
   resolved "https://registry.yarnpkg.com/standard-as-callback/-/standard-as-callback-2.1.0.tgz#8953fc05359868a77b5b9739a665c5977bb7df45"
   integrity sha512-qoRRSyROncaz1z0mvYqIE4lCd9p2R90i6GxW3uZv5ucSu8tU7B5HXUP1gG8pVZsYNVaXjk8ClXHPttLyxAL48A==
 
-starknet@^5.19.5:
+starknet@^5.24.3:
   version "5.24.3"
   resolved "https://registry.yarnpkg.com/starknet/-/starknet-5.24.3.tgz#1d8a84047783ea122a6cf4f2dac59bfa6d628154"
   integrity sha512-v0TuaNc9iNtHdbIRzX372jfQH1vgx2rwBHQDMqK4DqjJbwFEE5dog8Go6rGiZVW750NqRSWrZ7ahqyRNc3bscg==
