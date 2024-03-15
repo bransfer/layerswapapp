@@ -2,7 +2,6 @@ import { Context, createContext, useContext, useState } from 'react'
 
 const StarknetModalContext = createContext<DataContextType | null>(null);
 
-
 type DataContextType = {
     handleOpenModal: () => void,
     handleCloseModal: () => void,
@@ -12,7 +11,7 @@ type DataContextType = {
 export function StarknetModalState({ children }) {
 
     const [openModal, setOpenModal] = useState(false)
-
+    console.log(openModal)
     const handleOpenModal = () => {
         setOpenModal(true)
     }
@@ -37,4 +36,3 @@ export function useStarknetModalState() {
 
     return data;
 }
-
