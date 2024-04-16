@@ -140,15 +140,14 @@ const DepositMethod: FC<DespositMethodItemProps> = ({
     )
 }
 
-
 type DepositMethod = {
     id: string,
     display_name: string
-}
+} 
 
-function GenerateDepositMethodMenuItems(network: Network, depositMethods: DepositMethod[]): DepositMethod[] {
+function GenerateDepositMethodMenuItems(network: Network, depositMethods: DepositMethod[]): DepositMethod[] | undefined {
 
-    return network.deposit_methods.map(m => ({
+    return network?.deposit_methods?.map(m => ({
         id: m,
         display_name: depositMethods.find(dp => dp.id === m)?.display_name!
     }));
