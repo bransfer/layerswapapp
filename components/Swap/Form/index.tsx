@@ -168,7 +168,6 @@ export default function Form() {
         >
             <ResizablePanel>
                 <SwapDetails type="contained" />
-                <CountdownTimer avgTime={"00:00:45.5917270"} timestamp={"2024-04-16T16:49:33+00:00"} swapId={swap?.id} swapStatus={SwapStatus.UserTransferPending} />
             </ResizablePanel>
         </Modal>
         <Formik
