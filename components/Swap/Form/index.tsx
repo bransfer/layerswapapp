@@ -29,6 +29,8 @@ import dynamic from "next/dynamic";
 import { useFee } from "../../../context/feeContext";
 import ResizablePanel from "../../ResizablePanel";
 import useWallet from "../../../hooks/useWallet";
+import CountdownTimer from "../../utils/countdownTImer";
+import { SwapStatus } from "../../../Models/SwapStatus";
 
 type NetworkToConnect = {
     DisplayName: string;
@@ -166,6 +168,7 @@ export default function Form() {
         >
             <ResizablePanel>
                 <SwapDetails type="contained" />
+                <CountdownTimer avgTime={"00:00:45.5917270"} timestamp={"2024-04-16T16:49:33+00:00"} swapId={swap?.id} swapStatus={SwapStatus.UserTransferPending} />
             </ResizablePanel>
         </Modal>
         <Formik
