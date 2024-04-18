@@ -12,7 +12,7 @@ export const SendFeedbackMessage = async (title: string, text: string) => {
 }
 
 export const SendErrorMessage = async (title: string, text: string) => {
-    if (!configs.error_token || !configs.error_chat_id) return
+    if (!configs?.error_token || !configs?.error_chat_id) return
 
     if (text.length > 2000) {
         text = text.slice(0, 2000);

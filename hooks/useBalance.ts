@@ -27,14 +27,14 @@ export default function useBalanceProvider() {
     const query = useQueryState()
 
     const {
-        setIsBalanceLoading,
         setAllBalances,
         setIsGasLoading,
-        setAllGases
+        setAllGases,
+        setIsBalanceLoading
     } = useBalancesUpdate()
 
     const { getAutofillProvider } = useWallet()
-
+    
     const fetchNetworkBalances = async (network: NetworkWithTokens) => {
         const provider = getAutofillProvider(network)
         const wallet = provider?.getConnectedWallet()
@@ -48,17 +48,48 @@ export default function useBalanceProvider() {
             && address) {
             setIsBalanceLoading(true)
 
-            const walletBalances = balances[address]
-            const filteredBalances = walletBalances?.some(b => b?.network === network?.name) ? walletBalances?.filter(b => b?.network !== network.name) : walletBalances || []
-
             const provider = getBalanceProvider(network)
             const networkBalances = await provider?.getNetworkBalances({
                 network: network,
                 address: address,
             }) || []
 
-            setAllBalances((data) => ({ ...data, [address]: filteredBalances?.concat(networkBalances) }))
-            setIsBalanceLoading(false)
+            setAllBalances((data) => {
+                const walletBalances = data[address]
+                const filteredBalances = walletBalances?.some(b => b?.network === network?.name) ? walletBalances?.filter(b => b?.network !== network.name) : walletBalances || []
+
+                return ({ ...data, [address]: filteredBalances?.concat(networkBalances) })
+            })
+
+        }
+    }
+
+    const fetchAddressBalance = async ({ network, address }: { network: Network, address?: string }) => {
+
+        if (network
+            && address
+        ) {
+
+            const provider = getBalanceProvider(network)
+            const ercAndNativeBalances = await provider?.getBalance({
+                network,
+                address: address,
+                token: 
+            }) || []
+
+            setAllBalances((data) => {
+                const walletBalances = data[address]
+                const filteredBalances = walletBalances?.some(b => b?.network === network?.name) ? walletBalances?.filter(b => b?.network !== network.name) : walletBalances || []
+
+                return ({ ...data, [address]: filteredBalances?.concat(ercAndNativeBalances) })
+            })
+
+        }
+    }
+
+    const fetchAllBalances = async (networks: Network[]) => {
+        for (const network of networks) {
+            await fetchAddressBalance({ network });
         }
     }
 
@@ -73,7 +104,6 @@ export default function useBalanceProvider() {
         if (network
             && isBalanceOutDated
             && address) {
-            setIsBalanceLoading(true)
 
             const walletBalances = balances[address]
             const filteredBalances = walletBalances?.some(b => b?.network === network?.name) ? walletBalances?.filter(b => b?.network !== network.name) : walletBalances || []
@@ -86,7 +116,6 @@ export default function useBalanceProvider() {
             }) || []
 
             setAllBalances((data) => ({ ...data, [address]: filteredBalances?.concat(balance) }))
-            setIsBalanceLoading(false)
         }
     }
 
@@ -135,7 +164,11 @@ export default function useBalanceProvider() {
 
     return {
         fetchGas,
+        fetchBalance,
+        fetchAddressBalance,
+        fetchAllBalances,
         fetchNetworkBalances,
-        fetchBalance
     }
 }
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));

@@ -22,7 +22,7 @@ export default function useEVMBalance(): BalanceProvider {
                 chain,
                 transport: http()
             })
-
+            
             const {
                 getErc20Balances,
                 getTokenBalance,

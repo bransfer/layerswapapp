@@ -11,7 +11,7 @@ type PopoverSelectWrapper = {
     values: ISelectMenuItem[];
     value?: ISelectMenuItem;
     placeholder?: string;
-    searchHint?: string;
+    searchHint: string;
     disabled?: boolean;
 }
 
@@ -40,15 +40,14 @@ export default function PopoverSelectWrapper<T>({
                             <button type='button' className='w-full py-0 border-transparent bg-transparent font-semibold rounded-md flex items-center justify-between'>
                                 <span className="flex items-center text-xs md:text-base">
                                     <div className="flex-shrink-0 h-6 w-6 relative">
-                                        {
-                                            value.imgSrc && <Image
-                                                src={value.imgSrc}
-                                                alt="Project Logo"
-                                                priority
-                                                height="40"
-                                                width="40"
-                                                className="rounded-md object-contain"
-                                            />
+                                        {value.imgSrc && <Image
+                                            src={value.imgSrc}
+                                            alt="Project Logo"
+                                            priority
+                                            height="40"
+                                            width="40"
+                                            className="rounded-md object-contain"
+                                        />
                                         }
                                     </div>
                                     <span className="text-primary-buttonTextColor ml-3 block">{value.name}</span>
@@ -69,7 +68,6 @@ export default function PopoverSelectWrapper<T>({
                                         </span>
                                     </span>
                                 </div>
-
 
                                 <span className="ml-1 flex items-center pointer-events-none text-primary-text">
                                     <ChevronDown className="h-4 w-4" aria-hidden="true" />
@@ -105,17 +103,15 @@ const LockedAsset = ({ value }: { value: ISelectMenuItem }) => {
             <div className='w-full border-transparent bg-transparent font-semibold rounded-md'>
                 <span className="flex items-center text-xs md:text-base">
                     <div className="flex-shrink-0 h-6 w-6 relative">
-                        {
-                            value?.imgSrc && <Image
-                                src={value?.imgSrc}
-                                alt="Project Logo"
-                                priority
-                                height="40"
-                                width="40"
-                                className="rounded-md object-contain"
-                            />
+                        {value?.imgSrc && <Image
+                            src={value?.imgSrc}
+                            alt="Project Logo"
+                            priority
+                            height="40"
+                            width="40"
+                            className="rounded-md object-contain"
+                        />
                         }
-
                     </div>
                     <span className="ml-3 block truncate text-primary-text">{value?.name}</span>
                 </span>

@@ -2,7 +2,7 @@ import { useFormikContext } from "formik";
 import { forwardRef, useCallback, useEffect, useState } from "react";
 import { useSettingsState } from "../../context/settings";
 import { SwapFormValues } from "../DTOs/SwapFormValues";
-import { ISelectMenuItem, SelectMenuItem } from "../Select/Shared/Props/selectMenuItem";
+import { SelectMenuItem } from "../Select/Shared/Props/selectMenuItem";
 import CommandSelectWrapper from "../Select/Command/CommandSelectWrapper";
 import ExchangeSettings from "../../lib/ExchangeSettings";
 import { SortingByAvailability } from "../../lib/sorting"
@@ -14,7 +14,7 @@ import CurrencyFormField from "./CurrencyFormField";
 import useSWR from 'swr'
 import { ApiResponse } from "../../Models/ApiResponse";
 import LayerSwapApiClient from "../../lib/layerSwapApiClient";
-import { RouteNetwork } from "../../Models/Network";
+import { Network, RouteNetwork } from "../../Models/Network";
 import { Exchange } from "../../Models/Exchange";
 import CurrencyGroupFormField from "./CEXCurrencyFormField";
 import { QueryParams } from "../../Models/QueryParams";
@@ -26,7 +26,7 @@ type Props = {
     label: string,
     className?: string,
 }
-type LayerIsAvailable = {
+export type LayerIsAvailable = {
     value: boolean;
     disabledReason: LayerDisabledReason;
 } | {
@@ -195,7 +195,7 @@ const NetworkFormField = forwardRef(function NetworkFormField({ direction, label
     </div>)
 });
 
-function groupByType(values: ISelectMenuItem[]) {
+function groupByType(values: SelectMenuItem<Network>[]) {
     let groups: SelectMenuItemGroup[] = [];
     values.forEach((v) => {
         let group = groups.find(x => x.name == v.group) || new SelectMenuItemGroup({ name: v.group, items: [] });
