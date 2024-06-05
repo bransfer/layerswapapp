@@ -142,22 +142,23 @@ export default function LayerswapMenu() {
                                         }
                                     </>
                                 </Menu.Group>
-                                <Menu.Group>
-                                    <Menu.Item onClick={() => {
-                                        boot();
-                                        show();
-                                        updateWithProps();
-                                    }} target="_blank" icon={<ChatIcon strokeWidth={2} className="h-5 w-5" />} >
-                                        Help
-                                    </Menu.Item>
-                                    <Menu.Item pathname='https://docs.layerswap.io/' target="_blank" icon={<BookOpen className="h-5 w-5" />} >
-                                        Docs for Users
-                                    </Menu.Item>
-                                    <Menu.Item pathname='https://docs.layerswap.io/user-docs/partners-and-integrations' target="_blank" icon={<Users className="h-5 w-5" />} >
-                                        Docs for Partners
-                                    </Menu.Item>
-                                </Menu.Group>
-
+                                {!embedded &&
+                                    <Menu.Group>
+                                        <Menu.Item onClick={() => {
+                                            boot();
+                                            show();
+                                            updateWithProps();
+                                        }} target="_blank" icon={<ChatIcon strokeWidth={2} className="h-5 w-5" />} >
+                                            Help
+                                        </Menu.Item>
+                                        <Menu.Item pathname='https://docs.layerswap.io/' target="_blank" icon={<BookOpen className="h-5 w-5" />} >
+                                            Docs for Users
+                                        </Menu.Item>
+                                        <Menu.Item pathname='https://docs.layerswap.io/user-docs/partners-and-integrations' target="_blank" icon={<Users className="h-5 w-5" />} >
+                                            Docs for Partners
+                                        </Menu.Item>
+                                    </Menu.Group>
+                                }
                                 <Menu.Group>
                                     <Menu.Item pathname='https://docs.layerswap.io/user-docs/information/privacy-policy' target="_blank" icon={<Shield className="h-5 w-5" />} >
                                         Privacy Policy
@@ -186,23 +187,28 @@ export default function LayerswapMenu() {
                                     </Popover>
                                 </Menu.Group>
 
-                                <div className="space-y-3 w-full">
-                                    <hr className="border-secondary-500" />
-                                    <p className="text-primary-text-muted flex justify-center my-3">Media links & suggestions:</p>
-                                </div>
+                                {!embedded &&
+                                    <>
+                                        <div className="space-y-3 w-full">
+                                            <hr className="border-secondary-500" />
+                                            <p className="text-primary-text-muted flex justify-center my-3">Media links & suggestions:</p>
+                                        </div>
 
-                                <div className="grid grid-cols-2 gap-2 justify-center">
-                                    {navigation.social.map((item, index) => (
-                                        <Link key={index} target="_blank" href={item.href} className={`flex relative bg-secondary-700 hover:bg-secondary-600 rounded-md cursor-pointer select-none items-center outline-none text-primary-text ${item.className}`}>
-                                            <div className="p-2 w-full flex justify-center gap-1">
-                                                <item.icon className="h-5 w-5" aria-hidden="true" />
-                                                <p>{item.name}</p>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                </div>
+                                        <div className="grid grid-cols-2 gap-2 justify-center">
+                                            {navigation.social.map((item, index) => (
+                                                <Link key={index} target="_blank" href={item.href} className={`flex relative bg-secondary-700 hover:bg-secondary-600 rounded-md cursor-pointer select-none items-center outline-none text-primary-text ${item.className}`}>
+                                                    <div className="p-2 w-full flex justify-center gap-1">
+                                                        <item.icon className="h-5 w-5" aria-hidden="true" />
+                                                        <p>{item.name}</p>
+                                                    </div>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </>
+                                }
+
                                 {
-                                    router.pathname != '/auth' &&
+                                    router.pathname != '/auth' && !embedded &&
                                     <Menu.Footer>
                                         <Menu.Group>
                                             {
