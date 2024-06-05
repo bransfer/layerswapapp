@@ -36,6 +36,7 @@ export const THEME_COLORS: { [key: string]: ThemeData } = {
         buttonTextColor: '255, 255, 255',
         placeholderText: '140, 152, 192',
         logo: '255, 255, 255',
+        footerLogo: 'none',
         primary: {
             DEFAULT: '46, 236, 255',
             '50': '230, 253, 255',
@@ -73,6 +74,7 @@ export const THEME_COLORS: { [key: string]: ThemeData } = {
         actionButtonText: '0, 0, 0',
         buttonTextColor: '255, 255, 255',
         logo: '255, 255, 255',
+        footerLogo: 'none',
         primary: {
             DEFAULT: '128, 226, 235',
             '50': '255, 255, 255',
@@ -110,6 +112,7 @@ export const THEME_COLORS: { [key: string]: ThemeData } = {
         actionButtonText: '255, 255, 255',
         buttonTextColor: '17, 17, 17',
         logo: '255, 0, 147',
+        footerLogo: 'none',
         primary: {
             DEFAULT: '228, 37, 117',
             '50': '248, 200, 220',
@@ -147,6 +150,7 @@ export const THEME_COLORS: { [key: string]: ThemeData } = {
         actionButtonText: '254, 255, 254',
         buttonTextColor: '228, 229, 240',
         logo: '255, 0, 147',
+        footerLogo: 'none',
         primary: {
             DEFAULT: '228, 37, 117',
             '50': '248, 200, 220',
@@ -183,6 +187,7 @@ export const THEME_COLORS: { [key: string]: ThemeData } = {
         actionButtonText: '254, 255, 254',
         buttonTextColor: '74, 61, 59',
         logo: '226, 49, 115',
+        footerLogo: 'none',
         primary: {
             DEFAULT: '237, 78, 51',
             '50': '248, 200, 220',
@@ -219,6 +224,7 @@ export const THEME_COLORS: { [key: string]: ThemeData } = {
         actionButtonText: '255, 255, 255',
         buttonTextColor: '15, 15, 15',
         logo: '15, 15, 15',
+        footerLogo: 'none',
         primary: {
             DEFAULT: '51, 144, 236',
             '50': '248, 200, 220',
