@@ -51,7 +51,7 @@ const ColorSchema: FC<Props> = ({ themeData }) => {
                         display: ${themeData.headerLogo};
                     }
                     .footerLogo {
-                        display: block;
+                        display: ${themeData.footerLogo};
                         height: ${themeData.footerLogoHeight};
                     }
                 `}
