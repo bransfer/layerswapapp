@@ -12,7 +12,7 @@ import Summary from "./Summary";
 import { useFee } from "../../../context/feeContext";
 import ConnectedWallet from "./ConnectedWallet";
 import { ActionsWithProgressbar, ResolveMessages } from "./Resolver";
-import { useAtomicState } from "../../../context/atomicContext";
+import { AtomicProvider, useAtomicState } from "../../../context/atomicContext";
 
 
 type ContainerProps = {
@@ -108,15 +108,41 @@ const Footer: FC = () => {
 
 
 const Container: FC<ContainerProps> = (props) => {
-    const { type } = props
+    const {
+        type,
+        address,
+        amount,
+        destination,
+        destination_asset,
+        source,
+        source_asseet,
+    } = props
 
     if (type === "widget")
         return <Widget>
-            <Commitment {...props} />
+            <AtomicProvider
+                address={address as string}
+                amount={amount?.toString()}
+                destination={destination as string}
+                destination_asset={destination_asset as string}
+                source={source as string}
+                source_asseet={source_asseet as string}
+            >
+                <Commitment {...props} />
+            </AtomicProvider>
         </Widget>
     else
         return <div className="w-full flex flex-col justify-between h-full space-y-5 text-secondary-text">
-            <Commitment {...props} />
+            <AtomicProvider
+                address={address as string}
+                amount={amount?.toString()}
+                destination={destination as string}
+                destination_asset={destination_asset as string}
+                source={source as string}
+                source_asseet={source_asseet as string}
+            >
+                <Commitment {...props} />
+            </AtomicProvider>
         </div>
 
 }

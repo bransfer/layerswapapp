@@ -29,8 +29,16 @@ type DataContextType = {
     setHashLock: (data: string) => void;
     setUserLocked: (locked: boolean) => void,
 }
-
-export function AtomicProvider({ children }) {
+type AtomicProviderProps = {
+    address: string;
+    amount: string;
+    destination: string;
+    destination_asset: string;
+    source: string;
+    source_asseet: string;
+    children: JSX.Element | JSX.Element[]
+}
+export function AtomicProvider(props: AtomicProviderProps) {
     const router = useRouter()
     const {
         address,
@@ -38,8 +46,9 @@ export function AtomicProvider({ children }) {
         destination,
         destination_asset,
         source,
-        source_asseet
-    } = router.query
+        source_asseet,
+        children
+    } = props
 
     const [commitId, setCommitId] = useState<string | undefined>(router.query.commitId as string | undefined)
     const { networks } = useSettingsState()

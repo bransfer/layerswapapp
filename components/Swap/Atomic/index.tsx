@@ -34,6 +34,7 @@ import { AddressGroup } from "../../Input/Address/AddressPicker";
 import EthPhtlcAbi from "../../../lib/abis/atomic/ETHEREUM_PHTLC.json"
 import ArbPhtlcAbi from "../../../lib/abis/atomic/ARBITRUM_PHTLC.json"
 import { AssetLock } from "../../../Models/PHTLC";
+import AtmoicChat from '../AtomicChat'
 
 type NetworkToConnect = {
     DisplayName: string;
@@ -94,7 +95,14 @@ export const NETWORKS_DETAILS = {
         lp: '0x0454aC1A4567D8128CDA1f23de531702E6c9c06476c705dEcC6c5faEF4714623'
     }
 }
-
+type AtomicProps = {
+    source: string;
+    destination: string;
+    amount: number;
+    address: string;
+    source_asseet: string;
+    destination_asset: string;
+}
 export default function Form() {
     const formikRef = useRef<FormikProps<SwapFormValues>>(null);
     const [showConnectNetworkModal, setShowConnectNetworkModal] = useState(false);
@@ -118,9 +126,9 @@ export default function Form() {
     const { swapResponse } = useSwapDataState()
     const { swap } = swapResponse || {}
     const { minAllowedAmount, maxAllowedAmount, updatePolling: pollFee, mutateLimits } = useFee()
-
+    const [atomicData, setAtomicData] = useState<AtomicProps | undefined>(undefined)
     const handleSubmit = useCallback(async (values: SwapFormValues) => {
-        
+
         const { destination_address, to } = values
         if (to &&
             destination_address &&
@@ -177,17 +185,38 @@ export default function Form() {
             // })
             // router.push(`/commitment/${commitId}?network=${values.from?.name}`)
 
-            return await router.push({
-                pathname: `/atomic`,
-                query: {
-                    amount: values.amount,
-                    address: values.destination_address,
-                    source: values.from?.name,
-                    destination: values.to?.name,
-                    source_asseet: values.fromCurrency.symbol,
-                    destination_asset: values.toCurrency.symbol,
-                }
-            }, undefined, { shallow: false })
+            // return await router.push({
+            //     pathname: `/atomic`,
+            //     query: {
+            //         amount: values.amount,
+            //         address: values.destination_address,
+            //         source: values.from?.name,
+            //         destination: values.to?.name,
+            //         source_asseet: values.fromCurrency.symbol,
+            //         destination_asset: values.toCurrency.symbol,
+            //     }
+            // }, undefined, { shallow: false })
+
+            setV8Path({
+                amount: values.amount,
+                address: values.destination_address,
+                source: values.from?.name,
+                destination: values.to?.name,
+                source_asseet: values.fromCurrency.symbol,
+                destination_asset: values.toCurrency.symbol,
+                router
+            })
+            
+            setAtomicData({
+                amount: Number(values.amount),
+                address: values.destination_address,
+                source: values.from?.name,
+                destination: values.to?.name,
+                source_asseet: values.fromCurrency.symbol,
+                destination_asset: values.toCurrency.symbol,
+            })
+
+            setShowSwapModal(true)
         }
         catch (error) {
             console.log(error)
@@ -206,14 +235,23 @@ export default function Form() {
         setShowSwapModal(value)
         value && swap?.id ? setSwapPath(swap?.id, router) : removeSwapPath(router)
     }, [router, swap])
-
+    console.log("showSwapModal", showSwapModal)
     return <DepositMethodProvider canRedirect onRedirect={() => handleShowSwapModal(false)}>
         <div className="rounded-r-lg cursor-pointer absolute z-10 md:mt-3 border-l-0">
             <AnimatePresence mode='wait'>
                 {
-                    swap &&
+                    atomicData &&
                     !showSwapModal &&
-                    <PendingSwap key="pendingSwap" onClick={() => handleShowSwapModal(true)} />
+                    <PendingSwap
+                        source={atomicData.source}
+                        destination={atomicData.destination}
+                        amount={atomicData.amount}
+                        address={atomicData.address}
+                        source_asseet={atomicData.source_asseet}
+                        destination_asset={atomicData.destination_asset}
+                        key="pendingSwap"
+                        onClick={() => handleShowSwapModal(true)}
+                    />
                 }
             </AnimatePresence>
         </div>
@@ -237,7 +275,18 @@ export default function Form() {
             modalId="showSwap"
         >
             <ResizablePanel>
-                <SwapDetails type="contained" />
+                {
+                    atomicData && <AtmoicChat
+                        address={atomicData.address}
+                        amount={atomicData.amount}
+                        destination={atomicData.destination}
+                        destination_asset={atomicData.destination_asset}
+                        source={atomicData.source}
+                        source_asseet={atomicData.source_asseet}
+                        type='contained'
+                    />
+                }
+
             </ResizablePanel>
         </Modal>
         <Formik
@@ -275,19 +324,24 @@ const textMotion = {
         }
     }
 };
-
-const PendingSwap = ({ onClick }: { onClick: () => void }) => {
-    const { swapResponse } = useSwapDataState()
-    const { swap } = swapResponse || {}
+type PendingSwapProps = AtomicProps & {
+    onClick: () => void
+}
+const PendingSwap = (props: PendingSwapProps) => {
     const {
-        destination_exchange,
-        source_exchange,
-        source_network,
-        destination_network
-    } = swap || {}
-
-    if (!swap)
-        return <></>
+        source,
+        destination,
+        amount,
+        address,
+        source_asseet,
+        destination_asset,
+        onClick
+    } = props
+    const { networks } = useSettingsState()
+    const source_network = networks.find(n => n.name.toUpperCase() === source.toUpperCase())
+    const destination_network = networks.find(n => n.name.toUpperCase() === destination.toUpperCase())
+    const source_token = source_network?.tokens.find(t => t.symbol === source_asseet)
+    const destination_token = destination_network?.tokens.find(t => t.symbol === destination_asset)
 
     return <motion.div
         initial={{ y: 10, opacity: 0 }}
@@ -303,49 +357,54 @@ const PendingSwap = ({ onClick }: { onClick: () => void }) => {
                 variants={textMotion}
                 className="flex items-center bg-secondary-600 rounded-r-lg">
                 <div className="text-primary-text flex px-3 p-2 items-center space-x-2">
-                    <span className="flex items-center">
-                        {swap && <StatusIcon swap={swap} short={true} />}
-                    </span>
                     <div className="flex-shrink-0 h-5 w-5 relative">
-                        {source_exchange ? <Image
-                            src={source_exchange.logo}
+                        {source_network && <Image
+                            src={source_network.logo}
                             alt="From Logo"
                             height="60"
                             width="60"
                             className="rounded-md object-contain"
-                        /> : source_network ?
-                            <Image
-                                src={source_network.logo}
-                                alt="From Logo"
-                                height="60"
-                                width="60"
-                                className="rounded-md object-contain"
-                            /> : null
-                        }
+                        />}
                     </div>
                     <ChevronRight className="block h-4 w-4 mx-1" />
                     <div className="flex-shrink-0 h-5 w-5 relative block">
-                        {destination_exchange ? <Image
-                            src={destination_exchange.logo}
+                        {destination_network && <Image
+                            src={destination_network.logo}
                             alt="To Logo"
                             height="60"
                             width="60"
                             className="rounded-md object-contain"
-                        /> : destination_network ?
-                            <Image
-                                src={destination_network.logo}
-                                alt="To Logo"
-                                height="60"
-                                width="60"
-                                className="rounded-md object-contain"
-                            /> : null
-                        }
+                        />}
                     </div>
                 </div>
 
             </motion.div>
         </motion.div>
     </motion.div>
+}
+
+type SetV8PathParams = {
+    amount: string,
+    address: string,
+    source: string,
+    destination: string,
+    source_asseet: string,
+    destination_asset: string,
+    router: NextRouter
+}
+
+const setV8Path = (params: SetV8PathParams) => {
+    const { amount, address, source, destination, source_asseet, destination_asset, router } = params
+    const basePath = router?.basePath || ""
+    let v8Url = window.location.protocol + "//"
+        + window.location.host + `${basePath}/atomic?amount=${amount}&address=${address}&source=${source}&destination=${destination}&source_asseet=${source_asseet}&destination_asset=${destination_asset}`;
+    const query_params = resolvePersistantQueryParams(router.query)
+    if (query_params && Object.keys(query_params).length) {
+        const search = new URLSearchParams(query_params as any);
+        if (search)
+            v8Url += `?${search}`
+    }
+    window.history.pushState({ ...window.history.state, as: v8Url, url: v8Url }, '', v8Url);
 }
 
 const setSwapPath = (swapId: string, router: NextRouter) => {

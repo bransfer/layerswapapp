@@ -32,17 +32,15 @@ const CommitmentDetails = ({ settings, themeData, apiKey }: InferGetServerSidePr
                     <DepositMethodProvider>
                         <BalancesDataProvider>
                             <FeeProvider>
-                                <AtomicProvider>
-                                    <AtmoicChat
-                                        address={address as string}
-                                        amount={Number(amount)}
-                                        destination={destination as string}
-                                        destination_asset={destination_asset as string}
-                                        source={source as string}
-                                        source_asseet={source_asseet as string}
-                                        type='widget'
-                                    />
-                                </AtomicProvider>
+                                <AtmoicChat
+                                    address={address as string}
+                                    amount={Number(amount)}
+                                    destination={destination as string}
+                                    destination_asset={destination_asset as string}
+                                    source={source as string}
+                                    source_asseet={source_asseet as string}
+                                    type='widget'
+                                />
                             </FeeProvider>
                         </BalancesDataProvider>
                     </DepositMethodProvider>
