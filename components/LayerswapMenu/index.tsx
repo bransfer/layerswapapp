@@ -10,6 +10,9 @@ import Wizard from "../Wizard/Wizard";
 import WizardItem from "../Wizard/WizardItem";
 import { NextRouter, useRouter } from "next/router";
 import { resolvePersistantQueryParams } from "../../helpers/querryHelper";
+import dynamic from "next/dynamic"
+
+const WalletsHeader = dynamic(() => import("../ConnectedWallets").then((comp) => comp.WalletsHeader), { loading: () => <></> })
 
 const Comp = () => {
     const router = useRouter();
@@ -58,6 +61,7 @@ const Comp = () => {
                                 <h2>{currentStepName as string}</h2>
                             </div>
                         }
+                        walletComp={<WalletsHeader />}
                     >
                         <Wizard wizardId='menuWizard' >
                             <WizardItem StepName={MenuStep.Menu}>

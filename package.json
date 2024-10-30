@@ -16,7 +16,7 @@
     "@badrap/bar-of-progress": "^0.2.2",
     "@datadog/browser-rum": "^5.9.0",
     "@eth-optimism/contracts-ts": "^0.15.0",
-    "@headlessui/react": "^1.7.3",
+    "@headlessui/react": "^2.1.10",
     "@imtbl/imx-sdk": "2.1.1",
     "@imtbl/sdk": "^1.45.10",
     "@metamask/jazzicon": "^2.0.0",
@@ -118,7 +118,8 @@
     "typescript": "^5.1"
   },
   "resolutions": {
-    "rpc-websockets": "7.11.0"
+    "rpc-websockets": "7.11.0",
+    "@solana/web3.js": "1.66.0"
   },
   "engines": {
     "node": ">=20.9.0"

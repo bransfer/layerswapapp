@@ -1,7 +1,7 @@
-import LayerSwapApiClient, { SwapResponse } from "../../../lib/layerSwapApiClient"
+import LayerSwapApiClient, { SwapResponse, TransactionType } from "../../../lib/layerSwapApiClient"
 import { ApiResponse, EmptyApiResponse } from "../../../Models/ApiResponse"
 import { ChevronDown, Plus, RefreshCw } from 'lucide-react'
-import { FC, useCallback, useMemo, useState } from "react"
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import HistorySummary from "../HistorySummary";
 import useSWRInfinite from 'swr/infinite'
 import useWallet from "../../../hooks/useWallet"
@@ -21,6 +21,9 @@ import Modal from "../../modal/modal";
 import SwapDetails from "../SwapDetailsComponent"
 import { addressFormat } from "../../../lib/address/formatter";
 import { useSettingsState } from "../../../context/settings";
+import { Menu } from '@headlessui/react'
+import shortenAddress from "../../utils/ShortenAddress";
+import { Wallet } from "../../../stores/walletStore";
 
 const PAGE_SIZE = 20
 type ListProps = {
@@ -48,10 +51,29 @@ const HistoryList: FC<ListProps> = ({ componentType = 'page', onSwapSettled, onN
     const [showAll, setShowAll] = useState(false)
     const { wallets } = useWallet()
     const { userId } = useAuthState()
+
+    const [isOpen, setIsOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+    const [selectedWallets, setSelectedWallets] = useState<string[]>([]);
+
+    const handleCheckboxToggle = (wallet: Wallet) => {
+        const network = networks.find(n => n.type == wallet.providerName);
+        if (!network) return wallet.address
+        const formattedAddress = addressFormat(wallet.address, network || null);
+
+        setSelectedWallets((prevSelected) =>
+            prevSelected.includes(formattedAddress)
+                ? prevSelected.filter((address) => address !== formattedAddress)
+                : [...prevSelected, formattedAddress]
+        );
+    };
+
     const addresses = wallets.map(w => {
-        const network = networks.find(n => n.chain_id == w.chainId)
-        return addressFormat(w.address, network || null)
+        const network = networks.find(n => n.type == w.providerName)
+        if (!network) return w.address
+        return addressFormat(w.address, network)
     })
+
     const { setSelectedSwap, selectedSwap } = useHistoryContext()
     const handleopenSwapDetails = (swap: Swap) => {
         setSelectedSwap(swap)
@@ -108,14 +130,23 @@ const HistoryList: FC<ListProps> = ({ componentType = 'page', onSwapSettled, onN
 
     const pendingSwaps = pendingSwapPages?.map(p => p?.data).flat(1) || []
 
-    const pendingSwapsisEmpty = !pendingSwapsLoading && pendingSwaps.length === 0
     const pendingHaveMorepages = (pendingSwapPages && Number(pendingSwapPages[pendingSwapPages.length - 1]?.data?.length) == PAGE_SIZE);
 
-    const flattenedSwaps = grouppedSwaps?.flatMap(g => {
-        return [g.key, ...g.values]
-    })
+    const filteredSwaps = selectedWallets.length > 0
+        ? grouppedSwaps.flatMap(g => {
+            return {
+                key: g.key,
+                values: g?.values?.filter(swap => {
+                    const swapInputTransaction = swap?.swap?.transactions?.find(t => t.type === TransactionType.Input)
+                    const fromAddress = addressFormat(swapInputTransaction?.from || '', swap.swap.source_network || null) ?? "";
+                    const destAddress = addressFormat(swap.swap.destination_address || '', swap.swap.destination_network || null) ?? "";
+                    return selectedWallets.includes(fromAddress) || selectedWallets.includes(destAddress)
+                })
+            };
+        }).filter(g => g.values.length > 0)
+        : grouppedSwaps
 
-    const list = [...(showAll ? pendingSwaps : (pendingSwaps.slice(0, 1))), ...flattenedSwaps]
+    const list = [...(showAll ? pendingSwaps : (pendingSwaps.slice(0, 1))), ...filteredSwaps.flatMap(g => [g.key, ...(g.values || [])])];
 
     const rowVirtualizer = useVirtualizer({
         count: (list?.length || 0),
@@ -123,13 +154,78 @@ const HistoryList: FC<ListProps> = ({ componentType = 'page', onSwapSettled, onN
         estimateSize: () => 35,
     })
 
+    const handleClickOutside = (event) => {
+        if (menuRef.current && !menuRef.current.contains(event.target)) {
+            setIsOpen(false);
+        }
+    };
+
+    useEffect(() => {
+        if (isOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
+        } else {
+            document.removeEventListener("mousedown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isOpen]);
+
     const items = rowVirtualizer.getVirtualItems()
+
     if ((userSwapsLoading && !(Number(userSwaps?.length) > 0))) return <Snippet />
     if (!wallets.length && !userId) return <ConnectOrSignIn onLogin={() => { mutate(); mutatePendingSwaps(); }} />
-    if (!list.length) return <BlankHistory componentType={componentType} onNewTransferClick={onNewTransferClick} onLogin={() => { mutate(); mutatePendingSwaps(); }} />
+    if (!list.length && !selectedWallets.length) return <BlankHistory componentType={componentType} onNewTransferClick={onNewTransferClick} onLogin={() => { mutate(); mutatePendingSwaps(); }} />
 
     return (
         <div className="relative">
+            <div className="flex w-full justify-between items-start text-end">
+                <Menu as="div" className="relative inline-block text-left" ref={menuRef}>
+                    <div>
+                        <Menu.Button
+                            onClick={() => setIsOpen(!isOpen)}
+                            className={`${isOpen ? "text-primary-text" : "text-primary-text-placeholder"} flex w-full items-center justify-center space-x-2 rounded-md bg-secondary-700 px-3 py-1 text-sm mb-5`}
+                        >
+                            <p>
+                                <span>Wallets</span>
+                                {selectedWallets.length > 0 && <span>{` (${selectedWallets.length})`}</span>}
+                            </p>
+                            <ChevronDown className="size-4" />
+                        </Menu.Button>
+                    </div>
+                    {isOpen && (
+                        <Menu.Items
+                            className="absolute z-10 rounded-md -mt-4 bg-secondary-500 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                            static
+                        >
+                            <div className="py-1">
+                                {wallets.map((wallet, index) => {
+                                    const network = networks.find(n => n.chain_id == wallet.chainId)
+
+                                    return <Menu.Item key={index}>
+                                        {() => (
+                                            <div
+                                                className="flex items-center px-4 py-2 text-sm text-white cursor-pointer"
+                                                onClick={() => handleCheckboxToggle(wallet)}
+                                            >
+                                                <wallet.icon className="w-6 h-6 p-0.5 mr-2" />
+                                                {shortenAddress(wallet.address)}
+                                                <input
+                                                    type="checkbox"
+                                                    className="ml-6 w-4 h-4 text-primary-text-placeholder bg-transparent border-primary-text-placeholder rounded focus:ring-0 outline-none cursor-pointer"
+                                                    checked={selectedWallets.includes(addressFormat(wallet.address, network || null))}
+                                                    onChange={() => handleCheckboxToggle(wallet)}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+                                            </div>
+                                        )}
+                                    </Menu.Item>
+                                })}
+                            </div>
+                        </Menu.Items>
+                    )}
+                </Menu>
+            </div>
             <div
                 ref={parentRef}
             >

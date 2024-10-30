@@ -16,7 +16,7 @@ interface AsyncModalProps extends ModalProps {
 const AsyncModal: FC<AsyncModalProps> = ({ onConfirm, onDismiss, content, submitText, dismissText, ...props }) => {
     return (
         <Modal onClose={onDismiss} {...props}>
-            <div className="flex flex-col items-center gap-6 mt-2">
+            <div className="svsvsv flex flex-col items-center gap-6 mt-2">
                 {content}
                 <div className="h-full w-full space-y-3">
                     <SubmitButton type="button" onClick={onConfirm}>

@@ -61,7 +61,7 @@ const SwapDetails: FC<Props> = ({ swapResponse }) => {
     const calculatedFeeAmountInUsd = inputTransactionFeeInUsd ? inputTransactionFeeInUsd + quote?.total_fee_in_usd : quote?.total_fee_in_usd
     const displayCalculatedFeeAmountInUsd = calculatedFeeAmountInUsd ? (calculatedFeeAmountInUsd < 0.01 ? '<$0.01' : `$${calculatedFeeAmountInUsd?.toFixed(2)}`) : null
     const displayLayerswapFeeInUsd = quote?.total_fee_in_usd ? (quote?.total_fee_in_usd < 0.01 ? '<$0.01' : `$${quote?.total_fee_in_usd?.toFixed(2)}`) : null
-console.log('swap', quote)
+
     const nativeCurrency = refuel?.token
     const truncatedRefuelAmount = nativeCurrency && !!refuel ?
         truncateDecimals(refuel.amount, nativeCurrency?.precision) : null
@@ -321,7 +321,7 @@ console.log('swap', quote)
             </div>
 
             {
-                swap.status === SwapStatus.Completed &&
+                (swap.status === SwapStatus.Completed || swap.status === SwapStatus.UserTransferPending) &&
                 <button
                     onClick={() => router.push({
                         pathname: `/`,
@@ -344,7 +344,7 @@ console.log('swap', quote)
                 </button>
             }
             {
-                (swap.status !== SwapStatus.Completed && swap.status !== SwapStatus.Expired && swap.status !== SwapStatus.Failed) &&
+                (swap.status !== SwapStatus.Completed && swap.status !== SwapStatus.Expired && swap.status !== SwapStatus.Failed && swap.status !== SwapStatus.UserTransferPending) &&
                 <button
                     onClick={() => router.push({
                         pathname: `/swap/${swap.id}`,

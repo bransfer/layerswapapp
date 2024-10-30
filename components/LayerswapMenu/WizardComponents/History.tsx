@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react"
+import { FC } from "react"
 import WizardItem from "../../Wizard/WizardItem"
 import { HistorySwapProvider, useHistoryContext } from "../../../context/historyContext"
 import SwapDetails from "../../SwapHistory/SwapDetailsComponent"

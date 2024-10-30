@@ -92,6 +92,7 @@ export default function useWallet() {
     }
 
     return {
+        allPRoviders: WalletProviders,
         wallets: getConnectedWallets(),
         connectWallet,
         disconnectWallet,
