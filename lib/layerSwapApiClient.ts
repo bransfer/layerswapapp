@@ -24,6 +24,8 @@ export default class LayerSwapApiClient {
 
     fetcher = (url: string) => this.AuthenticatedRequest<ApiResponse<any>>("GET", url)
 
+    outboundFetcher = (url: string) => this.OutboundRequest<ApiResponse<any>>("GET", url)
+
     async GetRoutesAsync(direction: 'sources' | 'destinations'): Promise<ApiResponse<NetworkWithTokens[]>> {
         return await this.UnauthenticatedRequest<ApiResponse<NetworkWithTokens[]>>("GET", `/${direction}?include_unmatched=true&include_swaps=true&include_unavailable=true`)
     }
@@ -99,6 +101,21 @@ export default class LayerSwapApiClient {
 
     private async UnauthenticatedRequest<T extends EmptyApiResponse>(method: Method, endpoint: string, data?: any, header?: {}): Promise<T> {
         let uri = LayerSwapApiClient.apiBaseEndpoint + "/api/v2" + endpoint;
+        return await this._unauthInterceptor(uri, { method: method, data: data, headers: { 'Access-Control-Allow-Origin': '*', ...(header ? header : {}) } })
+            .then(res => {
+                return res?.data;
+            })
+            .catch(async reason => {
+                if (reason instanceof AuthRefreshFailedError) {
+                    return Promise.resolve(new EmptyApiResponse());
+                }
+                else {
+                    return Promise.reject(reason);
+                }
+            });
+    }
+
+    private async OutboundRequest<T extends EmptyApiResponse>(method: Method, uri: string, data?: any, header?: {}): Promise<T> {
         return await this._unauthInterceptor(uri, { method: method, data: data, headers: { 'Access-Control-Allow-Origin': '*', ...(header ? header : {}) } })
             .then(res => {
                 return res?.data;

@@ -2,7 +2,7 @@ import { useFormikContext } from "formik";
 import { forwardRef, useCallback, useEffect, useState } from "react";
 import { useSettingsState } from "../../context/settings";
 import { SwapDirection, SwapFormValues } from "../DTOs/SwapFormValues";
-import { ISelectMenuItem, SelectMenuItem } from "../Select/Shared/Props/selectMenuItem";
+import { ILogoCoordinates, ILogoMetadata, ISelectMenuItem, SelectMenuItem } from "../Select/Shared/Props/selectMenuItem";
 import CommandSelectWrapper from "../Select/Command/CommandSelectWrapper";
 import { ResolveExchangeOrder, ResolveNetworkOrder, SortAscending } from "../../lib/sorting"
 import NetworkSettings from "../../lib/NetworkSettings";
@@ -18,6 +18,8 @@ import CurrencyGroupFormField from "./CEXCurrencyFormField";
 import { QueryParams } from "../../Models/QueryParams";
 import { resolveExchangesURLForSelectedToken, resolveNetworkRoutesURL } from "../../helpers/routes";
 import RouteIcon from "./RouteIcon";
+import AppSettings from "../../lib/AppSettings";
+import NetworkLogo from "./NetworkLogo";
 
 type Props = {
     direction: SwapDirection,
@@ -60,6 +62,15 @@ const NetworkFormField = forwardRef(function NetworkFormField({ direction, label
 
     const networkRoutesURL = resolveNetworkRoutesURL(direction, values)
     const apiClient = new LayerSwapApiClient()
+
+    const metadataURL = `${AppSettings.ImageStorage}metadata.json`
+    const {
+        data: metadata,
+        isLoading: metadataLoading,
+    } = useSWR<ApiResponse<ILogoMetadata[]> | ILogoMetadata[]>(`${metadataURL}`, apiClient.outboundFetcher, { keepPreviousData: true })
+
+    const [logoMetadata, setLogoMetadata] = useState<ILogoMetadata[]>([])
+
     const {
         data: routes,
         isLoading,
@@ -77,6 +88,10 @@ const NetworkFormField = forwardRef(function NetworkFormField({ direction, label
     const [exchangesData, setExchangesData] = useState<Exchange[]>(direction === 'from' ? sourceExchanges : destinationExchanges)
 
     useEffect(() => {
+        if (!metadataLoading && metadata) setLogoMetadata(metadata as ILogoMetadata[])
+    }, [metadata])
+
+    useEffect(() => {
         if (!exchnagesDataLoading && exchanges?.data) setExchangesData(exchanges.data)
     }, [exchanges])
 
@@ -89,12 +104,12 @@ const NetworkFormField = forwardRef(function NetworkFormField({ direction, label
     if (direction === "from") {
         placeholder = "Source";
         searchHint = "Swap from";
-        menuItems = GenerateMenuItems(routesData, toExchange || disableExchanges ? [] : exchangesData, direction, !!(from && lockFrom), query);
+        menuItems = GenerateMenuItems(routesData, toExchange || disableExchanges ? [] : exchangesData, direction, !!(from && lockFrom), query, logoMetadata);
     }
     else {
         placeholder = "Destination";
         searchHint = "Swap to";
-        menuItems = GenerateMenuItems(routesData, fromExchange || disableExchanges ? [] : exchangesData, direction, !!(to && lockTo), query);
+        menuItems = GenerateMenuItems(routesData, fromExchange || disableExchanges ? [] : exchangesData, direction, !!(to && lockTo), query, logoMetadata);
     }
 
     const value = menuItems.find(x => !x.isExchange ?
@@ -169,7 +184,16 @@ function groupByType(values: ISelectMenuItem[]) {
     return groups;
 }
 
-function GenerateMenuItems(routes: RouteNetwork[] | undefined, exchanges: Exchange[], direction: SwapDirection, lock: boolean, query: QueryParams): (SelectMenuItem<RouteNetwork | Exchange> & { isExchange: boolean })[] {
+function getLogoCoords(logoMetadata: ILogoMetadata[], url: string): ILogoCoordinates {
+    const name = url.split('/').pop();
+    const metadata = logoMetadata?.find(l => l.filename === name);
+    return {
+        x: metadata?.x || 0,
+        y: metadata?.y || 0
+    }
+}
+
+function GenerateMenuItems(routes: RouteNetwork[] | undefined, exchanges: Exchange[], direction: SwapDirection, lock: boolean, query: QueryParams, logoMetadata: ILogoMetadata[]): (SelectMenuItem<RouteNetwork | Exchange> & { isExchange: boolean })[] {
     const mappedLayers = routes?.map(r => {
         const isNewlyListed = r?.tokens?.every(t => new Date(t?.listing_date)?.getTime() >= new Date().getTime() - ONE_WEEK);
         const badge = isNewlyListed ? (
@@ -185,6 +209,8 @@ function GenerateMenuItems(routes: RouteNetwork[] | undefined, exchanges: Exchan
         const order = ResolveNetworkOrder(r, direction, isNewlyListed)
         const routeNotFound = isAvailable && !r.tokens?.some(r => r.status === 'active');
 
+        const logoCoords = getLogoCoords(logoMetadata, r.logo)
+
         const res: SelectMenuItem<RouteNetwork> & { isExchange: boolean } = {
             baseObject: r,
             id: r.name,
@@ -196,6 +222,7 @@ function GenerateMenuItems(routes: RouteNetwork[] | undefined, exchanges: Exchan
             isExchange: false,
             badge,
             leftIcon: <RouteIcon direction={direction} isAvailable={isAvailable} routeNotFound={routeNotFound} type="network" />,
+            logo: <NetworkLogo x={logoCoords.x} y={logoCoords.y} />
         }
         return res;
     }).sort(SortAscending) || [];

@@ -1,3 +1,16 @@
+export interface ILogoMetadata {
+    filename: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
+export interface ILogoCoordinates {
+    x?: number;
+    y?: number;
+}
+
 export class SelectMenuItem<T> implements ISelectMenuItem {
     id: string;
     name: string;
@@ -8,6 +21,7 @@ export class SelectMenuItem<T> implements ISelectMenuItem {
     group?: string;
     details?: JSX.Element | JSX.Element[];
     badge?: JSX.Element | JSX.Element[];
+    logo?: JSX.Element | JSX.Element[];
     leftIcon?: JSX.Element | JSX.Element[];
     baseObject: T;
     constructor(baseObject: T, id: string, name: string, order: number, imgSrc: string, isAvailable: boolean, group?: string, details?: JSX.Element | JSX.Element[]) {
@@ -33,4 +47,5 @@ export interface ISelectMenuItem {
     badge?: JSX.Element | JSX.Element[];
     leftIcon?: JSX.Element | JSX.Element[];
     order?: number;
+    logo?: JSX.Element | JSX.Element[];
 }
