@@ -2717,15 +2717,28 @@
     "@fuel-ts/utils" "0.96.1"
     type-fest "^4.26.1"
 
-"@fuel-ts/abi-typegen@0.96.1":
-  version "0.96.1"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/abi-typegen/-/abi-typegen-0.96.1.tgz#303df544682db481b3c650185b17077dd1ab2d2e"
-  integrity sha512-vRJnAQ9sxkKuUQ2fkxntPm/679grxgwSf54O7vgDeXuXqQx/4XeylpExjH0/nZzEM5al+muw4rg9WwmKulkcZA==
+"@fuel-ts/abi-coder@0.97.2":
+  version "0.97.2"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/abi-coder/-/abi-coder-0.97.2.tgz#4177dd1e06756f5e5004ef5909bb1b8c004e380c"
+  integrity sha512-YbXFwBtQSfGNhIv+mrgr6EbbyVjzc5DwNjVJuC8DDObiAYhow0uzn/URHFdQ8bexokrKBrdzQKDjnAP6F7ap+w==
   dependencies:
-    "@fuel-ts/errors" "0.96.1"
-    "@fuel-ts/interfaces" "^0.96.1"
-    "@fuel-ts/utils" "0.96.1"
-    "@fuel-ts/versions" "0.96.1"
+    "@fuel-ts/crypto" "0.97.2"
+    "@fuel-ts/errors" "0.97.2"
+    "@fuel-ts/hasher" "^0.97.2"
+    "@fuel-ts/interfaces" "0.97.2"
+    "@fuel-ts/math" "0.97.2"
+    "@fuel-ts/utils" "0.97.2"
+    type-fest "^4.26.1"
+
+"@fuel-ts/abi-typegen@0.97.2":
+  version "0.97.2"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/abi-typegen/-/abi-typegen-0.97.2.tgz#9413c7d2dc3af98eee5fee34d80ad9b12438e996"
+  integrity sha512-/2XCbEbYL32+ETrKj/uTpuNybwra7BmH7F0V0iGP0eGKzhD0q/GZaIXCqTpwSPKOgvf5jR9dM3akxSw4Sox5mg==
+  dependencies:
+    "@fuel-ts/errors" "0.97.2"
+    "@fuel-ts/interfaces" "^0.97.2"
+    "@fuel-ts/utils" "0.97.2"
+    "@fuel-ts/versions" "0.97.2"
     commander "12.1.0"
     glob "^10.4.5"
     handlebars "^4.7.8"
@@ -2733,7 +2746,31 @@
     ramda "^0.30.1"
     rimraf "^5.0.10"
 
-"@fuel-ts/account@0.96.1", "@fuel-ts/account@^0.96.1":
+"@fuel-ts/account@0.97.2":
+  version "0.97.2"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/account/-/account-0.97.2.tgz#4c60f97813de13206a619f0d0566eb7852941d2c"
+  integrity sha512-3nm5xTOV0wAMhKbtE+V1lk38F7s8qovtUTETPA7RzLDHRFKCQuyrR4ntjhOUe+Qvhjc8eDBtHarCuIPChSSJIA==
+  dependencies:
+    "@fuel-ts/abi-coder" "0.97.2"
+    "@fuel-ts/address" "0.97.2"
+    "@fuel-ts/crypto" "0.97.2"
+    "@fuel-ts/errors" "0.97.2"
+    "@fuel-ts/hasher" "0.97.2"
+    "@fuel-ts/interfaces" "0.97.2"
+    "@fuel-ts/math" "0.97.2"
+    "@fuel-ts/merkle" "0.97.2"
+    "@fuel-ts/transactions" "0.97.2"
+    "@fuel-ts/utils" "0.97.2"
+    "@fuel-ts/versions" "0.97.2"
+    "@fuels/vm-asm" "0.58.2"
+    "@noble/curves" "^1.6.0"
+    events "^3.3.0"
+    graphql "^16.9.0"
+    graphql-request "^6.1.0"
+    graphql-tag "^2.12.6"
+    ramda "^0.30.1"
+
+"@fuel-ts/account@^0.96.1":
   version "0.96.1"
   resolved "https://registry.yarnpkg.com/@fuel-ts/account/-/account-0.96.1.tgz#ce3793cc789d0f762a5049f9efb1e1e3c3f84b1f"
   integrity sha512-i9InTebg3/buKXNJZpKBhxGMBC3MKpk905Uiv2CvTmldyPVgnZV/jY/b63jlfdEWyP5yVkr5/tzo7QaPKpfnMA==
@@ -2769,24 +2806,36 @@
     "@noble/hashes" "^1.5.0"
     bech32 "^2.0.0"
 
-"@fuel-ts/contract@0.96.1":
-  version "0.96.1"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/contract/-/contract-0.96.1.tgz#3417fc2a191aca300d25d216d8041c2351c4ec5c"
-  integrity sha512-shwNMHFZ7vr5QJsfVQ6aLd1ms88f3ZagrsNLqNz1Txhz/5KVgYyJaxfp7tUc4WZFpR67+W1zeIqx8ZNHVhck3g==
+"@fuel-ts/address@0.97.2":
+  version "0.97.2"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/address/-/address-0.97.2.tgz#4d1813fa986dc6b5607e2e4790fa55268f4c955b"
+  integrity sha512-lGAsQ4AOtfqznu+Ws5ZneheejcEUhtam2JIVz1s6Y2Blo8Z2ZaVtsbaN8k0u/23Xcs0cgzyfE4Gt1vRZTHgs8w==
   dependencies:
-    "@fuel-ts/abi-coder" "0.96.1"
-    "@fuel-ts/account" "0.96.1"
-    "@fuel-ts/crypto" "0.96.1"
-    "@fuel-ts/errors" "0.96.1"
-    "@fuel-ts/hasher" "0.96.1"
-    "@fuel-ts/interfaces" "^0.96.1"
-    "@fuel-ts/math" "^0.96.1"
-    "@fuel-ts/merkle" "0.96.1"
-    "@fuel-ts/program" "0.96.1"
-    "@fuel-ts/transactions" "0.96.1"
-    "@fuel-ts/utils" "0.96.1"
-    "@fuel-ts/versions" "0.96.1"
-    "@fuels/vm-asm" "0.58.0"
+    "@fuel-ts/crypto" "0.97.2"
+    "@fuel-ts/errors" "0.97.2"
+    "@fuel-ts/interfaces" "0.97.2"
+    "@fuel-ts/utils" "^0.97.2"
+    "@noble/hashes" "^1.5.0"
+    bech32 "^2.0.0"
+
+"@fuel-ts/contract@0.97.2":
+  version "0.97.2"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/contract/-/contract-0.97.2.tgz#f37350fd3174595c506f0bda473138cc32c9d3a7"
+  integrity sha512-znAldrRFEWz0uFrpYfZHNz7XxnFU0c/res88kawAOhMfi7x9dOnWrkSyWq4GCk98jjGIAuWff1e9iNNMOroCJw==
+  dependencies:
+    "@fuel-ts/abi-coder" "0.97.2"
+    "@fuel-ts/account" "0.97.2"
+    "@fuel-ts/crypto" "0.97.2"
+    "@fuel-ts/errors" "0.97.2"
+    "@fuel-ts/hasher" "0.97.2"
+    "@fuel-ts/interfaces" "^0.97.2"
+    "@fuel-ts/math" "^0.97.2"
+    "@fuel-ts/merkle" "0.97.2"
+    "@fuel-ts/program" "0.97.2"
+    "@fuel-ts/transactions" "0.97.2"
+    "@fuel-ts/utils" "0.97.2"
+    "@fuel-ts/versions" "0.97.2"
+    "@fuels/vm-asm" "0.58.2"
     ramda "^0.30.1"
 
 "@fuel-ts/crypto@0.96.1":
@@ -2800,12 +2849,30 @@
     "@fuel-ts/utils" "^0.96.1"
     "@noble/hashes" "^1.5.0"
 
+"@fuel-ts/crypto@0.97.2":
+  version "0.97.2"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/crypto/-/crypto-0.97.2.tgz#ddd93b4b13b80b7855641a92aed14c23990aff9f"
+  integrity sha512-1IuTX5CNj0a03Z1Y2FMYhw4FsEboShhjBXmg2NbbFpDxf17D59LekZe/fJZYS7lxSmjnzx8BR2HlhG9i/LNYLQ==
+  dependencies:
+    "@fuel-ts/errors" "0.97.2"
+    "@fuel-ts/interfaces" "0.97.2"
+    "@fuel-ts/math" "0.97.2"
+    "@fuel-ts/utils" "^0.97.2"
+    "@noble/hashes" "^1.5.0"
+
 "@fuel-ts/errors@0.96.1":
   version "0.96.1"
   resolved "https://registry.yarnpkg.com/@fuel-ts/errors/-/errors-0.96.1.tgz#bef0995ccc0d44f060b1934e937a019449896435"
   integrity sha512-Xtso5v4a3UUvnMaOSDhMRlkb9LxLyCyC/1/RY7fZZ035ttscy6dNMuiD/iSptJ5pHklJ5R4rCPdOL5EKpgOaMA==
   dependencies:
     "@fuel-ts/versions" "0.96.1"
+
+"@fuel-ts/errors@0.97.2":
+  version "0.97.2"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/errors/-/errors-0.97.2.tgz#21b993565717e66bf29028be3a2ceeb8e849e92c"
+  integrity sha512-Wnt40XHDBYZbcW/TJEXAPnZq9e9FhLz1yPGojuFt4fXGd/yJnx1quu/GhxDCL2B4EGr4rsbJ08ASEj3+hmpGuw==
+  dependencies:
+    "@fuel-ts/versions" "0.97.2"
 
 "@fuel-ts/hasher@0.96.1", "@fuel-ts/hasher@^0.96.1":
   version "0.96.1"
@@ -2817,17 +2884,41 @@
     "@fuel-ts/utils" "0.96.1"
     "@noble/hashes" "^1.5.0"
 
+"@fuel-ts/hasher@0.97.2", "@fuel-ts/hasher@^0.97.2":
+  version "0.97.2"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/hasher/-/hasher-0.97.2.tgz#8850495c8b7430e40668266b5dedc647821af2bf"
+  integrity sha512-2CSKpvibiJ4XhCQ82/qN+09dh8eKRTWvIxFnfwGreKVnhKBWoHB+IL0fkGKsw5iQMex1BFMekZOV80THeRu7YQ==
+  dependencies:
+    "@fuel-ts/crypto" "0.97.2"
+    "@fuel-ts/interfaces" "^0.97.2"
+    "@fuel-ts/utils" "0.97.2"
+    "@noble/hashes" "^1.5.0"
+
 "@fuel-ts/interfaces@0.96.1", "@fuel-ts/interfaces@^0.96.1":
   version "0.96.1"
   resolved "https://registry.yarnpkg.com/@fuel-ts/interfaces/-/interfaces-0.96.1.tgz#4146633ac7efea1f842cb340c7fb4d0a81c55698"
   integrity sha512-mZ3sDHJml5AtLRSmGWo5rbU9//3oKDhAeiFealajcPaVztAAnaKnA5a19dd4ITbjZb2q3e2lQ7zX8iAXgHUwYA==
 
-"@fuel-ts/math@0.96.1", "@fuel-ts/math@^0.96.1":
+"@fuel-ts/interfaces@0.97.2", "@fuel-ts/interfaces@^0.97.2":
+  version "0.97.2"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/interfaces/-/interfaces-0.97.2.tgz#bbde6e32e64a79bde2a92b1677c575fa0297db98"
+  integrity sha512-yBmSsvjxJiZRBlLkU04Sre4bBNELUGETp79bq2q5eHz6WgfaDQlwgy7fwewDTviV63ZXCa736LTkgL1duL00NA==
+
+"@fuel-ts/math@0.96.1":
   version "0.96.1"
   resolved "https://registry.yarnpkg.com/@fuel-ts/math/-/math-0.96.1.tgz#1abef26ec05fb8a98839501a09471282af013847"
   integrity sha512-AZUChguQmE1ILYbcc6SOTjFJIUkGzD3Z6yHgvO4tszn2QS/jVTSAZKVx653J5u9m/Xn/WthwR35l1GbwXMwB4g==
   dependencies:
     "@fuel-ts/errors" "0.96.1"
+    "@types/bn.js" "^5.1.6"
+    bn.js "^5.2.1"
+
+"@fuel-ts/math@0.97.2", "@fuel-ts/math@^0.97.2":
+  version "0.97.2"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/math/-/math-0.97.2.tgz#b556ad35d3bd8535ce5a965623f1dc8bf82d4de9"
+  integrity sha512-btagAIqahRT0ml7lKWZfG9IXEhmEK6OtuBytiHfUVPNhHWqEYeoZ021eJjimJSPU6FOCnXuAVpvk6gmyK7kXSQ==
+  dependencies:
+    "@fuel-ts/errors" "0.97.2"
     "@types/bn.js" "^5.1.6"
     bn.js "^5.2.1"
 
@@ -2839,36 +2930,58 @@
     "@fuel-ts/hasher" "^0.96.1"
     "@fuel-ts/math" "0.96.1"
 
-"@fuel-ts/program@0.96.1":
-  version "0.96.1"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/program/-/program-0.96.1.tgz#e8899c691103edaf26cab96668c32249da41d818"
-  integrity sha512-tA2YvcIdlDQLKeOOfoTyfI3LRQZiqsHi5rFaGbOsjEQvyNQBdXa92vMMFW0dFNWXqOPLjTmYNWqp0xsMuikbsA==
+"@fuel-ts/merkle@0.97.2":
+  version "0.97.2"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/merkle/-/merkle-0.97.2.tgz#8698c617920609a87660608ee9b90129d17f69a6"
+  integrity sha512-FD/4XXp/pimfJ6Po2rm5lVucDAW5h6uqlDY2GqfMfmExJVJl77AsyHMkVnWU/mUeCp/dcT8rHbI37THmlAkNzQ==
   dependencies:
-    "@fuel-ts/abi-coder" "0.96.1"
-    "@fuel-ts/account" "0.96.1"
-    "@fuel-ts/address" "0.96.1"
-    "@fuel-ts/errors" "0.96.1"
-    "@fuel-ts/interfaces" "0.96.1"
-    "@fuel-ts/math" "0.96.1"
-    "@fuel-ts/transactions" "0.96.1"
-    "@fuel-ts/utils" "0.96.1"
-    "@fuels/vm-asm" "0.58.0"
+    "@fuel-ts/hasher" "^0.97.2"
+    "@fuel-ts/math" "0.97.2"
+
+"@fuel-ts/program@0.97.2":
+  version "0.97.2"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/program/-/program-0.97.2.tgz#1f6c1bbfe5d7acb995f16b791df58cf48af944bb"
+  integrity sha512-fS7EeXMf2hBu+2XmNsazJIgbLHonStzNxsU0CQ0je1sMFp7lBzae89+4xtIztgD2/m3GA3qZffP+P9cusmTIGg==
+  dependencies:
+    "@fuel-ts/abi-coder" "0.97.2"
+    "@fuel-ts/account" "0.97.2"
+    "@fuel-ts/address" "0.97.2"
+    "@fuel-ts/errors" "0.97.2"
+    "@fuel-ts/interfaces" "0.97.2"
+    "@fuel-ts/math" "0.97.2"
+    "@fuel-ts/transactions" "0.97.2"
+    "@fuel-ts/utils" "0.97.2"
+    "@fuels/vm-asm" "0.58.2"
     ramda "^0.30.1"
 
-"@fuel-ts/script@0.96.1":
-  version "0.96.1"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/script/-/script-0.96.1.tgz#a5dab4b57200f4e9014152509ad5c4a8b401581d"
-  integrity sha512-N/N3I3xjDI1+9XcCrYTWapF0iBbdvtBxUUUZxn5S5GuIXuTCK6UfQLrRciuCHK5QiHVwFmQjlki+ozJfI+4UbQ==
+"@fuel-ts/recipes@0.97.2":
+  version "0.97.2"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/recipes/-/recipes-0.97.2.tgz#388dd21f1b0394ef3298fd493c3e03aa6ff369cc"
+  integrity sha512-2JM6HYrSNDC74FFAvba7Z+JV8KcCikCzvYxRlv3iUNWMup6NX+xq0bvKODwtzEDQqTHBkBdHfNDK+Jrq2chIlg==
   dependencies:
-    "@fuel-ts/abi-coder" "0.96.1"
-    "@fuel-ts/account" "0.96.1"
-    "@fuel-ts/address" "0.96.1"
-    "@fuel-ts/errors" "0.96.1"
-    "@fuel-ts/interfaces" "0.96.1"
-    "@fuel-ts/math" "0.96.1"
-    "@fuel-ts/program" "0.96.1"
-    "@fuel-ts/transactions" "0.96.1"
-    "@fuel-ts/utils" "0.96.1"
+    "@fuel-ts/abi-coder" "0.97.2"
+    "@fuel-ts/abi-typegen" "0.97.2"
+    "@fuel-ts/account" "0.97.2"
+    "@fuel-ts/contract" "0.97.2"
+    "@fuel-ts/interfaces" "0.97.2"
+    "@fuel-ts/program" "0.97.2"
+    "@fuel-ts/transactions" "0.97.2"
+    "@fuel-ts/utils" "0.97.2"
+
+"@fuel-ts/script@0.97.2":
+  version "0.97.2"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/script/-/script-0.97.2.tgz#dbfef76ea1bfa850db0c7b7e1628676a2b6b8907"
+  integrity sha512-9tVTLPdqgH/apR43z0Fixe8OuYo4/HhreeBJEgU0VVu0q7hXI1DiifRlrvyPfGSx1HAwJ9SKJuD3Iyd+GdceCQ==
+  dependencies:
+    "@fuel-ts/abi-coder" "0.97.2"
+    "@fuel-ts/account" "0.97.2"
+    "@fuel-ts/address" "0.97.2"
+    "@fuel-ts/errors" "0.97.2"
+    "@fuel-ts/interfaces" "0.97.2"
+    "@fuel-ts/math" "0.97.2"
+    "@fuel-ts/program" "0.97.2"
+    "@fuel-ts/transactions" "0.97.2"
+    "@fuel-ts/utils" "0.97.2"
 
 "@fuel-ts/transactions@0.96.1":
   version "0.96.1"
@@ -2883,6 +2996,19 @@
     "@fuel-ts/math" "0.96.1"
     "@fuel-ts/utils" "0.96.1"
 
+"@fuel-ts/transactions@0.97.2":
+  version "0.97.2"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/transactions/-/transactions-0.97.2.tgz#e1dcd75a986ab28eb6c899ffa5ad6dd4c9c25d55"
+  integrity sha512-W4koZbOrR/+rROe4hLZkub+nTciY0RYKrAA5IAYfipjOvbfp9j/BuA2/O9lEiV9sqxqTF5KU7TuEZE56EwkoCA==
+  dependencies:
+    "@fuel-ts/abi-coder" "0.97.2"
+    "@fuel-ts/address" "0.97.2"
+    "@fuel-ts/errors" "0.97.2"
+    "@fuel-ts/hasher" "^0.97.2"
+    "@fuel-ts/interfaces" "^0.97.2"
+    "@fuel-ts/math" "0.97.2"
+    "@fuel-ts/utils" "0.97.2"
+
 "@fuel-ts/utils@0.96.1", "@fuel-ts/utils@^0.96.1":
   version "0.96.1"
   resolved "https://registry.yarnpkg.com/@fuel-ts/utils/-/utils-0.96.1.tgz#35478926d640e9e93607074a37fdfd6e31f4276a"
@@ -2894,10 +3020,29 @@
     "@fuel-ts/versions" "0.96.1"
     fflate "^0.8.2"
 
+"@fuel-ts/utils@0.97.2", "@fuel-ts/utils@^0.97.2":
+  version "0.97.2"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/utils/-/utils-0.97.2.tgz#6cfc5d26eebd2e0423905d5912f33dc502706aa3"
+  integrity sha512-9NErTdOpucPaBQ5Po0NBm8I1/0uJw0FMtbQEXzorXiKpXL6nGZsFC2/lROmCFVmOmJPDd1qRa4SnIJd0sLdn3w==
+  dependencies:
+    "@fuel-ts/errors" "0.97.2"
+    "@fuel-ts/interfaces" "0.97.2"
+    "@fuel-ts/math" "0.97.2"
+    "@fuel-ts/versions" "0.97.2"
+    fflate "^0.8.2"
+
 "@fuel-ts/versions@0.96.1":
   version "0.96.1"
   resolved "https://registry.yarnpkg.com/@fuel-ts/versions/-/versions-0.96.1.tgz#074ae7b84caca0a83fa0acb29470ad30dc3b88bb"
   integrity sha512-C//ZT7U68Gksz9PzUJVzdzUARK7mfXf3MsF5ZqZaMegkE2tCy+twjy8PBdeVserY0uX6mEHRJyZJwcspk34ixg==
+  dependencies:
+    chalk "4"
+    cli-table "^0.3.11"
+
+"@fuel-ts/versions@0.97.2":
+  version "0.97.2"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/versions/-/versions-0.97.2.tgz#d34314e267469d3f5d7977946b4a5d609588072c"
+  integrity sha512-l09N9A46Y8oRf5DmM2cRClckCGEcp9cbW7Do8Rnv4Fp2dQbbmyjtfqj3vnU7X24RHl+zsNTDkcrfHfHgvRxTUw==
   dependencies:
     chalk "4"
     cli-table "^0.3.11"
@@ -2914,6 +3059,11 @@
   version "0.58.0"
   resolved "https://registry.yarnpkg.com/@fuels/vm-asm/-/vm-asm-0.58.0.tgz#d43aa704a88e955edf2ea8106502814d91f5e776"
   integrity sha512-tfarairW3IAtyoAIL3I5EJiUQzKAsY4J+eLgZg58B7+itDxqF+CUEpKanmiUnt1mBgry5GwtZsPIrUJ7OgTcDA==
+
+"@fuels/vm-asm@0.58.2":
+  version "0.58.2"
+  resolved "https://registry.yarnpkg.com/@fuels/vm-asm/-/vm-asm-0.58.2.tgz#bf3e03956da05b925039261e8c854af54fd16e55"
+  integrity sha512-1/5azTzKJP508BXbZvM6Y0V5bCCX5JgEnd/8mXdBFmFvNLOhiYbwb25yk26auqOokfBXvthSkdkrvipEFft6jQ==
 
 "@gamestopnft/detect-gamestop-provider@^1.0.0":
   version "1.0.0"
@@ -2982,7 +3132,7 @@
   dependencies:
     google-gax "^4.0.3"
 
-"@graphql-typed-document-node/core@^3.1.1":
+"@graphql-typed-document-node/core@^3.1.1", "@graphql-typed-document-node/core@^3.2.0":
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/@graphql-typed-document-node/core/-/core-3.2.0.tgz#5f3d96ec6b2354ad6d8a28bf216a1d97b5426861"
   integrity sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==
@@ -14891,27 +15041,28 @@ fsevents@2.3.3, fsevents@^2.3.2, fsevents@~2.3.2:
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.3.tgz#cac6407785d03675a2a5e1a5305c697b347d90d6"
   integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
 
-fuels@^0.96.1:
-  version "0.96.1"
-  resolved "https://registry.yarnpkg.com/fuels/-/fuels-0.96.1.tgz#d78f8bc93125c4608968c3da42090e7da73b3199"
-  integrity sha512-BquRIJ0qHNKwhqBTNa6X4aghqhCj1Qz0jM+P0bziXAEk7gVJJZWRz10jCcAgZVeEb4AMdZLDsnNzKJ51GH8IvQ==
+fuels@^0.97.2:
+  version "0.97.2"
+  resolved "https://registry.yarnpkg.com/fuels/-/fuels-0.97.2.tgz#1b7874204b227caced7e70fcf2e97a44e9e55ca3"
+  integrity sha512-H7I4RR55XLPfsvgG/xTgj0CZ7Y4oYj2KACDXXa8QdypOMeD6BFu+7EBy6dE+LftbjE09xNzItLlYsdZbcOTgKg==
   dependencies:
-    "@fuel-ts/abi-coder" "0.96.1"
-    "@fuel-ts/abi-typegen" "0.96.1"
-    "@fuel-ts/account" "0.96.1"
-    "@fuel-ts/address" "0.96.1"
-    "@fuel-ts/contract" "0.96.1"
-    "@fuel-ts/crypto" "0.96.1"
-    "@fuel-ts/errors" "0.96.1"
-    "@fuel-ts/hasher" "0.96.1"
-    "@fuel-ts/interfaces" "0.96.1"
-    "@fuel-ts/math" "0.96.1"
-    "@fuel-ts/merkle" "0.96.1"
-    "@fuel-ts/program" "0.96.1"
-    "@fuel-ts/script" "0.96.1"
-    "@fuel-ts/transactions" "0.96.1"
-    "@fuel-ts/utils" "0.96.1"
-    "@fuel-ts/versions" "0.96.1"
+    "@fuel-ts/abi-coder" "0.97.2"
+    "@fuel-ts/abi-typegen" "0.97.2"
+    "@fuel-ts/account" "0.97.2"
+    "@fuel-ts/address" "0.97.2"
+    "@fuel-ts/contract" "0.97.2"
+    "@fuel-ts/crypto" "0.97.2"
+    "@fuel-ts/errors" "0.97.2"
+    "@fuel-ts/hasher" "0.97.2"
+    "@fuel-ts/interfaces" "0.97.2"
+    "@fuel-ts/math" "0.97.2"
+    "@fuel-ts/merkle" "0.97.2"
+    "@fuel-ts/program" "0.97.2"
+    "@fuel-ts/recipes" "0.97.2"
+    "@fuel-ts/script" "0.97.2"
+    "@fuel-ts/transactions" "0.97.2"
+    "@fuel-ts/utils" "0.97.2"
+    "@fuel-ts/versions" "0.97.2"
     bundle-require "^5.0.0"
     chalk "4"
     chokidar "^3.6.0"
@@ -15307,6 +15458,14 @@ graphql-request@5.0.0:
     cross-fetch "^3.1.5"
     extract-files "^9.0.0"
     form-data "^3.0.0"
+
+graphql-request@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/graphql-request/-/graphql-request-6.1.0.tgz#f4eb2107967af3c7a5907eb3131c671eac89be4f"
+  integrity sha512-p+XPfS4q7aIpKVcgmnZKhMNqhltk20hfXtkaIkTfjjmiKMJ5xrt5c743cL03y/K7y1rg3WrIC49xGiEQ4mxdNw==
+  dependencies:
+    "@graphql-typed-document-node/core" "^3.2.0"
+    cross-fetch "^3.1.5"
 
 graphql-tag@^2.12.6:
   version "2.12.6"

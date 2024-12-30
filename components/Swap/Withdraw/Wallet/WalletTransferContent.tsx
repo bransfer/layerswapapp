@@ -121,6 +121,7 @@ export const WalletTransferContent: FC = () => {
             token={swap?.source_token}
             swapId={swap?.id}
             callData={callData}
+            sequenceNumber={swap?.metadata.sequence_number}
         />
     else if (sourceIsSophon)
         return <SophonWalletWithdraw

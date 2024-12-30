@@ -123,7 +123,7 @@
     "eslint-config-next": "^14.0.4",
     "eslint-plugin-no-conditional-literals-in-jsx": "file:eslint-plugins/eslint-plugin-no-conditional-literals-in-jsx",
     "eslint-plugin-storybook": "^0.6.14",
-    "fuels": "^0.96.1",
+    "fuels": "^0.97.2",
     "postcss": "^8.4.13",
     "storybook": "^7.4.5",
     "storybook-addon-mock": "^4.3.0",
