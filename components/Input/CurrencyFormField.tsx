@@ -1,5 +1,5 @@
 import { useFormikContext } from "formik";
-import { FC, useCallback, useEffect } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { SwapDirection, SwapFormValues } from "../DTOs/SwapFormValues";
 import { SelectMenuItem } from "../Select/Shared/Props/selectMenuItem";
 import PopoverSelectWrapper from "../Select/Popover/PopoverSelectWrapper";
@@ -25,6 +25,8 @@ const CurrencyFormField: FC<{ direction: SwapDirection }> = ({ direction }) => {
         values,
         setFieldValue,
     } = useFormikContext<SwapFormValues>();
+
+    const [currencyIsSetManually, setCurrencyIsSetManually] = useState(false)
 
     const { from, to, fromCurrency, toCurrency, fromExchange, toExchange, destination_address, currencyGroup } = values
     const name = direction === 'from' ? 'fromCurrency' : 'toCurrency';
@@ -82,7 +84,6 @@ const CurrencyFormField: FC<{ direction: SwapDirection }> = ({ direction }) => {
         }
     }, [to, query, routes])
 
-
     useEffect(() => {
         if (direction !== "from") return
 
@@ -115,8 +116,15 @@ const CurrencyFormField: FC<{ direction: SwapDirection }> = ({ direction }) => {
         if (name === "toCurrency" && toCurrency && !isLoading && routes) {
             const value = routes.data?.find(r => r.name === to?.name)?.tokens?.find(r => r.symbol === toCurrency?.symbol)
             if (!value) return
-
-            setFieldValue(name, value)
+            
+            if (!currencyIsSetManually && (value?.status !== "active" || error?.code === LSAPIKnownErrorCode.ROUTE_NOT_FOUND_ERROR)) {
+                const default_currency = currencyMenuItems?.find(c => c.baseObject?.status === "active")
+                if (default_currency) {
+                    setFieldValue(name, default_currency.baseObject, true)
+                }
+            } else {
+                setFieldValue(name, value)
+            }
         }
     }, [fromCurrency, currencyGroup, name, to, routes, error, isLoading])
 
@@ -125,12 +133,20 @@ const CurrencyFormField: FC<{ direction: SwapDirection }> = ({ direction }) => {
             const value = routes.data?.find(r => r.name === from?.name)?.tokens?.find(r => r.symbol === fromCurrency?.symbol)
             if (!value) return
 
-            setFieldValue(name, value)
+            if (!currencyIsSetManually && (value?.status !== "active" || error?.code === LSAPIKnownErrorCode.ROUTE_NOT_FOUND_ERROR)) {
+                const default_currency = currencyMenuItems?.find(c => c.baseObject?.status === "active")
+                if (default_currency) {
+                    setFieldValue(name, default_currency.baseObject, true)
+                }
+            } else {
+                setFieldValue(name, value)
+            }
         }
     }, [toCurrency, currencyGroup, name, from, routes, error, isLoading])
 
     const handleSelect = useCallback((item: SelectMenuItem<RouteToken>) => {
         setFieldValue(name, item.baseObject, true)
+        setCurrencyIsSetManually(true)
     }, [name, direction, toCurrency, fromCurrency, from, to])
 
     const isLocked = direction === 'from' ? query?.lockFromAsset

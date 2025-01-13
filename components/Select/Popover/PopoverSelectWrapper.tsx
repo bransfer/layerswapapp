@@ -26,7 +26,7 @@ export default function PopoverSelectWrapper<T>({
     const handleSelect = useCallback((item: SelectMenuItem<T>) => {
         setValue(item)
         setShowModal(false)
-    }, [])
+    }, [setValue])
 
     if (!values) return <Placeholder placeholder={placeholder} />
 

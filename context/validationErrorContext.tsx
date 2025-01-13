@@ -87,14 +87,14 @@ export const ValidationProvider: React.FC<{ children: ReactNode }> = ({ children
         }
     }
     else if (currencyGroup?.status === 'not_found' || toCurrency?.status === 'not_found' || fromCurrency?.status === 'not_found') {
-        
+
         validationMessage = 'Please change one of the selected tokens';
         validationDetails = { title: 'Route Unavailable', type: 'warning', icon: <RouteOff stroke='#f8974b' className='w-4 h-4 ' /> };
     }
 
     return (
         <ValidationContext.Provider
-            value={{ validationMessage, validationDetails }}
+            value={{ validationMessage: '', validationDetails: {} }}
         >
             {children}
         </ValidationContext.Provider>
