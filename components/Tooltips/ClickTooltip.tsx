@@ -11,7 +11,7 @@ type Props = {
 
 const ClickTooltip: FC<Props> = (({ text, moreClassNames, side }) => {
     return (
-        <Popover >
+        <Popover>
             <PopoverTrigger>
                 <Info className={classNames("h-4 text-secondary-text hover:text-secondary-buttonTextColor", moreClassNames)} aria-hidden="true" strokeWidth={2.5} />
             </PopoverTrigger>

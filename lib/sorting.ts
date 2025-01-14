@@ -1,6 +1,7 @@
 import { Exchange, ExchangeToken } from "../Models/Exchange";
 import { RouteNetwork, RouteToken } from "../Models/Network";
 import { SwapDirection } from "../components/DTOs/SwapFormValues";
+import { SelectMenuItem } from "../components/Select/Shared/Props/selectMenuItem";
 import CurrencySettings from "./CurrencySettings";
 import ExchangeSettings from "./ExchangeSettings";
 import NetworkSettings from "./NetworkSettings";
@@ -41,6 +42,19 @@ export function ResolveCurrencyOrder(currency: RouteToken, is_new: boolean) {
 
 }
 
+export function SortingByAvailability<T>(x: SelectMenuItem<T>, y: SelectMenuItem<T>) {
+    const reasonA = x.isAvailable && x.isAvailable;
+    const reasonB = y.isAvailable && y.isAvailable;
+    if (reasonA && !reasonB) {
+        return 1;
+    } else if (!reasonA && reasonB) {
+        return -1;
+    } else {
+        const balanceAmountsComparison = (Number(y.balanceAmount) || 0) - (Number(x.balanceAmount) || 0);
+        const orderComparison = balanceAmountsComparison !== 0 ? balanceAmountsComparison : x.order - y.order;
+        return orderComparison;
+    }
+}
 const resolveInitialWeightedOrder = (settingsOrder: number | undefined, initialOrderWeight: number) => {
     // Add 1 to distinguish between 0 and undefined
     const settings_order = (Number(settingsOrder) + 1)

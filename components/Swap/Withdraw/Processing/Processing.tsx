@@ -140,7 +140,7 @@ const Processing: FC<Props> = ({ swapResponse }) => {
             complete: {
                 name: `Your deposit is confirmed`,
                 description: <div className='flex items-center space-x-1'>
-                    <span>Transaction: </span>
+                    <span>Transaction: {swapInputTransaction?.confirmations} {swapInputTransaction?.max_confirmations}</span>
                     <div className='underline hover:no-underline flex items-center space-x-1'>
                         <a target={"_blank"} href={input_tx_explorer?.replace("{0}", transactionHash)}>{shortenAddress(transactionHash)}</a>
                         <ExternalLink className='h-4' />

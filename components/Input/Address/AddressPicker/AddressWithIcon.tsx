@@ -141,7 +141,7 @@ export const ExtendedAddress: FC<ExtendedAddressProps> = ({ address, network, ad
             <Popover open={isPopoverOpen} onOpenChange={() => setPopoverOpen(!isPopoverOpen)} >
                 <PopoverTrigger asChild>
                     <div>
-                        <Tooltip>
+                        <Tooltip disableHoverableContent={true}>
                             <TooltipTrigger asChild>
                                 <div className="group-hover/addressItem:underline hover:text-secondary-text transition duration-200 no-underline flex gap-1 items-center cursor-pointer">
                                     <p className={`block text-sm font-medium ${addressClassNames}`}>
@@ -157,7 +157,7 @@ export const ExtendedAddress: FC<ExtendedAddressProps> = ({ address, network, ad
                     </div>
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-2 flex flex-col gap-1 items-stretch" side="top">
-                    <div onClick={(e) => { e.stopPropagation(), setCopied(address) }} className="hover:text-primary-text px-2 py-1.5 hover:bg-secondary-600 rounded transition-all duartion-200 flex items-center justify-between gap-5 w-full">
+                    {<div onClick={(e) => { e.stopPropagation(), setCopied(address) }} className="hover:text-primary-text px-2 py-1.5 hover:bg-secondary-600 rounded transition-all duartion-200 flex items-center justify-between gap-5 w-full">
                         <p>
                             Copy address
                         </p>
@@ -167,6 +167,7 @@ export const ExtendedAddress: FC<ExtendedAddressProps> = ({ address, network, ad
                                 : <Copy className="w-4 h-4" />
                         }
                     </div>
+                    }
                     {
                         network &&
                         <Link href={network?.account_explorer_template?.replace('{0}', address)} target="_blank" className="hover:text-primary-text px-2 py-1.5 hover:bg-secondary-600 rounded transition-all duartion-200 flex items-center justify-between gap-5 w-full">

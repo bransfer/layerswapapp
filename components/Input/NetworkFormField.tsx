@@ -17,7 +17,8 @@ import { Exchange } from "../../Models/Exchange";
 import CurrencyGroupFormField from "./CEXCurrencyFormField";
 import { QueryParams } from "../../Models/QueryParams";
 import { resolveExchangesURLForSelectedToken, resolveNetworkRoutesURL } from "../../helpers/routes";
-import RouteIcon from "./RouteIcon";
+import Image from 'next/image'
+import ResolveRouteIcon from "./RouteIcon";
 import SourceWalletPicker from "./SourceWalletPicker";
 import DestinationWalletPicker from "./DestinationWalletPicker";
 import dynamic from "next/dynamic";
@@ -222,6 +223,19 @@ function GenerateMenuItems(routes: RouteNetwork[] | undefined, exchanges: Exchan
         const order = ResolveNetworkOrder(r, direction, isNewlyListed)
         const routeNotFound = isAvailable && !r.tokens?.some(r => r.status === 'active');
 
+        const logo = <div className="flex-shrink-0 h-6 w-6 relative">
+            {r.logo && (
+                <Image
+                    src={r.logo}
+                    alt="Project Logo"
+                    height="40"
+                    width="40"
+                    loading="eager"
+                    className="rounded-md object-contain"
+                />
+            )}
+        </div>
+
         const res: SelectMenuItem<RouteNetwork> & { isExchange: boolean } = {
             baseObject: r,
             id: r.name,
@@ -232,12 +246,26 @@ function GenerateMenuItems(routes: RouteNetwork[] | undefined, exchanges: Exchan
             group: getGroupName(r, 'network', isAvailable && !routeNotFound),
             isExchange: false,
             badge,
-            leftIcon: <RouteIcon direction={direction} isAvailable={isAvailable} routeNotFound={routeNotFound} type="network" />,
+            leftIcon: ResolveRouteIcon({ direction, isAvailable, routeNotFound, type: 'network' }),
+            logo
         }
         return res;
     }).sort(SortAscending) || [];
 
     const mappedExchanges = exchanges?.map(e => {
+        const logo = <div className="flex-shrink-0 h-6 w-6 relative">
+            {e.logo && (
+                <Image
+                    src={e.logo}
+                    alt="Project Logo"
+                    height="40"
+                    width="40"
+                    loading="eager"
+                    className="rounded-md object-contain"
+                />
+            )}
+        </div>
+
         const res: SelectMenuItem<Exchange> & { isExchange: boolean } = {
             baseObject: e,
             id: e.name,
@@ -247,6 +275,7 @@ function GenerateMenuItems(routes: RouteNetwork[] | undefined, exchanges: Exchan
             isAvailable: lock ? false : true,
             group: getGroupName(e, 'cex'),
             isExchange: true,
+            logo
         }
         return res;
     }).sort(SortAscending) || [];

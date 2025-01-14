@@ -54,7 +54,7 @@ const AmountField = forwardRef(function AmountField(_, ref: any) {
         maxAllowedAmount = Number(maxAmountFromApi) || 0
     }
 
-    const placeholder = (fromCurrency && toCurrency && from && to && minAllowedAmount && !isBalanceLoading && !isGasLoading) ? `${minAllowedAmount} - ${maxAmountFromApi}` : '0.0'
+    const placeholder = (fromCurrency && toCurrency && from && to && minAllowedAmount && !isGasLoading) ? `${minAllowedAmount} - ${maxAmountFromApi}` : '0.0'
     const step = 1 / Math.pow(10, fromCurrency?.precision || 1)
     const amountRef = useRef(ref)
 
