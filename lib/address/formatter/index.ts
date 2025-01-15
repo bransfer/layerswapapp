@@ -23,7 +23,7 @@ export function addressFormat(address: string, network: { name: string } | null)
             return address
         }
     }
-    else if (network?.name.toLowerCase().startsWith("solana") || network?.name.toLowerCase().startsWith("eclipse")) {
+    else if (network?.name.toLowerCase().startsWith("solana") || network?.name.toLowerCase().startsWith("eclipse") || network?.name.toLowerCase().startsWith("tron")) {
         return address
     }
     else {

@@ -1710,7 +1710,7 @@
     pirates "^4.0.6"
     source-map-support "^0.5.16"
 
-"@babel/runtime@^7.12.5", "@babel/runtime@^7.13.10", "@babel/runtime@^7.15.4", "@babel/runtime@^7.17.8", "@babel/runtime@^7.21.0", "@babel/runtime@^7.22.5", "@babel/runtime@^7.23.2", "@babel/runtime@^7.26.0", "@babel/runtime@^7.8.4":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.12.5", "@babel/runtime@^7.13.10", "@babel/runtime@^7.15.4", "@babel/runtime@^7.17.8", "@babel/runtime@^7.21.0", "@babel/runtime@^7.22.5", "@babel/runtime@^7.23.2", "@babel/runtime@^7.26.0", "@babel/runtime@^7.8.4":
   version "7.26.0"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.26.0.tgz#8600c2f595f277c60815256418b85356a65173c1"
   integrity sha512-FDSOghenHTiToteC/QRlv2q3DhPZ/oOXTBoirfWNx1Cx3TMVcGWQtMMmQcSvb/JjpNeGzx8Pq/b4fKEJuWm1sw==
@@ -1781,6 +1781,15 @@
     react-is "^18.2.0"
     react-keyed-flatten-children "^3.0.0"
     ts-deepmerge "^6.2.0"
+
+"@bitget-wallet/web3-sdk@^0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@bitget-wallet/web3-sdk/-/web3-sdk-0.0.8.tgz#1510b0b379654ff0de5e10ae19bef93fa86e46c3"
+  integrity sha512-WFk6URUxTCukKrU3YpTdWTCScrj6/wwd/0O7eSANeQl1KDbDs+yj/fAkN1Wy6ebI3NMcW6sqN9mrmfwz53dPMQ==
+  dependencies:
+    "@metamask/safe-event-emitter" "^3.0.0"
+    "@solana/web3.js" "^1.78.0"
+    eventemitter3 "^5.0.1"
 
 "@coinbase/wallet-sdk@4.2.3":
   version "4.2.3"
@@ -6663,7 +6672,7 @@
     "@solana/wallet-standard-core" "^1.1.1"
     "@solana/wallet-standard-wallet-adapter" "^1.1.2"
 
-"@solana/web3.js@1.66.0", "@solana/web3.js@^1.32.0", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.63.1", "@solana/web3.js@^2.0.0":
+"@solana/web3.js@1.66.0", "@solana/web3.js@^1.32.0", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.63.1", "@solana/web3.js@^1.78.0", "@solana/web3.js@^2.0.0":
   version "1.66.0"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.66.0.tgz#ab76e59b369815fc6114c784a48e91726c1ae6c5"
   integrity sha512-hQCzWd9u100Ba3da52u7GeDRqSRwyFZtZkUj4j08GKSK3c3+ZQ6CQoN3HBXzfyjVKMTyRGKT0FlPA+hOX3kmOQ==
@@ -9141,6 +9150,33 @@
     typeforce "^1.18.0"
     varuint-bitcoin "2.0.0"
     wif "^5.0.0"
+
+"@tronweb3/google-protobuf@^3.21.2":
+  version "3.21.2"
+  resolved "https://registry.yarnpkg.com/@tronweb3/google-protobuf/-/google-protobuf-3.21.2.tgz#0964cf83ed7826d31c3cb4e4ecf07655681631c9"
+  integrity sha512-IVcT2GfWX3K6tHUVhs14NP5uzKhQt4KeDya1g9ACxuZsUzsaoGUIGzceK2Ltu7xp1YV94AaHOf4yxLAivlvEkQ==
+
+"@tronweb3/tronwallet-abstract-adapter@^1.1.8":
+  version "1.1.8"
+  resolved "https://registry.yarnpkg.com/@tronweb3/tronwallet-abstract-adapter/-/tronwallet-abstract-adapter-1.1.8.tgz#110f9e6cf0bcbec5da4a15bdb73d5029ac3f9348"
+  integrity sha512-Ztt2C8kLEaRSgztpBKYqXDtXd7/+4AVS7K+ThZAjOInBu8MM/Jo3tmG4koVW8hM6Hz0rjoohKfQ36LGPVCQfGw==
+  dependencies:
+    eventemitter3 "^4.0.0"
+
+"@tronweb3/tronwallet-adapter-react-hooks@^1.1.9":
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/@tronweb3/tronwallet-adapter-react-hooks/-/tronwallet-adapter-react-hooks-1.1.9.tgz#a8b9a517456a05971d28c813eb92de636f1cd38f"
+  integrity sha512-IUus7pqj+Wswz2RFZ27NBAk9YzVfPU8xkpCv03XMsKQLNvhrambGQWo2Ldq9p+H4KkC0l5x7MD6uEYuux5AVLg==
+  dependencies:
+    "@tronweb3/tronwallet-abstract-adapter" "^1.1.8"
+    "@tronweb3/tronwallet-adapter-tronlink" "^1.1.11"
+
+"@tronweb3/tronwallet-adapter-tronlink@^1.1.11":
+  version "1.1.11"
+  resolved "https://registry.yarnpkg.com/@tronweb3/tronwallet-adapter-tronlink/-/tronwallet-adapter-tronlink-1.1.11.tgz#facda2d9b3aeaa5d508c7f8520b1e8970264c4bf"
+  integrity sha512-jU+NoWo4TZSE910NUi+tApjmzZmcOyYOnLlzBu7xZTedfnWtJvv9i4PSTac+5e188fQQH47JySt9p74S69mPkA==
+  dependencies:
+    "@tronweb3/tronwallet-abstract-adapter" "^1.1.8"
 
 "@trpc/client@^10.38.1":
   version "10.45.2"
@@ -14084,7 +14120,7 @@ ethereum-cryptography@^0.1.3:
     secp256k1 "^4.0.1"
     setimmediate "^1.0.5"
 
-ethereum-cryptography@^2.0.0, ethereum-cryptography@^2.1.2, ethereum-cryptography@^2.2.1:
+ethereum-cryptography@^2.0.0, ethereum-cryptography@^2.1.2, ethereum-cryptography@^2.1.3, ethereum-cryptography@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/ethereum-cryptography/-/ethereum-cryptography-2.2.1.tgz#58f2810f8e020aecb97de8c8c76147600b0b8ccf"
   integrity sha512-r/W8lkHSiTLxUxW8Rf3u4HGB0xQweG2RyETjywylKZSzLWoWAijRz8WCuOtJ6wah+avllXBqZuk29HCCvhEIRg==
@@ -14168,7 +14204,7 @@ ethers@5.7.2, ethers@^5.4.4, ethers@^5.7.0, ethers@^5.7.2:
     "@ethersproject/web" "5.7.1"
     "@ethersproject/wordlists" "5.7.0"
 
-ethers@^6.9.0:
+ethers@^6.13.1, ethers@^6.9.0:
   version "6.13.4"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.13.4.tgz#bd3e1c3dc1e7dc8ce10f9ffb4ee40967a651b53c"
   integrity sha512-21YtnZVg4/zKkCQPjrDj38B1r4nQvTZLopUGMLQ1ePU2zV/joCfDC3t3iKQjWRzjjjbzR+mdAIoikeBRNkdllA==
@@ -14221,6 +14257,11 @@ eventemitter3@5.0.1, eventemitter3@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-5.0.1.tgz#53f5ffd0a492ac800721bb42c66b841de96423c4"
   integrity sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==
+
+eventemitter3@^3.1.0:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-3.1.2.tgz#2d3d48f9c346698fce83a85d7d664e98535df6e7"
+  integrity sha512-tvtQIeLVHjDkJYnzf2dgVMxfuSGJeM/7UCG17TT4EumTfNtF+0nebF/4zWOIkCreAbtNqhGEboB6BWrwqNaw4Q==
 
 eventemitter3@^4.0.0, eventemitter3@^4.0.4, eventemitter3@^4.0.7:
   version "4.0.7"
@@ -19223,9 +19264,9 @@ preact@10.4.1:
   integrity sha512-WKrRpCSwL2t3tpOOGhf2WfTpcmbpxaWtDbdJdKdjd0aEiTkvOmS4NBkG6kzlaAHI9AkQ3iVqbFWM3Ei7mZ4o1Q==
 
 preact@^10.16.0, preact@^10.24.2:
-  version "10.25.2"
-  resolved "https://registry.yarnpkg.com/preact/-/preact-10.25.2.tgz#e141e18a547ae0082dae48d044e0d8267e2547d2"
-  integrity sha512-GEts1EH3oMnqdOIeXhlbBSddZ9nrINd070WBOiPO2ous1orrKGUM4SMDbwyjSWD1iMS2dBvaDjAa5qUhz3TXqw==
+  version "10.24.3"
+  resolved "https://registry.yarnpkg.com/preact/-/preact-10.24.3.tgz#086386bd47071e3b45410ef20844c21e23828f64"
+  integrity sha512-Z2dPnBnMUfyQfSQ+GBdsGa16hz35YmLmtTLhM169uW944hYL6xzTYkJjC07j+Wosz733pMWx0fgON3JNw1jJQA==
 
 prebuild-install@^7.1.1:
   version "7.1.2"
@@ -21929,6 +21970,21 @@ triple-beam@^1.3.0:
   resolved "https://registry.yarnpkg.com/triple-beam/-/triple-beam-1.4.1.tgz#6fde70271dc6e5d73ca0c3b24e2d92afb7441984"
   integrity sha512-aZbgViZrg1QNcG+LULa7nhZpJTZSLm/mXnHXnbAbjmN5aSa0y7V+wvv6+4WaBtpISJzThKy+PIPxc1Nq1EJ9mg==
 
+tronweb@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/tronweb/-/tronweb-6.0.0.tgz#9c1f23155473f0b6a6e0c33f96b655d38de38343"
+  integrity sha512-mIh00KG00Iu80UT1SLDgNEBLzWiR24WnttlObP8B9eQyNJ6mg4oD2gE+vG0cd6FcHL9DV6Jd18gKeBp4y3Y7Ew==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    "@tronweb3/google-protobuf" "^3.21.2"
+    axios "^1.7.4"
+    bignumber.js "^9.0.1"
+    ethereum-cryptography "^2.1.3"
+    ethers "^6.13.1"
+    eventemitter3 "^3.1.0"
+    semver "^5.6.0"
+    validator "^13.7.0"
+
 trough@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/trough/-/trough-2.2.0.tgz#94a60bd6bd375c152c1df911a4b11d5b0256f50f"
@@ -22630,6 +22686,11 @@ validate-npm-package-license@^3.0.1:
   dependencies:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
+
+validator@^13.7.0:
+  version "13.12.0"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-13.12.0.tgz#7d78e76ba85504da3fee4fd1922b385914d4b35f"
+  integrity sha512-c1Q0mCiPlgdTVVVIJIrBuxNicYE+t/7oKeI9MWLj3fh/uq2Pxh/3eeWbVZ4OcGW1TUf53At0njHw5SMdA3tmMg==
 
 valtio@1.11.2:
   version "1.11.2"
