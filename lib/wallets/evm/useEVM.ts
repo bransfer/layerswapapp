@@ -5,7 +5,7 @@ import KnownInternalNames from "../../knownIds"
 import { resolveWalletConnectorIcon, resolveWalletConnectorIndex } from "../utils/resolveWalletIcon"
 import { evmConnectorNameResolver } from "./KnownEVMConnectors"
 import { useMemo } from "react"
-import { getAccount, getConnections } from '@wagmi/core'
+import { ConnectorAlreadyConnectedError, getAccount, getConnections } from '@wagmi/core'
 import toast from "react-hot-toast"
 import { isMobile } from "../../isMobile"
 import convertSvgComponentToBase64 from "../../../components/utils/convertSvgComponentToBase64"
@@ -13,7 +13,6 @@ import { LSConnector } from "../connectors/EthereumProvider"
 import { InternalConnector, Wallet, WalletProvider } from "../../../Models/WalletProvider"
 import { useConnectModal } from "../../../components/WalletModal"
 import { explicitInjectedproviderDetected } from "../connectors/getInjectedConnector"
-import { type ConnectorAlreadyConnectedError } from '@wagmi/core'
 
 type Props = {
     network: Network | undefined,
@@ -141,14 +140,13 @@ export default function useEVM({ network }: Props): WalletProvider {
 
         } catch (e) {
             //TODO: handle error like in transfer
+            //toast.error('Error connecting wallet')
             const error = e as ConnectorAlreadyConnectedError
             if (error.name == 'ConnectorAlreadyConnectedError') {
-                toast.error('Wallet is already connected.')
+                throw new Error("Wallet is already connected");
+            } else {
+                throw new Error(e);
             }
-            else {
-                toast.error('Error connecting wallet')
-            }
-            throw new Error(e)
         }
     }
 

@@ -113,7 +113,8 @@ export default function useStarknet(): WalletProvider {
 
         catch (e) {
             console.log(e)
-            toast.error(e.message, { id: 'connect-wallet', duration: 30000 })
+            if(e.message !== 'User rejected request')  toast.error(e.message, { id: 'connect-wallet', duration: 30000 })
+            throw new Error(e)
         }
     }
 

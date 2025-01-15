@@ -63,6 +63,7 @@ export default function useSolana({ network }: { network: Network | undefined })
         }
         catch (e) {
             console.log(e)
+            throw new Error(e)
         }
     }
 

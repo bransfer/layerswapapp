@@ -5,7 +5,7 @@ import { NetworkType } from "../../Models/Network";
 import resolveChain from "../../lib/resolveChain";
 import React from "react";
 import NetworkSettings from "../../lib/NetworkSettings";
-import { WagmiProvider, injected } from 'wagmi'
+import { WagmiProvider } from 'wagmi'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createConfig } from 'wagmi';
 import { Chain, http } from 'viem';
@@ -64,6 +64,7 @@ function WagmiComponent({ children }: Props) {
         chains: settingsChains as [Chain, ...Chain[]],
         transports: transports,
     });
+    
     return (
         <WagmiProvider config={config} >
             <QueryClientProvider client={queryClient}>
