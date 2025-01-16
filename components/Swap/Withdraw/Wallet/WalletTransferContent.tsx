@@ -123,7 +123,7 @@ export const WalletTransferContent: FC = () => {
             swapId={swap?.id}
             callData={callData}
         />
-    else if (sourceIsSophon)
+    else
         return <SophonWalletWithdraw
             amount={amount}
             depositAddress={depositAddress}
@@ -132,21 +132,6 @@ export const WalletTransferContent: FC = () => {
             swapId={swap?.id}
             callData={callData}
         />;
-    else
-        return <>
-            {
-                swap &&
-                <TransferFromWallet
-                    sequenceNumber={swap?.metadata.sequence_number}
-                    swapId={swap.id}
-                    network={swap.source_network}
-                    token={swap.source_token}
-                    depositAddress={depositAddress}
-                    userDestinationAddress={swap.destination_address}
-                    amount={amount}
-                />
-            }
-        </>;
 };
 
 
