@@ -17,7 +17,6 @@ import { useConfig } from "wagmi"
 import { usePersistedState } from "../../../hooks/usePersistedState"
 import { LOCAL_STORAGE_KEY } from "./lib/constants"
 import { useSettingsState } from "../../../context/settings"
-import { sophon, sophonTestnet } from 'viem/chains';
 
 type Props = {
     network: Network | undefined,
@@ -56,7 +55,6 @@ export default function useParadex({ network }: Props): WalletProvider {
             setSelectedProvider({ ...provider, connector: { name: connector.name } })
             const isEvm = evmProvider.availableWalletsForConnect?.find(w => w.id === connector.id)
             const isStarknet = starknetProvider.availableWalletsForConnect?.find(w => w.id === connector.id)
-            console.log("sophon", sophon )
             if (isEvm) {
                 const connectionResult = evmProvider.connectConnector && await evmProvider.connectConnector({ connector })
                 if (!connectionResult) return

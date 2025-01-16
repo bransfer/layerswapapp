@@ -8,10 +8,11 @@ import External from './External';
 import { useQueryState } from '../../../context/query';
 import { Widget } from '../../Widget/Index';
 import WalletTransferContent from './WalletTransferContent';
+import useSWRGas from '../../../lib/gases/useSWRGas';
 
 const Withdraw: FC = () => {
     const { swapResponse } = useSwapDataState()
-    const { swap } = swapResponse || {}
+    const { swap, quote } = swapResponse || {}
     const { appName, signature } = useQueryState()
 
     const sourceIsImmutableX = swap?.source_network.name?.toUpperCase() === KnownInternalNames.Networks.ImmutableXMainnet?.toUpperCase()
@@ -21,6 +22,8 @@ const Withdraw: FC = () => {
 
     const isImtblMarketplace = (signature && appName === "imxMarketplace" && sourceIsImmutableX)
     const sourceIsSynquote = appName === "ea7df14a1597407f9f755f05e25bab42" && sourceIsArbitrumOne
+    const { gas: networkGas, isGasLoading } = useSWRGas(swap?.destination_address, swap?.source_network, swap?.source_token)
+    console.log(networkGas)
 
     let withdraw: {
         content?: JSX.Element | JSX.Element[],
