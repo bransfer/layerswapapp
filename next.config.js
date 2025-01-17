@@ -54,7 +54,7 @@ module.exports = (phase, { defaultConfig }) => {
       return config;
     },
     productionBrowserSourceMaps: true,
-    transpilePackages: ['@coral-xyz/anchor', '@solana/web3.js', '@imtbl/sdk', '@fuels/connectors', '@fuels/react', "@radix-ui/react-dismissable-layer", 'viem/chains']
+    transpilePackages: ['@coral-xyz/anchor', '@solana/web3.js', '@imtbl/sdk', '@fuels/connectors', '@fuels/react', "@radix-ui/react-dismissable-layer", '@wagmi/core/chains']
   }
   if (process.env.APP_BASE_PATH) {
     nextConfig.basePath = process.env.APP_BASE_PATH
