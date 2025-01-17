@@ -3,7 +3,8 @@ import { Network } from "../Models/Network";
 import NetworkSettings from "./NetworkSettings";
 import { SendErrorMessage } from "./telegram";
 
-export default function resolveChain(network: Network) {
+
+export default (overrides) => ((network: Network) => {
 
     const nativeCurrency = network.token;
     const blockExplorersBaseURL =
@@ -19,7 +20,7 @@ export default function resolveChain(network: Network) {
         return
     }
 
-    const res = defineChain({
+    const res = overrides.find(o => o.id == Number(network.chain_id)) || defineChain({
         id: Number(network.chain_id),
         name: network.display_name,
         nativeCurrency: {
@@ -68,4 +69,4 @@ export default function resolveChain(network: Network) {
         }
     }
     return res as Chain
-}
+})

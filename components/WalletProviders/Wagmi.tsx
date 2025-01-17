@@ -2,22 +2,27 @@
 
 import { useSettingsState } from "../../context/settings";
 import { NetworkType } from "../../Models/Network";
-import resolveChain from "../../lib/resolveChain";
+import resolveChain from "../../lib/resolveChainWithOverrides";
 import React from "react";
 import NetworkSettings from "../../lib/NetworkSettings";
-import { WagmiProvider, injected } from 'wagmi'
+import { WagmiProvider } from 'wagmi'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createConfig } from 'wagmi';
 import { Chain, http } from 'viem';
 import { WalletModalProvider } from '../WalletModal';
 import { argent } from '../../lib/wallets/connectors/argent';
 import { rainbow } from '../../lib/wallets/connectors/rainbow';
-import { coinbaseWallet, metaMask, walletConnect } from 'wagmi/connectors'
+import { coinbaseWallet, metaMask, walletConnect } from '@wagmi/connectors'
 import { hasInjectedProvider } from '../../lib/wallets/connectors/getInjectedConnector';
 import { bitget } from '../../lib/wallets/connectors/bitget';
 import { isMobile } from '../../lib/isMobile';
 import FuelProviderWrapper from "./FuelProvider";
 import { browserInjected } from "../../lib/wallets/connectors/browserInjected";
+import { optimism } from "@wagmi/core/chains";
+
+const overrides = [
+    optimism
+]
 
 type Props = {
     children: JSX.Element | JSX.Element[]
@@ -34,7 +39,7 @@ function WagmiComponent({ children }: Props) {
         .filter(net => net.type === NetworkType.EVM
             && net.node_url
             && net.token)
-        .map(resolveChain).filter(isChain) as Chain[]
+        .map(resolveChain(overrides)).filter(isChain) as Chain[]
 
     const transports = {}
 
