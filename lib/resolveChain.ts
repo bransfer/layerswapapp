@@ -2,7 +2,7 @@ import { Chain, defineChain, parseGwei } from "viem";
 import { Network } from "../Models/Network";
 import NetworkSettings from "./NetworkSettings";
 import { SendErrorMessage } from "./telegram";
-import { optimism } from "@wagmi/core/chains";
+import { optimism } from "viem/chains";
 
 const overrides = [
     optimism
