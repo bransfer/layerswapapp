@@ -7,7 +7,7 @@ import { ButtonWrapper, ChangeNetworkButton, ConnectWalletButton } from './Walle
 import { useAccount } from 'wagmi';
 import useWallet from '../../../../hooks/useWallet';
 import { WithdrawPageProps } from './WalletTransferContent';
-// import { sophon, sophonTestnet } from 'viem/chains';
+import { sophon, sophonTestnet } from 'viem/chains';
 import { createWalletClient, custom, JsonRpcAccount } from 'viem';
 import { eip712WalletActions, getGeneralPaymasterInput } from 'viem/zksync';
 import KnownInternalNames from '../../../../lib/knownIds';
@@ -27,38 +27,38 @@ const SophonWalletWithdraw: FC<WithdrawPageProps> = ({ amount, depositAddress, n
         if (!wallet?.address || !swapId || !depositAddress || !token || amount == undefined || !callData || !network?.metadata.zks_paymaster_contract) return
 
         try {
-            // setLoading(true)
+            setLoading(true)
 
-            // const walletProvider = await connector?.getProvider() as any
+            const walletProvider = await connector?.getProvider() as any
 
-            // if (!walletProvider) throw new Error('Could not get provider')
+            if (!walletProvider) throw new Error('Could not get provider')
 
-            // const account = {
-            //     address: wallet?.address,
-            //     type: 'json-rpc'
-            // } as JsonRpcAccount
+            const account = {
+                address: wallet?.address,
+                type: 'json-rpc'
+            } as JsonRpcAccount
 
-            // const walletClient = createWalletClient({
-            //     chain: network.name === KnownInternalNames.Networks.SophonSepolia ? sophonTestnet : sophon,
-            //     transport: custom(walletProvider),
-            //     account: account
-            // }).extend(eip712WalletActions());
+            const walletClient = createWalletClient({
+                chain: network.name === KnownInternalNames.Networks.SophonSepolia ? sophonTestnet : sophon,
+                transport: custom(walletProvider),
+                account: account
+            }).extend(eip712WalletActions());
 
-            // const request = await walletClient.prepareTransactionRequest({
-            //     to: depositAddress,
-            //     data: callData as `0x${string}`,
-            //     paymaster: network?.metadata.zks_paymaster_contract,
-            //     paymasterInput: getGeneralPaymasterInput({ innerInput: "0x" }),
-            // })
+            const request = await walletClient.prepareTransactionRequest({
+                to: depositAddress,
+                data: callData as `0x${string}`,
+                paymaster: network?.metadata.zks_paymaster_contract,
+                paymasterInput: getGeneralPaymasterInput({ innerInput: "0x" }),
+            })
 
-            // const signature = await walletClient.signTransaction(request as any)
-            // const hash = await walletClient.sendRawTransaction({
-            //     serializedTransaction: signature
-            // })
+            const signature = await walletClient.signTransaction(request as any)
+            const hash = await walletClient.sendRawTransaction({
+                serializedTransaction: signature
+            })
 
-            // if (hash) {
-            //     setSwapTransaction(swapId, BackendTransactionStatus.Pending, hash);
-            // }
+            if (hash) {
+                setSwapTransaction(swapId, BackendTransactionStatus.Pending, hash);
+            }
         }
         catch (e) {
             if (e?.message) {
