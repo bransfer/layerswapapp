@@ -22,7 +22,7 @@ module.exports = (phase, { defaultConfig }) => {
     },
     modularizeImports:{
       'viem/chains': {
-        transform: 'viem/chains/{{member}}',
+        transform: 'viem/chains/definitions/{{member}}',
       },
     },
     images: {
