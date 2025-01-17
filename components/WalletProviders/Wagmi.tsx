@@ -18,11 +18,11 @@ import { bitget } from '../../lib/wallets/connectors/bitget';
 import { isMobile } from '../../lib/isMobile';
 import FuelProviderWrapper from "./FuelProvider";
 import { browserInjected } from "../../lib/wallets/connectors/browserInjected";
-import { optimism } from "@wagmi/core/chains";
+// import { optimism } from "@wagmi/core/chains";
 
-const overrides = [
-    optimism
-]
+// const overrides = [
+//     optimism
+// ]
 
 type Props = {
     children: JSX.Element | JSX.Element[]
@@ -39,7 +39,7 @@ function WagmiComponent({ children }: Props) {
         .filter(net => net.type === NetworkType.EVM
             && net.node_url
             && net.token)
-        .map(resolveChain(overrides)).filter(isChain) as Chain[]
+        .map(resolveChain([])).filter(isChain) as Chain[]
 
     const transports = {}
 
