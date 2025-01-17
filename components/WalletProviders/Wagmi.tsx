@@ -18,7 +18,6 @@ import { bitget } from '../../lib/wallets/connectors/bitget';
 import { isMobile } from '../../lib/isMobile';
 import FuelProviderWrapper from "./FuelProvider";
 import { browserInjected } from "../../lib/wallets/connectors/browserInjected";
-import { optimism } from "@wagmi/core/chains";
 
 // const overrides = [
 //     optimism
@@ -32,7 +31,6 @@ const WALLETCONNECT_PROJECT_ID = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_
 const queryClient = new QueryClient()
 
 function WagmiComponent({ children }: Props) {
-    console.log('optimism', optimism)
     const settings = useSettingsState();
     const isChain = (c: Chain | undefined): c is Chain => c != undefined
     const settingsChains = settings?.networks
