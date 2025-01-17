@@ -6,6 +6,7 @@ import { PublicClient, TransactionSerializedEIP1559, encodeFunctionData, seriali
 import { erc20Abi } from "viem";
 import { datadogRum } from "@datadog/browser-rum";
 import formatAmount from "../../formatAmount";
+import resolveChain from "../../resolveChain"
 
 export class EVMGasProvider implements Provider {
     supportsNetwork(network: Network): boolean {
@@ -27,9 +28,8 @@ export class EVMGasProvider implements Provider {
             if (network.metadata.zks_paymaster_contract) return 0
 
             const { createPublicClient, http } = await import("viem")
-            const resolveNetworkChain = (await import("../../resolveChain")).default
             const publicClient = createPublicClient({
-                chain: resolveNetworkChain(network),
+                chain: resolveChain(network),
                 transport: http(),
             })
 
