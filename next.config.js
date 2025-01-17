@@ -20,11 +20,6 @@ module.exports = (phase, { defaultConfig }) => {
       locales: ["en"],
       defaultLocale: "en",
     },
-    modularizeImports: {
-      'lucide-react': {
-        transform: 'lucide-react/dist/esm/icons/{{ kebabCase member }}',
-      },
-    },
     images: {
       remotePatterns: [
         {
