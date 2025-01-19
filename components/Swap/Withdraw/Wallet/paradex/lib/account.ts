@@ -1,10 +1,11 @@
+import { keyDerivation } from '@starkware-industries/starkware-crypto-utils';
 import * as Starknet from 'starknet';
 
 import type { ParadexConfig } from './config';
 import * as starknetSigner from './starknet-signer';
 import type { Hex } from './types';
 
-export interface Account extends Starknet.Account {}
+export interface Account extends Starknet.Account { }
 
 interface FromEthSignerParams {
   readonly provider: Starknet.ProviderOptions | Starknet.ProviderInterface;
@@ -12,9 +13,11 @@ interface FromEthSignerParams {
 }
 
 interface FromStarknetAccountParams {
+  /** Paradex chain provider */
   readonly provider: Starknet.ProviderOptions | Starknet.ProviderInterface;
   readonly config: ParadexConfig;
   readonly account: Starknet.AccountInterface;
+  readonly starknetProvider?: Starknet.ProviderInterface;
 }
 
 /**
@@ -25,12 +28,19 @@ export async function fromStarknetAccount({
   provider,
   config,
   account,
+  starknetProvider,
 }: FromStarknetAccountParams): Promise<Account> {
-  const starknetChainId = config.l2ChainId;
-  const starkKeyTypedData =
-    starknetSigner.buildStarknetStarkKeyTypedData(starknetChainId);
+  const starkKeyTypedData = starknetSigner.buildStarknetStarkKeyTypedData(
+    config.l2ChainId,
+  );
+
+  const accountSupport = await starknetSigner.getAccountSupport(
+    account,
+    starknetProvider ??
+    starknetSigner.getPublicProvider(config.l2ChainId),
+  );
   const signature = await account.signMessage(starkKeyTypedData);
-  const seed = starknetSigner.getSeedFromStarknetSignature(signature);
+  const seed = accountSupport.getSeedFromSignature(signature);
   const [privateKey, publicKey] =
     await starknetSigner.getStarkKeypairFromStarknetSignature(seed);
   const address = generateAccountAddress({

@@ -3,15 +3,15 @@ import { FC, useCallback, useEffect } from "react";
 import { SwapDirection, SwapFormValues } from "../DTOs/SwapFormValues";
 import { SelectMenuItem } from "../Select/Shared/Props/selectMenuItem";
 import PopoverSelectWrapper from "../Select/Popover/PopoverSelectWrapper";
-import CurrencySettings from "../../lib/CurrencySettings";
-import { ResolveCEXCurrencyOrder, SortAscending } from "../../lib/sorting";
+import { ResolveCEXCurrencyOrder } from "../../lib/sorting";
 import { useQueryState } from "../../context/query";
 import { Exchange, ExchangeToken } from "../../Models/Exchange";
-import { LSAPIKnownErrorCode } from "../../Models/ApiError";
 import { resolveExchangesURLForSelectedToken } from "../../helpers/routes";
 import { ApiResponse } from "../../Models/ApiResponse";
 import useSWR from "swr";
 import LayerSwapApiClient from "../../lib/layerSwapApiClient";
+import RouteIcon from "./RouteIcon";
+import { useSettingsState } from "../../context/settings";
 
 const CurrencyGroupFormField: FC<{ direction: SwapDirection }> = ({ direction }) => {
     const {
@@ -19,24 +19,23 @@ const CurrencyGroupFormField: FC<{ direction: SwapDirection }> = ({ direction })
         setFieldValue,
     } = useFormikContext<SwapFormValues>();
     const { to, fromCurrency, toCurrency, from, currencyGroup, toExchange, fromExchange } = values
+    const { sourceExchanges, destinationExchanges } = useSettingsState();
 
     const name = 'currencyGroup'
     const query = useQueryState()
     const exchange = direction === 'from' ? fromExchange : toExchange
-    const network = direction === 'from' ? to : from
-
     const exchangeRoutesURL = resolveExchangesURLForSelectedToken(direction, values)
     const apiClient = new LayerSwapApiClient()
     const {
         data: exchanges,
         error
-    } = useSWR<ApiResponse<Exchange[]>>(`${exchangeRoutesURL}`, apiClient.fetcher, { keepPreviousData: true })
+    } = useSWR<ApiResponse<Exchange[]>>(`${exchangeRoutesURL}`, apiClient.fetcher, { keepPreviousData: true, fallbackData: { data: direction === 'from' ? sourceExchanges : destinationExchanges }, dedupingInterval: 10000 })
 
     const availableAssetGroups = exchanges?.data?.find(e => e.name === exchange?.name)?.token_groups
 
-    const lockAsset = direction === 'from' ? query?.lockFromAsset : query?.lockToAsset
+    const isLocked = direction === 'from' ? query?.lockFromAsset : query?.lockToAsset
     const asset = direction === 'from' ? query?.fromAsset : query?.toAsset
-    const lockedCurrency = lockAsset
+    const lockedCurrency = isLocked
         ? availableAssetGroups?.find(a => a.symbol.toUpperCase() === (asset)?.toUpperCase())
         : undefined
 
@@ -44,25 +43,24 @@ const CurrencyGroupFormField: FC<{ direction: SwapDirection }> = ({ direction })
 
     const currencyMenuItems = GenerateCurrencyMenuItems(
         filteredCurrencies!,
-        values,
-        lockedCurrency,
+        direction,
+        lockedCurrency
     )
 
     const value = currencyMenuItems?.find(x => x.id == currencyGroup?.symbol);
 
     useEffect(() => {
-        if (exchanges?.data
-            && !!exchanges?.data
-                ?.find(r => r.name === exchange?.name)?.token_groups
-                ?.find(r => r.symbol === currencyGroup?.symbol && r.status === 'not_found')) {
-            setFieldValue(name, null)
-        }
-    }, [toCurrency, fromCurrency, name, network, exchanges, error])
+        if (value) return
+        if (currencyMenuItems?.[0])
+            setFieldValue(name, currencyMenuItems?.[0]?.baseObject)
+        return () => { setFieldValue(name, null) }
+    }, [])
 
     useEffect(() => {
-        if (value) return
-        setFieldValue(name, currencyMenuItems?.[0]?.baseObject)
-    }, [])
+        const value = availableAssetGroups?.find(r => r.symbol === currencyGroup?.symbol)
+        if (!value) return
+        setFieldValue(name, value)
+    }, [fromCurrency, toCurrency, availableAssetGroups])
 
     const handleSelect = useCallback((item: SelectMenuItem<ExchangeToken>) => {
         setFieldValue(name, item.baseObject, true)
@@ -73,31 +71,23 @@ const CurrencyGroupFormField: FC<{ direction: SwapDirection }> = ({ direction })
         values={currencyMenuItems}
         value={value}
         setValue={handleSelect}
-        disabled={!value?.isAvailable?.value}
+        disabled={isLocked}
     />;
 }
 
 export function GenerateCurrencyMenuItems(
     currencies: ExchangeToken[],
-    values: SwapFormValues,
-    lockedCurrency?: ExchangeToken | undefined
+    direction: string,
+    lockedCurrency?: ExchangeToken | undefined,
 ): SelectMenuItem<ExchangeToken>[] {
 
     return currencies?.map(c => {
         const currency = c
         const displayName = lockedCurrency?.symbol ?? currency.symbol;
 
-        let currencyIsAvailable = (currency: ExchangeToken) => {
-            if (lockedCurrency) {
-                return { value: false, disabledReason: CurrencyDisabledReason.LockAssetIsTrue }
-            }
-            else if (currency?.status !== "active") {
-                return { value: true, disabledReason: CurrencyDisabledReason.InvalidRoute }
-            }
-            else {
-                return { value: true, disabledReason: null }
-            }
-        }
+        const isAvailable = (lockedCurrency || (c?.status !== "active" && c.status !== "not_found")) ? false : true;
+
+        const routeNotFound = c.status === "not_found"
 
         const res: SelectMenuItem<ExchangeToken> = {
             baseObject: c,
@@ -105,16 +95,11 @@ export function GenerateCurrencyMenuItems(
             name: displayName || "-",
             order: ResolveCEXCurrencyOrder(c),
             imgSrc: c.logo,
-            isAvailable: currencyIsAvailable(c),
+            isAvailable: isAvailable,
+            leftIcon: <RouteIcon direction={direction} isAvailable={isAvailable} routeNotFound={routeNotFound} type="token" />
         };
         return res
-    }).sort(SortAscending);
-}
-
-export enum CurrencyDisabledReason {
-    LockAssetIsTrue = '',
-    InsufficientLiquidity = 'Temporarily disabled. Please check later.',
-    InvalidRoute = 'InvalidRoute'
+    });
 }
 
 export default CurrencyGroupFormField

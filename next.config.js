@@ -21,18 +21,40 @@ module.exports = (phase, { defaultConfig }) => {
       defaultLocale: "en",
     },
     images: {
-      domains: ["devlslayerswapbridgesa.blob.core.windows.net", "prodlslayerswapbridgesa.blob.core.windows.net"],
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: 'stagelslayerswapbridgesa.blob.core.windows.net',
+        },
+        {
+          protocol: 'https',
+          hostname: 'bransferstorage.blob.core.windows.net',
+        },
+        {
+          protocol: 'https',
+          hostname: 'devlslayerswapbridgesa.blob.core.windows.net',
+        },
+        {
+          protocol: 'https',
+          hostname: 'prodlslayerswapbridgesa.blob.core.windows.net',
+        },
+      ]
     },
     compiler: {
       removeConsole: false,
     },
-    reactStrictMode: true,
+    reactStrictMode: false,
     webpack: config => {
       config.resolve.fallback = { fs: false, net: false, tls: false };
+      config.module.rules.push({
+        test: /\.wasm$/,
+        type: 'javascript/auto',
+        use: 'file-loader',
+      });
       return config;
     },
     productionBrowserSourceMaps: true,
-    transpilePackages: ['@coral-xyz/anchor','@solana/web3.js'],
+    transpilePackages: ['@coral-xyz/anchor', '@solana/web3.js', '@imtbl/sdk', '@fuels/connectors', '@fuels/react', "@radix-ui/react-dismissable-layer"]
   }
   if (process.env.APP_BASE_PATH) {
     nextConfig.basePath = process.env.APP_BASE_PATH

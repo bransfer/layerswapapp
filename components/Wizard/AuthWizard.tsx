@@ -15,12 +15,14 @@ import { ParsedUrlQuery } from "querystring";
 const AuthWizard: FC = () => {
     const { goToStep } = useFormWizardaUpdate()
     const router = useRouter();
-    const { redirect } = router.query;
 
     const CodeOnNext = useCallback(async () => {
-        await router.push(resolveRedirectUrl(redirect?.toString(), router.query))
+        await router.push({
+            pathname: "/",
+            query: router.query
+        })
         plausible(TrackEvent.SignedIn)
-    }, [redirect]);
+    }, []);
 
     const GoBackToEmailStep = useCallback(() => goToStep(AuthStep.Email, "back"), [])
     const GoToCodeStep = useCallback(() => goToStep(AuthStep.Code), [])
@@ -32,10 +34,10 @@ const AuthWizard: FC = () => {
     return (
         <TimerProvider>
             <Wizard wizardId="auth">
-                <WizardItem StepName={SwapCreateStep.Email} GoBack={handleGoBack}>
+                <WizardItem StepName={SwapCreateStep.Email} GoBack={handleGoBack} className="pb-6">
                     <EmailStep OnNext={GoToCodeStep} />
                 </WizardItem>
-                <WizardItem StepName={SwapCreateStep.Code} GoBack={GoBackToEmailStep}>
+                <WizardItem StepName={SwapCreateStep.Code} GoBack={GoBackToEmailStep} className="pb-6">
                     <CodeStep OnNext={CodeOnNext} />
                 </WizardItem>
             </Wizard>

@@ -10,6 +10,8 @@ import LoopringWalletWithdraw from "./Loopring";
 import { Network, Token } from "../../../../Models/Network";
 import TonWalletWithdrawStep from "./TonWalletWithdraw";
 import ParadexWalletWithdrawStep from "./paradex/index";
+import FuelWalletWithdrawStep from "./FuelWalletWithdrawal";
+import SophonWalletWithdraw from "./SophonWalletWithdraw";
 
 //TODO have separate components for evm and none_evm as others are sweepless anyway
 export const WalletTransferContent: FC = () => {
@@ -35,11 +37,18 @@ export const WalletTransferContent: FC = () => {
 
     const sourceIsSolana = source_network_internal_name?.toUpperCase() === KnownInternalNames.Networks.SolanaMainnet?.toUpperCase()
         || source_network_internal_name?.toUpperCase() === KnownInternalNames.Networks.SolanaDevnet?.toUpperCase();
+    const sourceIsEclipse = source_network_internal_name?.toUpperCase() === KnownInternalNames.Networks.EclipseTestnet?.toUpperCase()
+        || source_network_internal_name?.toUpperCase() === KnownInternalNames.Networks.EclipseMainnet?.toUpperCase();
 
     const sourceIsTon = source_network_internal_name?.toUpperCase() === KnownInternalNames.Networks.TONMainnet?.toUpperCase()
 
     const sourceIsParadex = source_network_internal_name?.toUpperCase() === KnownInternalNames.Networks.ParadexMainnet?.toUpperCase()
         || source_network_internal_name?.toUpperCase() === KnownInternalNames.Networks.ParadexTestnet?.toUpperCase();
+
+    const sourceIsFuel = source_network_internal_name?.toUpperCase() === KnownInternalNames.Networks.FuelMainnet?.toUpperCase()
+        || source_network_internal_name?.toUpperCase() === KnownInternalNames.Networks.FuelTestnet?.toUpperCase();
+    const sourceIsSophon = source_network_internal_name?.toUpperCase() === KnownInternalNames.Networks.SophonMainnet?.toUpperCase()
+        || source_network_internal_name?.toUpperCase() === KnownInternalNames.Networks.SophonSepolia?.toUpperCase();
 
     const depositAddress = depositActionsResponse?.find(da => true)?.to_address;
     const amount = depositActionsResponse?.find(da => true)?.amount || 0;
@@ -77,7 +86,7 @@ export const WalletTransferContent: FC = () => {
             swapId={swap?.id}
             callData={callData}
         />;
-    else if (sourceIsSolana)
+    else if (sourceIsSolana || sourceIsEclipse)
         return <SolanaWalletWithdrawStep
             amount={amount}
             depositAddress={depositAddress}
@@ -97,6 +106,25 @@ export const WalletTransferContent: FC = () => {
         />;
     else if (sourceIsParadex)
         return <ParadexWalletWithdrawStep
+            amount={amount}
+            depositAddress={depositAddress}
+            network={swap?.source_network}
+            token={swap?.source_token}
+            swapId={swap?.id}
+            callData={callData}
+        />;
+    else if (sourceIsFuel)
+        return <FuelWalletWithdrawStep
+            amount={amount}
+            depositAddress={depositAddress}
+            network={swap?.source_network}
+            token={swap?.source_token}
+            sequenceNumber={swap?.metadata.sequence_number}
+            swapId={swap?.id}
+            callData={callData}
+        />
+    else if (sourceIsSophon)
+        return <SophonWalletWithdraw
             amount={amount}
             depositAddress={depositAddress}
             network={swap?.source_network}

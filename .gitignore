@@ -11,6 +11,7 @@
 # next.js
 /.next/
 /out/
+next-env.d.ts
 
 # production
 /build
@@ -36,3 +37,5 @@ package-lock.json
 storybook-static/*
 # Sentry Config File
 .sentryclirc
+.env*.local
+

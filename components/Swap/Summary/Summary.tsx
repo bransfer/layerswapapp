@@ -12,6 +12,7 @@ import { Exchange } from "../../../Models/Exchange";
 import { addressFormat } from "../../../lib/address/formatter";
 import { ExtendedAddress } from "../../Input/Address/AddressPicker/AddressWithIcon";
 import { isValidAddress } from "../../../lib/address/validator";
+import shortenAddress from "../../utils/ShortenAddress";
 
 type SwapInfoProps = {
     sourceCurrency: Token,
@@ -81,7 +82,7 @@ const Summary: FC<SwapInfoProps> = ({ sourceAccountAddress, sourceCurrency, dest
                                                 <ExtendedAddress address={addressFormat(sourceAccountAddress, from)} network={from} />
                                             </div>
                                             :
-                                            <p className="text-sm text-secondary-text">{sourceAccountAddress}</p>
+                                            <p className="text-sm text-secondary-text">{shortenAddress(sourceAccountAddress)}</p>
                                         :
                                         null
                             }

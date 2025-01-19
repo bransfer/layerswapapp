@@ -13,7 +13,6 @@ import { motion, useCycle } from "framer-motion";
 import { ArrowUpDown, ExternalLink, Loader2 } from 'lucide-react'
 import { Widget } from "../../Widget/Index";
 import { classNames } from "../../utils/classNames";
-import GasDetails from "../../gasDetails";
 import { useQueryState } from "../../../context/query";
 import FeeDetailsComponent from "../../FeeDetails";
 import { useFee } from "../../../context/feeContext";
@@ -30,10 +29,6 @@ type Props = {
 }
 
 const ReserveGasNote = dynamic(() => import("../../ReserveGasNote"), {
-    loading: () => <></>,
-});
-
-const Address = dynamic(() => import("../../Input/Address"), {
     loading: () => <></>,
 });
 
@@ -73,12 +68,6 @@ const SwapForm: FC<Props> = ({ partner }) => {
             setFieldValue('refuel', false, true)
         }
     }, [toAsset, destination, source, fromAsset, currencyGroup])
-
-    useEffect(() => {
-        (async () => {
-            (await import("../../Input/Address")).default
-        })()
-    }, [destination])
 
     useEffect(() => {
         if (values.refuel && minAllowedAmount && (Number(values.amount) < minAllowedAmount)) {
@@ -123,9 +112,9 @@ const SwapForm: FC<Props> = ({ partner }) => {
         && (query?.lockTo || query?.hideTo)
         && isValidAddress(query?.destAddress as string, destination)
 
-    const handleReserveGas = useCallback((walletBalance: Balance, networkGas: Gas) => {
+    const handleReserveGas = useCallback((walletBalance: Balance, networkGas: number) => {
         if (walletBalance && networkGas)
-            setFieldValue('amount', walletBalance?.amount - networkGas?.gas)
+            setFieldValue('amount', walletBalance?.amount - networkGas)
     }, [values.amount])
 
     return <>
@@ -133,9 +122,9 @@ const SwapForm: FC<Props> = ({ partner }) => {
             <Form className={`h-full ${(isSubmitting) ? 'pointer-events-none' : 'pointer-events-auto'}`} >
                 <ResizablePanel>
                     <Widget.Content>
-                        <div className='flex-col relative flex justify-between w-full space-y-0.5 mb-3.5 leading-4'>
-                            {!(query?.hideFrom && values?.from) && <div className="flex flex-col w-full">
-                                <NetworkFormField direction="from" label="From" className="rounded-t-componentRoundness pb-5" />
+                    <div className='flex-col relative flex justify-between gap-1.5 w-full mb-3.5 leading-4 bg-secondary-700 rounded-xl'>
+                    {!(query?.hideFrom && values?.from) && <div className="flex flex-col w-full">
+                                <NetworkFormField direction="from" label="From" className="rounded-t-componentRoundness pt-2.5" />
                             </div>}
                             {!query?.hideFrom && !query?.hideTo &&
                                 <button
@@ -143,7 +132,7 @@ const SwapForm: FC<Props> = ({ partner }) => {
                                     aria-label="Reverse the source and destination"
                                     disabled={valuesSwapperDisabled || sourceLoading || destinationLoading}
                                     onClick={valuesSwapper}
-                                    className={`${sourceLoading || destinationLoading ? "" : "hover:text-primary"} absolute right-[calc(50%-16px)] top-[86px] z-10 border-2 border-secondary-900 bg-secondary-900 rounded-[10px] disabled:cursor-not-allowed disabled:text-secondary-text duration-200 transition disabled:pointer-events-none`}>
+                                    className={`${sourceLoading || destinationLoading ? "" : "hover:text-primary"} absolute right-[calc(50%-16px)] top-[122px] z-10 border-2 border-secondary-900 bg-secondary-900 rounded-[10px] disabled:cursor-not-allowed disabled:text-secondary-text duration-200 transition disabled:pointer-events-none`}>
                                     <motion.div
                                         animate={animate}
                                         transition={{ duration: 0.3 }}
@@ -164,7 +153,7 @@ const SwapForm: FC<Props> = ({ partner }) => {
                             (((fromExchange && destination) || (toExchange && source)) && currencyGroup) ?
                                 <div className="mb-6 leading-4">
                                     <ResizablePanel>
-                                        <CEXNetworkFormField direction={fromExchange ? 'from' : 'to'} />
+                                        <CEXNetworkFormField direction={fromExchange ? 'from' : 'to'} partner={undefined} />
                                     </ResizablePanel>
                                 </div>
                                 : <></>
@@ -187,19 +176,7 @@ const SwapForm: FC<Props> = ({ partner }) => {
                                     <div className="mb-6 leading-4">
                                         <AmountField />
                                     </div>
-                                    {
-                                        !hideAddress ?
-                                            <Address partner={partner} />
-                                            : <></>
-                                    }
                                     <div className="w-full">
-                                        <FeeDetailsComponent values={values} />
-                                        {
-                                            values.amount &&
-                                            <ReserveGasNote onSubmit={(walletBalance, networkGas) => handleReserveGas(walletBalance, networkGas)} />
-                                        }
-                                    </div>
-                                    <div className="w-full hidden">
                                         <FeeDetailsComponent values={values} />
                                         {
                                             values.amount &&
@@ -221,12 +198,6 @@ const SwapForm: FC<Props> = ({ partner }) => {
                 </Widget.Footer>
             </Form>
         </Widget>
-        {
-            process.env.NEXT_PUBLIC_SHOW_GAS_DETAILS === 'true'
-            && values.from
-            && values.fromCurrency &&
-            <GasDetails network={values.from.name} currency={values.fromCurrency.symbol} />
-        }
     </>
 }
 

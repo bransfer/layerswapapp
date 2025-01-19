@@ -1,5 +1,5 @@
 import { Link, ArrowLeftRight } from 'lucide-react';
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useState } from 'react'
 import toast from 'react-hot-toast';
 import { BackendTransactionStatus } from '../../../../lib/layerSwapApiClient';
 import WarningMessage from '../../../WarningMessage';
@@ -14,12 +14,8 @@ const ImtblxWalletWithdrawStep: FC<WithdrawPageProps> = ({ amount, depositAddres
     const [transferDone, setTransferDone] = useState<boolean>()
     const { setSwapTransaction } = useSwapTransactionStore();
 
-    const { getWithdrawalProvider: getProvider } = useWallet()
-    const provider = useMemo(() => {
-        return network && getProvider(network)
-    }, [network, getProvider])
-
-    const imxAccount = provider?.getConnectedWallet()
+    const { provider } = useWallet(network, 'withdrawal')
+    const imxAccount = provider?.activeWallet
 
     const handleTransfer = useCallback(async () => {
         if (!network || !depositAddress || !amount)

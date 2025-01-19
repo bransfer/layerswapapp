@@ -1,5 +1,5 @@
 import { ArrowLeftRight, Info } from 'lucide-react';
-import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import * as zksync from 'zksync';
 import { utils } from 'ethers';
@@ -31,12 +31,9 @@ const ZkSyncWalletWithdrawStep: FC<WithdrawPageProps> = ({ amount, depositAddres
     const defaultProvider = network?.name?.split('_')?.[1]?.toLowerCase() == "mainnet" ? "mainnet" : "goerli";
     const l1Network = layers.find(n => n.name === KnownInternalNames.Networks.EthereumMainnet || n.name === KnownInternalNames.Networks.EthereumSepolia);
 
-    const { getWithdrawalProvider: getProvider } = useWallet()
-    const provider = useMemo(() => {
-        return network && getProvider(network)
-    }, [network, getProvider])
+    const { provider } = useWallet(network, 'withdrawal')
 
-    const wallet = provider?.getConnectedWallet()
+    const wallet = provider?.activeWallet
 
     useEffect(() => {
         if (signer?._address !== syncWallet?.cachedAddress && network) {
@@ -126,7 +123,7 @@ const ZkSyncWalletWithdrawStep: FC<WithdrawPageProps> = ({ amount, depositAddres
         }
     }, [syncWallet, swapId, depositAddress, token, amount, sequenceNumber])
 
-    if (wallet && wallet?.connector?.toLowerCase() === 'argent') return (
+    if (wallet && wallet?.id?.toLowerCase() === 'argent') return (
         <div className="rounded-md bg-secondary-800 p-4">
             <div className="flex">
                 <div className="flex-shrink-0">

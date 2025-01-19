@@ -42,6 +42,15 @@ export type RefundParams = {
     sourceAsset: Token,
 }
 
+export type ClaimParams = {
+    type: 'erc20' | 'native';
+    chainId: string,
+    contractAddress: `0x${string}`,
+    id: string,
+    secret: string | number,
+    sourceAsset: Token,
+}
+
 export type GetCommitsParams = {
     type: 'erc20' | 'native';
     contractAddress: `0x${string}`,

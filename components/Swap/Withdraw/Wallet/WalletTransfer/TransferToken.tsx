@@ -3,7 +3,7 @@ import {
     useAccount,
     useSendTransaction
 } from "wagmi";
-import { createPublicClient, http, parseEther } from 'viem'
+import { parseEther } from 'viem'
 import SubmitButton from "../../../../buttons/submitButton";
 import { BackendTransactionStatus } from "../../../../../lib/layerSwapApiClient";
 import WalletIcon from "../../../../icons/WalletIcon";
@@ -26,7 +26,10 @@ const TransferTokenButton: FC<BaseTransferButtonProps> = ({
     const [buttonClicked, setButtonClicked] = useState(false)
     const [openChangeAmount, setOpenChangeAmount] = useState(false)
     const [estimatedGas, setEstimatedGas] = useState<bigint>()
-    const { address, chain } = useAccount();
+
+    const { selectedSourceAccount } = useSwapDataState()
+
+    const { address } = useAccount();
     const { setSwapTransaction } = useSwapTransactionStore();
     const { depositActionsResponse } = useSwapDataState()
 
@@ -34,32 +37,28 @@ const TransferTokenButton: FC<BaseTransferButtonProps> = ({
 
     const transaction = useSendTransaction()
 
-    const publicClient = createPublicClient({
-        chain: chain,
-        transport: http()
-    })
-
     useEffect(() => {
         (async () => {
-            if (address && depositAddress) {
+            if (selectedSourceAccount?.address && depositAddress) {
                 try {
-                    const gasEstimate = await publicClient.estimateGas({
-                        account: address,
-                        to: depositAddress,
-                        data: callData,
-                    })
-                    setEstimatedGas(gasEstimate)
+                    //TODO: somehow does not work for none active accounts
+                    // const gasEstimate = await publicClient.estimateGas({
+                    //     account: selectedSourceAccount.address as `0x${string}`,
+                    //     to: depositAddress,
+                    //     data: callData,
+                    // })
+                    // setEstimatedGas(gasEstimate)
                 }
                 catch (e) {
-                    const renderingError = new Error("Transaction is taking longer than expected");
-                    renderingError.name = `LongTransactionError`;
-                    renderingError.cause = renderingError;
-                    datadogRum.addError(renderingError);
+                    const error = e;
+                    error.name = `EstimateGasError`;
+                    error.cause = error;
+                    datadogRum.addError(error);
                     console.error(e)
                 }
             }
         })()
-    }, [address, callData, depositAddress, amount])
+    }, [selectedSourceAccount?.address, callData, depositAddress, amount])
 
     useEffect(() => {
         try {
@@ -82,13 +81,16 @@ const TransferTokenButton: FC<BaseTransferButtonProps> = ({
                 throw new Error('Missing amount')
             if (!transaction.sendTransaction)
                 throw new Error('Missing sendTransaction')
+            if (!selectedSourceAccount?.address)
+                throw new Error('No selected account')
             const tx = {
                 to: depositAddress,
                 value: parseEther(amount?.toString()),
                 gas: estimatedGas,
-                data: callData
+                data: callData,
+                account: selectedSourceAccount.address
             }
-            transaction?.sendTransaction(tx)
+            transaction?.sendTransaction(tx as any)
         } catch (e) {
             const error = new Error(e)
             error.name = "TransferTokenError"
@@ -104,6 +106,8 @@ const TransferTokenButton: FC<BaseTransferButtonProps> = ({
             <TransactionMessage
                 transaction={transaction}
                 applyingTransaction={applyingTransaction}
+                activeAddress={address}
+                selectedSourceAddress={selectedSourceAccount?.address}
             />
         }
         {

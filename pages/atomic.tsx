@@ -5,9 +5,8 @@ import React from 'react';
 import { SwapDataProvider } from '../context/swap';
 import { TimerProvider } from '../context/timerContext';
 import { getThemeData } from '../helpers/settingsHelper';
-import AtmoicChat from '../components/Swap/AtomicChat'
+import AtmoicSteps from '../components/Swap/AtomicChat'
 import { DepositMethodProvider } from '../context/depositMethodContext';
-import { BalancesDataProvider } from '../context/balances';
 import { useRouter } from 'next/router';
 import { FeeProvider } from '../context/feeContext';
 import { AtomicProvider } from '../context/atomicContext';
@@ -30,21 +29,19 @@ const CommitmentDetails = ({ settings, themeData, apiKey }: InferGetServerSidePr
             <SwapDataProvider >
                 <TimerProvider>
                     <DepositMethodProvider>
-                        <BalancesDataProvider>
-                            <FeeProvider>
-                                <AtomicProvider>
-                                    <AtmoicChat
-                                        address={address as string}
-                                        amount={Number(amount)}
-                                        destination={destination as string}
-                                        destination_asset={destination_asset as string}
-                                        source={source as string}
-                                        source_asset={source_asset as string}
-                                        type='widget'
-                                    />
-                                </AtomicProvider>
-                            </FeeProvider>
-                        </BalancesDataProvider>
+                        <FeeProvider>
+                            <AtomicProvider>
+                                <AtmoicSteps
+                                    address={address as string}
+                                    amount={Number(amount)}
+                                    destination={destination as string}
+                                    destination_asset={destination_asset as string}
+                                    source={source as string}
+                                    source_asset={source_asset as string}
+                                    type='widget'
+                                />
+                            </AtomicProvider>
+                        </FeeProvider>
                     </DepositMethodProvider>
                 </TimerProvider>
             </SwapDataProvider >

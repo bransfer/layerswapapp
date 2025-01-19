@@ -4,7 +4,6 @@ import { ChevronDown } from 'lucide-react'
 import { ISelectMenuItem, SelectMenuItem } from '../Shared/Props/selectMenuItem'
 import { Popover, PopoverContent, PopoverTrigger } from '../../shadcn/popover'
 import PopoverSelect from './PopoverSelect'
-import { CurrencyDisabledReason } from '../../Input/CurrencyFormField'
 
 type PopoverSelectWrapper = {
     setValue: (value: ISelectMenuItem) => void;
@@ -20,6 +19,7 @@ export default function PopoverSelectWrapper<T>({
     value,
     values,
     placeholder,
+    disabled,
 }: PopoverSelectWrapper) {
     const [showModal, setShowModal] = useState(false)
 
@@ -29,14 +29,13 @@ export default function PopoverSelectWrapper<T>({
     }, [])
 
     if (!values) return <Placeholder placeholder={placeholder} />
-    if (value?.isAvailable.disabledReason === CurrencyDisabledReason.LockAssetIsTrue) return <LockedAsset value={value} />
 
     return (
-        <Popover open={showModal} onOpenChange={() => setShowModal(!showModal)}>
+        <Popover open={showModal} onOpenChange={() => !disabled && setShowModal(!showModal)}>
             <PopoverTrigger asChild>
                 {
                     value ?
-                        <div className="rounded-lg focus-peer:ring-primary focus-peer:border-secondary-400 focus-peer:border focus-peer:ring-1 focus:outline-none disabled:cursor-not-allowed relative grow h-12 flex items-center text-left justify-bottom w-full pl-3 pr-2 py-2 bg-secondary-600 border border-transparent font-semibold align-sub ">
+                        <div className="border-secondary-500 rounded-lg border focus-peer:ring-primary focus-peer:border-secondary-400 focus-peer:border focus-peer:ring-1 focus:outline-none disabled:cursor-not-allowed relative grow h-12 flex items-center text-left justify-bottom w-full pl-3 pr-2 py-2 bg-secondary-600 font-semibold align-sub">
                             <button type='button' className='w-full py-0 border-transparent bg-transparent font-semibold rounded-md flex items-center justify-between'>
                                 <span className="flex items-center text-xs md:text-base">
                                     <div className="flex-shrink-0 h-6 w-6 relative">
@@ -44,7 +43,7 @@ export default function PopoverSelectWrapper<T>({
                                             value.imgSrc && <Image
                                                 src={value.imgSrc}
                                                 alt="Project Logo"
-                                                priority
+                                                fetchPriority='high'
                                                 height="40"
                                                 width="40"
                                                 className="rounded-md object-contain"
@@ -55,7 +54,7 @@ export default function PopoverSelectWrapper<T>({
                                 </span>
 
                                 <span className="ml-1 flex items-center pointer-events-none text-primary-buttonTextColor">
-                                    <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                                    {!disabled && <ChevronDown className="h-4 w-4" aria-hidden="true" />}
                                 </span>
                             </button>
                         </div>
@@ -69,10 +68,8 @@ export default function PopoverSelectWrapper<T>({
                                         </span>
                                     </span>
                                 </div>
-
-
                                 <span className="ml-1 flex items-center pointer-events-none text-primary-text">
-                                    <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                                    {!disabled && <ChevronDown className="h-4 w-4" aria-hidden="true" />}
                                 </span>
                             </button>
                         </div>
@@ -109,7 +106,7 @@ const LockedAsset = ({ value }: { value: ISelectMenuItem }) => {
                             value?.imgSrc && <Image
                                 src={value?.imgSrc}
                                 alt="Project Logo"
-                                priority
+                                fetchPriority='high'
                                 height="40"
                                 width="40"
                                 className="rounded-md object-contain"

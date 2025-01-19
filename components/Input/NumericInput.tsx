@@ -64,7 +64,7 @@ const NumericInput: FC<Input> = forwardRef<HTMLInputElement, Input>(
                         /^[0-9]*[.,]?[0-9]*$/.test(e.target.value) && handleChange(e);
                     }}
                 />
-                {children && <>{children}</>}
+                {<>{children}</>}
             </div>
         </div>;
     });

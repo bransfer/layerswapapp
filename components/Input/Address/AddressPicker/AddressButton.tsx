@@ -1,10 +1,8 @@
 import { FC } from "react"
-import { ChevronRight } from "lucide-react";
 import { AddressItem } from ".";
-import { Wallet } from "../../../../stores/walletStore";
-import AddressWithIcon from "./AddressWithIcon";
 import { Partner } from "../../../../Models/Partner";
 import { Network } from "../../../../Models/Network";
+import { Wallet } from "../../../../Models/WalletProvider";
 
 type AddressButtonProps = {
     openAddressModal: () => void;
@@ -13,26 +11,14 @@ type AddressButtonProps = {
     connectedWallet?: Wallet;
     partner?: Partner;
     disabled: boolean;
-    destination: Network | undefined
+    destination: Network | undefined,
+    children: JSX.Element | JSX.Element[];
 }
 
-const AddressButton: FC<AddressButtonProps> = ({ openAddressModal, addressItem, connectedWallet, partner, disabled, destination }) => {
-    return <button type="button" disabled={disabled} onClick={openAddressModal} className="group/addressItem flex rounded-componentRoundness justify-between space-x-3 items-center cursor-pointer shadow-sm mt-1.5 text-primary-text bg-secondary-700 border-transparent border disabled:cursor-not-allowed h-12 leading-4 focus:ring-primary focus:border-primary font-medium w-full px-3 py-7">
-        <div className="truncate">
-            {(addressItem && destination) ?
-                <AddressWithIcon
-                    addressItem={addressItem}
-                    connectedWallet={connectedWallet}
-                    partner={partner}
-                    network={destination}
-                />
-                :
-                <span className="text-primary-text-placeholder">Address</span>
-            }
-        </div>
+const AddressButton: FC<AddressButtonProps> = ({ openAddressModal, addressItem, connectedWallet, partner, disabled, destination, children }) => {
+    return <button type="button" className="w-full" disabled={disabled} onClick={openAddressModal} >
         {
-            !disabled &&
-            <ChevronRight className="h-4 w-4 text-primary-buttonTextColor" />
+            children
         }
     </button>
 }

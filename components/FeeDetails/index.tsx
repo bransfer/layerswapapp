@@ -3,7 +3,6 @@ import { SwapFormValues } from '../DTOs/SwapFormValues';
 import { ReceiveAmounts } from './ReceiveAmounts';
 import DetailedEstimates from './DetailedEstimates';
 import { useFee } from '../../context/feeContext';
-import RefuelToggle from './Refuel';
 import FeeDetails from './FeeDetailsComponent';
 import { useQueryState } from '../../context/query';
 import ResizablePanel from '../ResizablePanel';
@@ -14,21 +13,23 @@ const RefuelModal = dynamic(() => import("./RefuelModal"), {
     loading: () => <></>,
 });
 
+const RefuelToggle = dynamic(() => import("./Refuel"), {
+    loading: () => <></>,
+});
+
 export default function FeeDetailsComponent({ values }: { values: SwapFormValues }) {
-    const { toCurrency, to, refuel, toExchange, from, fromCurrency } = values || {};
+    const { toCurrency, to, refuel, toExchange, from, fromCurrency, amount } = values || {};
     const { fee, isFeeLoading } = useFee()
     const query = useQueryState();
     const [openRefuelModal, setOpenRefuelModal] = useState<boolean>(false)
 
     return (
-        <>
+        <span className={amount ? 'visible' : 'hidden'}>
             <ResizablePanel>
                 <FeeDetails>
                     {
                         toCurrency?.refuel && !query.hideRefuel && !toExchange &&
-                        <FeeDetails.Item>
-                            <RefuelToggle onButtonClick={() => setOpenRefuelModal(true)} />
-                        </FeeDetails.Item>
+                        <RefuelToggle onButtonClick={() => setOpenRefuelModal(true)} />
                     }
 
                     {
@@ -52,8 +53,8 @@ export default function FeeDetailsComponent({ values }: { values: SwapFormValues
                 </FeeDetails>
             </ResizablePanel>
 
-            <RefuelModal values={values} openModal={openRefuelModal} setOpenModal={setOpenRefuelModal} fee={fee} />
+            <RefuelModal openModal={openRefuelModal} setOpenModal={setOpenRefuelModal} />
 
-        </>
+        </span>
     )
 }

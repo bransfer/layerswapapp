@@ -10,6 +10,7 @@ import { DepositMethodProvider } from '../../context/depositMethodContext';
 
 const SwapDetails = ({ settings, themeData, apiKey }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   LayerSwapApiClient.apiKey = apiKey
+  
   return (<>
     <Layout settings={settings} themeData={themeData}>
       <SwapDataProvider >

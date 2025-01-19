@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, useCallback, useState } from 'react'
 import SubmitButton from '../../../buttons/submitButton';
 import toast from 'react-hot-toast';
 import useWallet from '../../../../hooks/useWallet';
@@ -9,22 +9,18 @@ import { useTonConnectUI } from '@tonconnect/ui-react';
 import { Address, JettonMaster, beginCell, toNano } from '@ton/ton'
 import { Token } from '../../../../Models/Network';
 import { BackendTransactionStatus } from '../../../../lib/layerSwapApiClient';
-import WalletMessage from './WalletTransfer/message';
 import tonClient from '../../../../lib/wallets/ton/client';
 import { ConnectWalletButton } from './WalletTransfer/buttons';
+import WalletMessage from '../messages/Message';
 
 const TonWalletWithdrawStep: FC<WithdrawPageProps> = ({ amount, depositAddress, network, token, swapId, callData }) => {
     const [loading, setLoading] = useState(false);
-    const { getWithdrawalProvider } = useWallet()
+    const { provider } = useWallet(network, 'withdrawal');
     const { setSwapTransaction } = useSwapTransactionStore();
     const [tonConnectUI] = useTonConnectUI();
     const [transactionErrorMessage, setTransactionErrorMessage] = useState<string | undefined>(undefined)
 
-    const provider = useMemo(() => {
-        return network && getWithdrawalProvider(network)
-    }, [network, getWithdrawalProvider])
-
-    const wallet = provider?.getConnectedWallet()
+    const wallet = provider?.activeWallet
 
     const handleConnect = useCallback(async () => {
         setLoading(true)
@@ -43,7 +39,7 @@ const TonWalletWithdrawStep: FC<WithdrawPageProps> = ({ amount, depositAddress, 
     const handleTransfer = useCallback(async () => {
         setLoading(true)
         setTransactionErrorMessage(undefined)
-        if (!swapId || !depositAddress || !token || !wallet || !callData || amount === undefined) {
+        if (!swapId || !depositAddress || !token || !wallet?.address || !callData || amount === undefined) {
             setLoading(false)
             return toast('Something went wrong, please try again.')
         }

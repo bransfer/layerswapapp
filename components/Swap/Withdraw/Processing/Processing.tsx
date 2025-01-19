@@ -1,5 +1,5 @@
 import { ExternalLink } from 'lucide-react';
-import { FC, useCallback, useEffect } from 'react'
+import { FC, useCallback, useEffect, useRef } from 'react'
 import { Widget } from '../../../Widget/Index';
 import shortenAddress from '../../../utils/ShortenAddress';
 import Steps from '../../StepsComponent';
@@ -19,6 +19,7 @@ import { ApiResponse } from '../../../../Models/ApiResponse';
 import { datadogRum } from '@datadog/browser-rum';
 import { useIntercom } from 'react-use-intercom';
 import { useAuthState } from '../../../../context/authContext';
+import logError from '../../../../lib/logError';
 
 type Props = {
     swapResponse: SwapResponse;
@@ -58,6 +59,20 @@ const Processing: FC<Props> = ({ swapResponse }) => {
 
     const inputTxStatus = swapInputTransaction ? swapInputTransaction.status : inputTxStatusData?.data?.status.toLowerCase() as TransactionStatus
 
+    const loggedNotDetectedTxAt = useRef<number | null>(null);
+
+    useEffect(() => {
+        if (inputTxStatus === TransactionStatus.Completed || inputTxStatus === TransactionStatus.Pending) {
+            if (swap?.transactions?.find(t => t.type === TransactionType.Input) || !swap) {
+                return
+            }
+            if (Date.now() - (loggedNotDetectedTxAt.current || storedWalletTransaction.timestamp) > 60000) {
+                loggedNotDetectedTxAt.current = Date.now();
+                logError(`Transaction not detected in ${swap.source_network.name}. Tx hash: ${transactionHash}. Tx status: ${inputTxStatus}. Swap id: ${swap.id}. ${source_network.display_name} explorer: ${source_network?.transaction_explorer_template?.replace("{0}", transactionHash)} . LS explorer: https://layerswap.io/explorer/${storedWalletTransaction?.hash} `);
+            }
+        }
+    }, [swap, storedWalletTransaction]);
+
     useEffect(() => {
         if (storedWalletTransaction?.status !== inputTxStatus) setSwapTransaction(swap?.id, inputTxStatus, storedWalletTransaction?.hash)
     }, [inputTxStatus])
@@ -65,12 +80,12 @@ const Processing: FC<Props> = ({ swapResponse }) => {
     useEffect(() => {
         if (inputTxStatus === TransactionStatus.Failed) {
             const err = new Error("Transaction failed")
-            const renderingError = new Error("Transaction failed test");
+            const renderingError = new Error(`Swap:${swap?.id} transaction:${transactionHash} failed`);
             renderingError.name = `TransactionFailed`;
             renderingError.cause = err;
             datadogRum.addError(renderingError);
         }
-    }, [inputTxStatus])
+    }, [inputTxStatus, transactionHash, swap?.id])
 
     const truncatedRefuelAmount = refuel && truncateDecimals(refuel.amount, refuel.token?.precision)
 
@@ -98,18 +113,28 @@ const Processing: FC<Props> = ({ swapResponse }) => {
             },
             current: {
                 name: 'Processing your deposit',
-                description: <div>
-                    <span>
-                        <span>Waiting for confirmations</span>
-                        {swapInputTransaction && swapInputTransaction?.confirmations && (
-                            <span className="text-primary-text ml-1">
-                                <span>{swapInputTransaction?.confirmations >= swapInputTransaction?.max_confirmations
-                                    ? swapInputTransaction?.max_confirmations
-                                    : swapInputTransaction?.confirmations}</span>
-                                <span>/</span>{swapInputTransaction?.max_confirmations}
-                            </span>
-                        )}
-                    </span>
+                description: <div className='flex space-x-1'>
+                    <div className='flex items-center space-x-1'>
+                        <div className='underline hover:no-underline flex items-center space-x-1'>
+                            <a target={"_blank"} href={input_tx_explorer?.replace("{0}", transactionHash)}>{shortenAddress(transactionHash)}</a>
+                            <ExternalLink className='h-4' />
+                        </div>
+                    </div>
+                    <div>
+                        <span>
+                            {swapInputTransaction && swapInputTransaction?.confirmations && (
+                                <div>
+                                    <span className='whitespace-nowrap'>| Confirmations</span>
+                                    <span className="text-primary-text ml-1">
+                                        <span>{swapInputTransaction?.confirmations >= swapInputTransaction?.max_confirmations
+                                            ? swapInputTransaction?.max_confirmations
+                                            : swapInputTransaction?.confirmations}</span>
+                                        <span>/</span>{swapInputTransaction?.max_confirmations}
+                                    </span>
+                                </div>
+                            )}
+                        </span>
+                    </div>
                 </div>
             },
             complete: {

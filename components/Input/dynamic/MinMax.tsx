@@ -1,36 +1,31 @@
-import { useCallback, useEffect, useMemo } from "react"
-import useWallet from "../../../hooks/useWallet"
 import SecondaryButton from "../../buttons/secondaryButton"
 import { useFormikContext } from "formik";
 import { SwapFormValues } from "../../DTOs/SwapFormValues";
-import useBalance from "../../../hooks/useBalance";
 import { useFee } from "../../../context/feeContext";
-import { useBalancesState } from "../../../context/balances";
 import { useQueryState } from "../../../context/query";
+import useSWRBalance from "../../../lib/balances/useSWRBalance";
+import useSWRGas from "../../../lib/gases/useSWRGas";
+import { useSwapDataState } from "../../../context/swap";
 
-const MinMax = ({ onAddressGet }: { onAddressGet: (address: string) => void }) => {
+const MinMax = () => {
 
     const { values, setFieldValue } = useFormikContext<SwapFormValues>();
-    const { fromCurrency, from, destination_address } = values || {};
+    const { fromCurrency, from } = values || {};
     const { minAllowedAmount, maxAllowedAmount: maxAmountFromApi } = useFee()
-    const { balances, gases } = useBalancesState()
+
     const query = useQueryState()
 
-    const { getAutofillProvider: getProvider } = useWallet()
-    const provider = useMemo(() => {
-        return from && getProvider(from)
-    }, [from, getProvider])
+    const { selectedSourceAccount } = useSwapDataState()
 
-    const { fetchNetworkBalances, fetchGas } = useBalance()
+    const { gas } = useSWRGas(selectedSourceAccount?.address, values.from, fromCurrency)
+    const { balance, mutate } = useSWRBalance(selectedSourceAccount?.address, values.from)
 
-    const wallet = provider?.getConnectedWallet()
+    const gasAmount = gas || 0;
 
     const handleSetMinAmount = () => {
         setFieldValue('amount', minAllowedAmount);
     }
-
-    const gasAmount = gases[from?.name || '']?.find(g => g?.token === fromCurrency?.symbol)?.gas || 0
-    const walletBalance = wallet && balances[wallet.address]?.find(b => b?.network === from?.name && b?.token === fromCurrency?.symbol)
+    const walletBalance = selectedSourceAccount?.address && balance?.find(b => b?.network === from?.name && b?.token === fromCurrency?.symbol)
     const native_currency = from?.token
 
     let maxAllowedAmount: number | null = maxAmountFromApi || 0
@@ -55,17 +50,10 @@ const MinMax = ({ onAddressGet }: { onAddressGet: (address: string) => void }) =
         maxAllowedAmount = Number(maxAmountFromApi) || 0
     }
 
-    const handleSetMaxAmount = useCallback(async () => {
+    const handleSetMaxAmount = async () => {
+        mutate()
         setFieldValue('amount', maxAllowedAmount);
-        from && fetchNetworkBalances(from);
-
-        from && fromCurrency && fetchGas(from, fromCurrency, wallet?.address || destination_address || "");
-
-    }, [from, fromCurrency, destination_address, maxAllowedAmount])
-
-    useEffect(() => {
-        wallet?.address && onAddressGet(wallet.address)
-    }, [wallet])
+    }
 
     return (
         <div className="flex flex-col justify-center">

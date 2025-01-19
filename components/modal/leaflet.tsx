@@ -1,4 +1,4 @@
-import { Dispatch, PropsWithChildren, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
+import { Dispatch, PropsWithChildren, SetStateAction, useCallback, useEffect, useRef } from 'react'
 import { motion, useAnimation } from "framer-motion";
 import { forwardRef } from 'react';
 import IconButton from '../buttons/iconButton';
@@ -18,9 +18,10 @@ export interface LeafletProps {
     className?: string;
     height?: LeafletHeight;
     position: LeafletPosition;
+    onClose?: () => void;
 }
 // TODO handle overflow when height is set to 'fit'
-export const Leaflet = forwardRef<HTMLDivElement, PropsWithChildren<LeafletProps>>(function Leaflet({ show, setShow, children, title, className, height, description, position }, topmostRef) {
+export const Leaflet = forwardRef<HTMLDivElement, PropsWithChildren<LeafletProps>>(function Leaflet({ show, setShow, children, title, className, height, position, onClose }, topmostRef) {
     const mobileModalRef = useRef<HTMLDivElement>(null);
     const controls = useAnimation();
     const transitionProps = { type: "spring", stiffness: 500, damping: 40 };
@@ -33,6 +34,7 @@ export const Leaflet = forwardRef<HTMLDivElement, PropsWithChildren<LeafletProps
         if (offset > height / 2 || velocity > 800) {
             await controls.start({ y: "100%", transition: transitionProps, });
             setShow(false);
+            onClose && onClose();
         } else {
             controls.start({ y: 0, transition: transitionProps });
         }
@@ -59,6 +61,7 @@ export const Leaflet = forwardRef<HTMLDivElement, PropsWithChildren<LeafletProps
     const handleCloseModal = useCallback(async (e: React.MouseEvent<HTMLElement>) => {
         await controls.start({ y: "100%", transition: transitionProps, });
         setShow(false);
+        onClose && onClose();
     }, [setShow, controls, transitionProps])
 
     let wrapperHeightClass = ''
@@ -91,7 +94,7 @@ export const Leaflet = forwardRef<HTMLDivElement, PropsWithChildren<LeafletProps
                 key="mobile-modal"
                 ref={mobileModalRef}
                 animate={controls}
-                className={`${wrapperHeightClass} max-h-full overflow-y-hidden group ${position} inset-x-0 bottom-0 z-40 w-full ${height != 'full' ? 'rounded-t-2xl border-t border-secondary-500' : ''}  bg-secondary-900 ${className} shadow-lg`}
+                className={`max-h-full overflow-y-hidden group ${position} inset-x-0 bottom-0 z-40 w-full ${height != 'full' ? 'rounded-t-2xl' : ''}  bg-secondary-900 ${wrapperHeightClass} ${className} shadow-lg`}
                 initial={{ y: "20%" }}
                 exit={{ y: "100%" }}
                 transition={transitionProps}
@@ -101,18 +104,20 @@ export const Leaflet = forwardRef<HTMLDivElement, PropsWithChildren<LeafletProps
                 dragElastic={{ top: 0, bottom: 1 }}
                 dragConstraints={{ top: 0, bottom: 0 }}
             >
-                <div className={`py-3 overflow-y-auto flex flex-col h-full z-40 ${height != 'full' ? 'bg-secondary-900 border-t border-secondary-500 rounded-t-2xl ' : ''} pb-6`}>
-                    <div className='px-6 flex justify-between items-center hover:cursor-grab'>
+                <div className={`py-3 overflow-y-auto flex flex-col h-full z-40 ${height != 'full' ? 'bg-secondary-900 rounded-t-2xl ' : ''} pb-6`}>
+                    <div className={`px-6 pb-2 flex justify-between items-center ${height != 'full' && 'hover:cursor-grab'}`}>
                         <div className="text-lg text-secondary-text font-semibold">
                             <div>{title}</div>
                         </div>
-                        <IconButton onClick={handleCloseModal} icon={
-                            <X strokeWidth={3} />
-                        }>
-                        </IconButton>
+                        <div className='-mr-2'>
+                            <IconButton onClick={handleCloseModal} icon={
+                                <X strokeWidth={3} />
+                            }>
+                            </IconButton>
+                        </div>
                     </div>
                     <div
-                        className='select-text max-h-full overflow-y-auto styled-scroll px-6 h-full'>
+                        className='select-text max-h-full overflow-y-auto overflow-x-hidden styled-scroll px-6 h-full' id="virtualListContainer">
                         {children}
                     </div>
                 </div>

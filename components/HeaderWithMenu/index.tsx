@@ -8,7 +8,7 @@ import dynamic from "next/dynamic"
 import LayerswapMenu from "../LayerswapMenu"
 import { useQueryState } from "../../context/query"
 
-const WalletsHeader = dynamic(() => import("../ConnectedWallets").then((comp) => comp.WalletsHeader), {
+const WalletsHeader = dynamic(() => import("../Wallet/ConnectedWallets").then((comp) => comp.WalletsHeader), {
    loading: () => <></>
 })
 
@@ -19,22 +19,23 @@ function HeaderWithMenu({ goBack }: { goBack: (() => void) | undefined | null })
    const query = useQueryState()
 
    return (
-      <div className="w-full grid grid-cols-5 px-6 mt-3" >
+      <div className="w-full grid grid-cols-5 px-6 mt-3 pb-2" >
          {
             goBack &&
             <IconButton onClick={goBack}
                aria-label="Go back"
+               className="-ml-2"
                icon={
-                  <ArrowLeft strokeWidth="3" />
+                  <ArrowLeft strokeWidth="2" />
                }>
             </IconButton>
          }
          {
-            !query.hideLogo && <div className='justify-self-center self-center col-start-2 col-span-3 mx-auto overflow-hidden md:hidden'>
+            !query.hideLogo && <div className='justify-self-center self-center col-start-2 col-span-3 mx-auto overflow-hidden md:hidden headerLogo'>
                <GoHomeButton />
             </div>
          }
-         <div className="col-start-5 justify-self-end self-center flex items-center gap-4">
+         <div className="col-start-5 justify-self-end self-center flex items-center gap-x-1 -mr-2">
             <WalletsHeader />
             <IconButton className="relative hidden md:inline" onClick={() => {
                boot();

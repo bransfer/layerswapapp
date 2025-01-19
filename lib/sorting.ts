@@ -12,10 +12,11 @@ export function ResolveNetworkOrder(network: RouteNetwork, direction: SwapDirect
 
     let orderProp: keyof NetworkSettings = direction == 'from' ? 'OrderInSource' : 'OrderInDestination';
     const initial_order = resolveInitialWeightedOrder(NetworkSettings.KnownSettings[network.name]?.[orderProp], 1)
-    
-    const is_active = network.tokens?.some(r => r.status === 'active')
 
-    return initial_order + resolveConditionWeight(is_active, 3) + resolveConditionWeight(is_new, 2);
+    const is_active = network.tokens?.some(r => r.status === 'active')
+    const is_inactive = network.tokens?.every(r => r.status === 'inactive')
+
+    return initial_order + resolveConditionWeight(!is_inactive, 4) + resolveConditionWeight(is_active, 3) + resolveConditionWeight(is_new, 2);
 }
 export function ResolveExchangeOrder(exchange: Exchange, direction: SwapDirection) {
 
@@ -34,7 +35,9 @@ export function ResolveCurrencyOrder(currency: RouteToken, is_new: boolean) {
 
     const initial_order = resolveInitialWeightedOrder(CurrencySettings.KnownSettings[currency.symbol]?.Order, 1)
     const is_active = currency.status === 'active'
-    return initial_order + resolveConditionWeight(is_active, 2) 
+    const is_inactive = currency.status === 'inactive'
+
+    return initial_order + resolveConditionWeight(!is_inactive, 4) + resolveConditionWeight(is_active, 2)
 
 }
 

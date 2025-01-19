@@ -18,6 +18,8 @@ type CommandSelectWrapperProps = {
     valueDetails?: React.ReactNode;
     exchangeDetails?: React.ReactNode;
     modalContent?: React.ReactNode;
+    direction?: string;
+    header?: string;
 }
 
 export default function CommandSelectWrapper<T>({
@@ -30,8 +32,9 @@ export default function CommandSelectWrapper<T>({
     valueGrouper,
     isLoading,
     modalHeight,
-    valueDetails,
-    modalContent
+    modalContent,
+    header,
+    valueDetails
 }: CommandSelectWrapperProps) {
     const [showModal, setShowModal] = useState(false)
 
@@ -51,7 +54,7 @@ export default function CommandSelectWrapper<T>({
                     type="button"
                     onClick={openModal}
                     disabled={disabled}
-                    className="rounded-lg focus-peer:ring-primary focus-peer:border-secondary-400 focus-peer:border focus-peer:ring-1 focus:outline-none disabled:cursor-not-allowed relative grow h-12 flex items-center text-left justify-bottom w-full pl-3 pr-2 py-2 bg-secondary-600 border border-transparent font-semibold"
+                    className="rounded-lg focus-peer:ring-primary focus-peer:border-secondary-400 focus-peer:border focus-peer:ring-1 focus:outline-none disabled:cursor-not-allowed relative grow h-12 flex items-center text-left justify-bottom w-full pl-3 pr-2 py-2 bg-secondary-600 font-semibold"
                 >
                     <span className='flex grow text-left items-center text-xs md:text-base'>
                         {
@@ -63,7 +66,7 @@ export default function CommandSelectWrapper<T>({
                                         height="40"
                                         width="40"
                                         loading="eager"
-                                        priority
+                                        fetchPriority='high'
                                         className="rounded-md object-contain"
                                     />
                                 </div>
@@ -80,7 +83,7 @@ export default function CommandSelectWrapper<T>({
                         }
                     </span>
                     <span className="ml-3 right-0 flex items-center pr-2 pointer-events-none  text-primary-text">
-                        <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                        {!disabled && <ChevronDown className="h-4 w-4" aria-hidden="true" />}
                     </span>
                 </button>
             </div>
@@ -95,6 +98,7 @@ export default function CommandSelectWrapper<T>({
                 isLoading={isLoading}
                 modalHeight={modalHeight}
                 modalContent={modalContent}
+                header={header}
             />
         </>
     )

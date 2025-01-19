@@ -7,7 +7,8 @@ export enum NetworkType {
     Cosmos = "cosmos",
     StarkEx = "starkex",//TODO check this
     ZkSyncLite = "zksynclite",
-    TON = 'ton'
+    TON = 'ton',
+    Fuel = 'fuel',
 }
 
 export class Network {
@@ -16,6 +17,7 @@ export class Network {
     logo: string;
     chain_id: string | null;
     node_url: string;
+    node_urls?: string[];
     type: NetworkType;
     transaction_explorer_template: string;
     account_explorer_template: string;
@@ -41,7 +43,7 @@ export class Token {
     price_in_usd: number;
     precision: number;
     listing_date: string;
-    status?: string;
+    status?: 'active' | 'inactive' | 'not_found';
 }
 
 export class RouteToken extends Token {
@@ -55,4 +57,6 @@ export class Metadata {
     htlc_native_contract: string;
     htlc_token_contract?: string;
     lp_address: string;
+    zks_paymaster_contract?: `0x${string}` | null
+    watchdog_contract?: string | null
 }

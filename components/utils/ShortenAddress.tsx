@@ -25,3 +25,7 @@ export const shortenEmail = (email = '', maxNameLenght = 14) => {
     const maskedEmail = shortName + '@' + domain;
     return maskedEmail;
 };
+
+export const addressEnding = (address: string) => {
+    return `...${address?.substring(address?.length - 4, address?.length)}`
+}

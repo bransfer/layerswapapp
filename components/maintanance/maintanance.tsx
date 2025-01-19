@@ -23,13 +23,10 @@ function MaintananceContent(props) {
             <CardContainer {...props} >
                 <div className="flex flex-col justify-center space-y-12 p-10 text-primary-text md:min-h-fit min-h-[400px]">
                     <h1 className="text-xl tracking-tight text-gray-200">
-                        <p className="mb-4 text-primary-text">
+                        <p className="mb-4 text-secondary-text">
                             We&apos;re upgrading our systems and infrastructure to give you the best experience yet.
                         </p>
-                        {/* <span className="block font-bold text-3xl xl:inline">We&apos;ll be back at 15:00 UTC</span>
-                        <p className="mt-4 text-primary-text">
-                            Any pending swaps will be completed after maintenance.
-                        </p> */}
+                        <span className="block font-bold text-2xl xl:inline"><span>We&apos;ll be back at</span> <span>{new Date(1729778400000).toLocaleTimeString()}</span></span>
                     </h1>
                     <SubmitButton onClick={() => window.open('https://twitter.com/layerswap', '_blank')} icon={twitterLogo} isDisabled={false} isSubmitting={false}>Follow for updates</SubmitButton>
                 </div>

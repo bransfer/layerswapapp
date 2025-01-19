@@ -6,10 +6,21 @@ import CoinbaseIcon from "../../../components/icons/Wallets/Coinbase"
 import Phantom from "../../../components/icons/Wallets/Phantom"
 import { Connector } from "wagmi"
 import Argent from "../../../components/icons/Wallets/Argent"
+import ImtblPassportIcon from "../../../components/icons/Wallets/ImtblPassport"
+import BitGetIcon from "../../../components/icons/Wallets/Bitget"
+import BrowserWallet from "../../../components/icons/Wallets/BrowserWallet"
 
 const KnownEVMConnectors = [
     {
         id: 'metamask',
+        icon: MetaMaskIcon,
+    },
+    {
+        id: 'io.metamask',
+        icon: MetaMaskIcon
+    },
+    {
+        id: 'metamasksdk',
         icon: MetaMaskIcon
     },
     {
@@ -21,11 +32,19 @@ const KnownEVMConnectors = [
         icon: RainbowIcon
     },
     {
+        id: 'app.rainbow',
+        icon: RainbowIcon
+    },
+    {
         id: 'bitkeep',
         icon: BitKeep
     },
     {
-        id: 'coinbasewallet',
+        id: 'bitget',
+        icon: BitGetIcon
+    },
+    {
+        id: 'coinbasewalletsdk',
         icon: CoinbaseIcon
     },
     {
@@ -33,9 +52,20 @@ const KnownEVMConnectors = [
         icon: Phantom
     },
     {
+        id: 'app.phantom',
+        icon: Phantom
+    },
+    {
         id: 'argent',
         icon: Argent
     },
+    {
+        id: 'com.immutable.passport',
+        icon: ImtblPassportIcon
+    }, {
+        id: 'injected',
+        icon: BrowserWallet
+    }
 ]
 
 export const evmConnectorNameResolver = (connector: Connector) => {

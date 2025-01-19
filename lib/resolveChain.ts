@@ -1,11 +1,14 @@
-import { parseGwei } from "viem";
+import { Chain, defineChain, parseGwei } from "viem";
 import { Network } from "../Models/Network";
 import NetworkSettings from "./NetworkSettings";
 import { SendErrorMessage } from "./telegram";
-import { RainbowKitChain } from "@rainbow-me/rainbowkit/dist/components/RainbowKitProvider/RainbowKitChainContext";
-import { Chain } from "@rainbow-me/rainbowkit";
+// import { optimism } from "@wagmi/core/chains";
 
-export default function resolveChain(network: Network)  {
+// const overrides = [
+//     optimism
+// ]
+
+export default function resolveChain(network: Network) {
 
     const nativeCurrency = network.token;
     const blockExplorersBaseURL =
@@ -21,9 +24,7 @@ export default function resolveChain(network: Network)  {
         return
     }
 
-    
-
-    const res: RainbowKitChain = {
+    const res = defineChain({
         id: Number(network.chain_id),
         name: network.display_name,
         nativeCurrency: {
@@ -54,7 +55,7 @@ export default function resolveChain(network: Network)  {
                 }
             } : {}),
         },
-    } as const satisfies Chain
+    })
 
     const defaultPriorityFee = NetworkSettings.KnownSettings[network.name]?.DefaultPriorityFee?.toString()
     const baseFeeMultiplier = NetworkSettings.KnownSettings[network.name]?.BaseFeeMultiplier ?? 1.2
@@ -71,5 +72,5 @@ export default function resolveChain(network: Network)  {
             baseFeeMultiplier: () => baseFeeMultiplier
         }
     }
-    return res
+    return res as Chain
 }

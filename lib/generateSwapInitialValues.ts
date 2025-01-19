@@ -54,7 +54,7 @@ export function generateSwapInitialValues(settings: LayerSwapAppSettings, queryP
         fromCurrency: initialSourceCurrency,
         toCurrency: initialDestinationCurrency,
         destination_address: initialAddress ? initialAddress : '',
-        depositMethod: depositMethod ? depositMethod : '',
+        depositMethod: (depositMethod === "wallet" || depositMethod === "deposit_address") ? depositMethod : undefined,
     }
 
     return result

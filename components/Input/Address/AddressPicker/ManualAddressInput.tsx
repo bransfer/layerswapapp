@@ -7,8 +7,8 @@ import { NetworkType } from "../../../../Models/Network";
 import FilledX from "../../../icons/FilledX";
 import { AddressGroup, AddressItem } from ".";
 import { addressFormat } from "../../../../lib/address/formatter";
-import { Wallet } from "../../../../stores/walletStore";
 import AddressWithIcon from "./AddressWithIcon";
+import { Wallet } from "../../../../Models/WalletProvider";
 
 type AddressInput = {
     manualAddress: string,
@@ -99,7 +99,7 @@ const ManualAddressInput: FC<AddressInput> = ({ manualAddress, setManualAddress,
 
                 {
                     errorMessage &&
-                    <div className="basis-full w-full text-start text-xs text-primary">
+                    <div className="basis-full w-full text-start text-xs text-primary pt-1.5 pl-3">
                         {errorMessage}
                     </div>
                 }

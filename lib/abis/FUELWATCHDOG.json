@@ -1,0 +1,69 @@
+{
+    "programType": "contract",
+    "specVersion": "1",
+    "encodingVersion": "1",
+    "concreteTypes": [
+        {
+            "type": "()",
+            "concreteTypeId": "2e38e77b22c314a449e91fafed92a43826ac6aa403ae6a8acb6cf58239fbaf5d"
+        },
+        {
+            "type": "str",
+            "concreteTypeId": "8c25cb3686462e9a86d2883c5688a22fe738b0bbc85f458d2d2b5f3f667c6d5a"
+        },
+        {
+            "type": "struct MyEvent",
+            "concreteTypeId": "35f8825c39ae1a89edbc75e86805508f15548895730edcd1f2b1321b5291970c",
+            "metadataTypeId": 0
+        },
+        {
+            "type": "u256",
+            "concreteTypeId": "1b5759d94094368cfd443019e7ca5ec4074300e544e5ea993a979f5da627261e"
+        }
+    ],
+    "metadataTypes": [
+        {
+            "type": "struct MyEvent",
+            "metadataTypeId": 0,
+            "components": [
+                {
+                    "name": "num",
+                    "typeId": "1b5759d94094368cfd443019e7ca5ec4074300e544e5ea993a979f5da627261e"
+                }
+            ]
+        }
+    ],
+    "functions": [
+        {
+            "inputs": [
+                {
+                    "name": "_Id",
+                    "concreteTypeId": "1b5759d94094368cfd443019e7ca5ec4074300e544e5ea993a979f5da627261e"
+                }
+            ],
+            "name": "watch",
+            "output": "2e38e77b22c314a449e91fafed92a43826ac6aa403ae6a8acb6cf58239fbaf5d",
+            "attributes": [
+                {
+                    "name": "storage",
+                    "arguments": [
+                        "read",
+                        "write"
+                    ]
+                }
+            ]
+        }
+    ],
+    "loggedTypes": [
+        {
+            "logId": "10098701174489624218",
+            "concreteTypeId": "8c25cb3686462e9a86d2883c5688a22fe738b0bbc85f458d2d2b5f3f667c6d5a"
+        },
+        {
+            "logId": "3889001610850736777",
+            "concreteTypeId": "35f8825c39ae1a89edbc75e86805508f15548895730edcd1f2b1321b5291970c"
+        }
+    ],
+    "messagesTypes": [],
+    "configurables": []
+}

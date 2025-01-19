@@ -1,32 +1,32 @@
 import { useSwapDataState } from "../context/swap"
 import { NetworkType } from "../Models/Network"
 import useWallet from "./useWallet"
-import { useEffect, useMemo } from "react"
+import { useEffect } from "react"
 import { useContractWalletsStore } from "../stores/contractWalletsStore"
 import resolveChain from "../lib/resolveChain"
 import { createPublicClient, http } from "viem"
+import { useSettingsState } from "../context/settings"
 
 export default function useWalletTransferOptions() {
     const { swapResponse } = useSwapDataState()
+    const { networks } = useSettingsState()
     const { swap } = swapResponse || {}
-    const {source_network} = swap || {}
+    const { source_network } = swap || {}
     const { addContractWallet, getContractWallet, updateContractWallet } = useContractWalletsStore()
-    const { getWithdrawalProvider: getProvider } = useWallet()
+    const { provider } = useWallet(source_network, 'withdrawal')
 
-    const provider = useMemo(() => {
-        return source_network && getProvider(source_network)
-    }, [source_network, getProvider])
-
-    const wallet = provider?.getConnectedWallet()
+    const wallet = provider?.activeWallet
     useEffect(() => {
         if (wallet?.address == undefined || source_network == undefined) return;
         let contractWallet = getContractWallet(wallet.address, source_network.name);
         if (!contractWallet) {
             // add before checking to check only once
             addContractWallet(wallet.address, source_network.name);
-            checkContractWallet(wallet.address, source_network).then(
+
+            const sourceNetworkFromSettings = networks.find(n => n.name === source_network.name);
+            checkContractWallet(wallet.address, sourceNetworkFromSettings).then(
                 result => {
-                    updateContractWallet(wallet.address, source_network.name, result)
+                    updateContractWallet(wallet.address, sourceNetworkFromSettings?.name, result)
                 }
             )
         }

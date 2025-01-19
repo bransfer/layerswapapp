@@ -1,57 +1,76 @@
-import { Connection, PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
+import { Connection, PublicKey, SystemProgram, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { createAssociatedTokenAccountInstruction, createTransferInstruction, getAccount, getAssociatedTokenAddress } from '@solana/spl-token';
 import { Network, NetworkWithTokens, Token } from "../../../Models/Network";
 import { CommitmentParams, CreatePreHTLCParams, LockParams } from "../phtlc";
 import { BN, Idl, Program } from "@coral-xyz/anchor";
 
-export const transactionBuilder = async (network: Network, token: Token, walletPublicKey: PublicKey) => {
+export const transactionBuilder = async (network: Network, token: Token, walletPublicKey: PublicKey, recipientAddress?: string | undefined) => {
 
     const connection = new Connection(
         `${network.node_url}`,
         "confirmed"
     );
+    const recipientPublicKey = new PublicKey(recipientAddress || new Array(32).fill(0));
 
-    const sourceToken = new PublicKey(token?.contract!);
-    const recipientAddress = new PublicKey('');
+    if (token.contract) {
+        const sourceToken = new PublicKey(token?.contract);
 
-    const transactionInstructions: TransactionInstruction[] = [];
-    const associatedTokenFrom = await getAssociatedTokenAddress(
-        sourceToken,
-        walletPublicKey
-    );
-    const fromAccount = await getAccount(connection, associatedTokenFrom);
-    const associatedTokenTo = await getAssociatedTokenAddress(
-        sourceToken,
-        recipientAddress
-    );
+        const transactionInstructions: TransactionInstruction[] = [];
+        const associatedTokenFrom = await getAssociatedTokenAddress(
+            sourceToken,
+            walletPublicKey
+        );
+        const fromAccount = await getAccount(connection, associatedTokenFrom);
+        const associatedTokenTo = await getAssociatedTokenAddress(
+            sourceToken,
+            recipientPublicKey
+        );
 
-    if (!(await connection.getAccountInfo(associatedTokenTo))) {
+        if (!(await connection.getAccountInfo(associatedTokenTo))) {
+            transactionInstructions.push(
+                createAssociatedTokenAccountInstruction(
+                    walletPublicKey,
+                    associatedTokenTo,
+                    recipientPublicKey,
+                    sourceToken
+                )
+            );
+        }
         transactionInstructions.push(
-            createAssociatedTokenAccountInstruction(
-                walletPublicKey,
+            createTransferInstruction(
+                fromAccount.address,
                 associatedTokenTo,
-                recipientAddress,
-                sourceToken
+                walletPublicKey,
+                2000000 * Math.pow(10, Number(token?.decimals))
             )
         );
+        const result = await connection.getLatestBlockhash()
+
+        const transaction = new Transaction({
+            feePayer: walletPublicKey,
+            blockhash: result.blockhash,
+            lastValidBlockHeight: result.lastValidBlockHeight
+        }).add(...transactionInstructions);
+
+        return transaction
     }
-    transactionInstructions.push(
-        createTransferInstruction(
-            fromAccount.address,
-            associatedTokenTo,
-            walletPublicKey,
-            20000 * Math.pow(10, Number(token?.decimals))
-        )
-    );
-    const result = await connection.getLatestBlockhash()
+    else {
+        const transaction = new Transaction();
+        const amountInLamports = 20000 * Math.pow(10, Number(token?.decimals));
 
-    const transaction = new Transaction({
-        feePayer: walletPublicKey,
-        blockhash: result.blockhash,
-        lastValidBlockHeight: result.lastValidBlockHeight
-    }).add(...transactionInstructions);
+        const transferInstruction = SystemProgram.transfer({
+            fromPubkey: walletPublicKey,
+            toPubkey: recipientPublicKey,
+            lamports: amountInLamports
+        });
+        transaction.add(transferInstruction);
 
-    return transaction
+        const { blockhash } = await connection.getLatestBlockhash();
+        transaction.recentBlockhash = blockhash;
+        transaction.feePayer = walletPublicKey;
+
+        return transaction
+    }
 }
 
 export const phtlcTransactionBuilder = async (params: CreatePreHTLCParams & { program: Program<Idl>, connection: Connection, walletPublicKey: PublicKey, network: NetworkWithTokens }) => {

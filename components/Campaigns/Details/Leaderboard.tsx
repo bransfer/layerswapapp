@@ -1,6 +1,5 @@
 import { FC, useState } from "react"
 import Image from 'next/image'
-import { Trophy } from "lucide-react"
 import LayerSwapApiClient, { Campaign, Leaderboard, Reward } from "../../../lib/layerSwapApiClient"
 import { RewardsComponentLeaderboardSceleton } from "../../Sceletons"
 import useSWR from "swr"

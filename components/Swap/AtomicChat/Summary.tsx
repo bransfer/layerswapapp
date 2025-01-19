@@ -5,6 +5,7 @@ import { Network, Token } from "../../../Models/Network";
 import { addressFormat } from "../../../lib/address/formatter";
 import { ExtendedAddress } from "../../Input/Address/AddressPicker/AddressWithIcon";
 import { isValidAddress } from "../../../lib/address/validator";
+import { ArrowDown } from "lucide-react";
 
 type AtomicSummaryProps = {
     sourceCurrency: Token,
@@ -28,9 +29,9 @@ const Summary: FC<AtomicSummaryProps> = ({ sourceAccountAddress, sourceCurrency,
     const destAddress = destinationAddress
 
     return (
-        <div className={`bg-secondary-700 rounded-componentRoundness px-4 py-4 border border-secondary-500 w-full relative z-10`}>
-            <div className="font-normal flex flex-col w-full relative z-10 space-y-4">
-                <div className="flex items-center justify-between w-full">
+        <div className='bg-secondary-800 rounded-componentRoundness p-3 w-full relative z-10'>
+            <div className="font-normal flex flex-col w-full relative z-10 space-y-3">
+                <div className="flex items-center justify-between w-full bg-secondary-600/60 p-2 rounded-lg">
                     <div className="flex items-center gap-3">
                         <Image src={source.logo} alt={source.display_name} width={32} height={32} className="rounded-lg" />
                         <div>
@@ -53,7 +54,10 @@ const Summary: FC<AtomicSummaryProps> = ({ sourceAccountAddress, sourceCurrency,
                         <p className="text-secondary-text text-sm flex justify-end">${requestedAmountInUsd}</p>
                     </div>
                 </div>
-                <div className="flex items-center justify-between  w-full ">
+                <div className='absolute right-[calc(50%-16px)] top-[37px] z-10 border-2 border-secondary-900 bg-secondary-900 rounded-xl'>
+                    <ArrowDown className="w-6 h-auto p-0.5 bg-secondary-900 border-2 border-secondary-500 rounded-lg disabled:opacity-30" />
+                </div>
+                <div className="flex items-center justify-between w-full bg-secondary-600/60 p-2 rounded-xl">
                     <div className="flex items-center gap-3">
                         {
                             <Image src={destination.logo} alt={destination.display_name} width={32} height={32} className="rounded-lg" />

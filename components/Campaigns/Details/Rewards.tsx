@@ -9,16 +9,21 @@ import useSWR from "swr"
 import { ApiResponse } from "../../../Models/ApiResponse"
 import ClickTooltip from "../../Tooltips/ClickTooltip"
 import shortenAddress from "../../utils/ShortenAddress"
-import { useAccount } from "wagmi"
 import { Progress } from "../../ProgressBar";
+import useWallet from "../../../hooks/useWallet";
 
 type Props = {
     campaign: Campaign
 }
 
 const Rewards: FC<Props> = ({ campaign }) => {
+    const network = campaign?.network
 
-    const { address } = useAccount();
+    const { provider } = useWallet(network, 'autofil')
+    const wallet = provider?.activeWallet
+
+    const address = wallet?.address
+
     const apiClient = new LayerSwapApiClient()
 
     const { data: rewardsData, isLoading: rewardsIsLoading } = useSWR<ApiResponse<Reward>>(`/campaigns/${campaign.id}/rewards/${address}`, apiClient.fetcher, { dedupingInterval: 60000 })
@@ -31,7 +36,6 @@ const Rewards: FC<Props> = ({ campaign }) => {
     const payouts = payoutsData?.data || []
     const totalBudget = campaign.total_budget
 
-    const network = campaign.network
     const rewards = rewardsData?.data
     const campaignEndDate = new Date(campaign.end_date)
     const now = new Date()

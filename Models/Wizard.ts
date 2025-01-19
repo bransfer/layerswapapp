@@ -54,7 +54,13 @@ export enum AuthStep {
     PendingSwaps = 'PendingSwaps'
 }
 
-export type Steps = AuthStep | SwapWithdrawalStep | SwapCreateStep
+export enum MenuStep {
+    Menu = "Menu",
+    Transactions = "Transactions",
+    TransactionDetails = "Transaction Details"
+}
+
+export type Steps = AuthStep | SwapWithdrawalStep | SwapCreateStep | MenuStep
 
 export const ExchangeAuthorizationSteps: { [key: string]: SwapCreateStep } = {
     "api_credentials": SwapCreateStep.ApiKey,
@@ -71,5 +77,5 @@ export class WizardStep<T> {
     Content: FC;
     onBack?: () => void;
     onNext?: (data?: any) => Promise<void>;
-    positionPercent: number;
+    positionPercent?: number;
 }

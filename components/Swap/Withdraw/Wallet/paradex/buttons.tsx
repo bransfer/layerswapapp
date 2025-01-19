@@ -1,14 +1,14 @@
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import { useSwitchChain } from "wagmi";
 import WalletIcon from "../../../../icons/WalletIcon";
 import SubmitButton, { SubmitButtonProps } from "../../../../buttons/submitButton";
 import useWallet from "../../../../../hooks/useWallet";
 import { useSwapDataState } from "../../../../../context/swap";
 import toast from "react-hot-toast";
-import WalletMessage from "../WalletTransfer/message";
 import { ActionData } from "../WalletTransfer/sharedTypes";
 import ManualTransferNote from "../WalletTransfer/manualTransferNote";
 import { NetworkWithTokens } from "../../../../../Models/Network";
+import WalletMessage from "../../messages/Message";
 
 type ConnectProps = {
     network: NetworkWithTokens | undefined,
@@ -21,28 +21,18 @@ type ConnectProps = {
 
 
 export const ConnectWalletButton: FC<ConnectProps> = ({ network, text, icon, onClick, secondary, onConnect }) => {
-    const [loading, setLoading] = useState(false)
-
-    const { getWithdrawalProvider: getProvider } = useWallet()
-
-    const provider = useMemo(() => {
-        return network && getProvider(network)
-    }, [network, getProvider])
+    const { provider } = useWallet(network, 'withdrawal')
 
     const clickHandler = useCallback(async () => {
         try {
-            setLoading(true)
             onClick && onClick()
             if (!provider) throw new Error(`No provider from ${network?.name}`)
 
-            await provider.connectWallet(provider?.name)
+            await provider.connectWallet()
             onConnect && onConnect()
         }
         catch (e) {
             toast.error(e.message)
-        }
-        finally {
-            setLoading(false)
         }
 
     }, [provider, onClick])
@@ -123,7 +113,7 @@ export const ButtonWrapper: FC<SubmitButtonProps> = ({
             {props.children}
         </SubmitButton>
         {
-            source_network?.deposit_methods.some(m => m === 'deposit_address') &&
+            source_network?.deposit_methods?.some(m => m === 'deposit_address') &&
             <ManualTransferNote />
         }
     </div>

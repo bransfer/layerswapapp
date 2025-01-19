@@ -1,117 +1,53 @@
-import toast from "react-hot-toast"
-import LayerSwapApiClient, { SwapItem } from "../lib/layerSwapApiClient"
-import { Wallet } from "../stores/walletStore"
-import useEVM from "../lib/wallets/evm/useEVM"
-import useStarknet from "../lib/wallets/starknet/useStarknet"
-import { Network, RouteNetwork } from "../Models/Network"
-import { CreatePreHTLCParams, CommitmentParams, LockParams, GetCommitsParams, RefundParams } from "../lib/wallets/phtlc"
-import { Commit } from "../Models/PHTLC"
-import useSolana from "../lib/wallets/solana/useSolana"
-import useTON from "../lib/wallets/ton/useTON"
+import { Network } from "../Models/Network"
+import useEVM from "../lib/wallets/evm/useEVM";
+import useSolana from "../lib/wallets/solana/useSolana";
+import useStarknet from "../lib/wallets/starknet/useStarknet";
+import useTON from "../lib/wallets/ton/useTON";
+import { Wallet, WalletProvider } from "../Models/WalletProvider";
+import { useMemo } from "react";
 
-export type WalletProvider = {
-    connectWallet: (chain?: string | number | undefined | null, destination?: RouteNetwork) => Promise<void> | undefined | void,
-    disconnectWallet: () => Promise<void> | undefined | void,
-    reconnectWallet: (chain?: string | number | undefined | null) => Promise<void> | undefined | void,
-    getConnectedWallet: () => Wallet | undefined,
-    withdrawalSupportedNetworks: string[],
-    autofillSupportedNetworks?: string[],
-    asSourceSupportedNetworks?: string[],
-    name: string,
-    connectedWalletActiveChain?: string | number | null,
+export type WalletPurpose = "autofil" | "withdrawal" | "asSource"
 
-    createPreHTLC: (args: CreatePreHTLCParams) => Promise<{ hash: string, commitId: string } | null | undefined>,
-    claim: (/* TODO:Implement interface a*/) => Promise<void> | undefined | void,
-    refund: (args: RefundParams) => Promise<any> | undefined | void,
-    getDetails: (args: CommitmentParams) => Promise<Commit | null>,
-    addLock: (args: CommitmentParams & LockParams) => Promise<{ hash: string, result: any } | null>,
-    getContracts?: (params: GetCommitsParams) => Promise<string[]>,
-}
+export default function useWallet(network?: Network | undefined, purpose?: WalletPurpose) {
 
-export default function useWallet() {
-
-    const WalletProviders: WalletProvider[] = [
-        useTON(),
-        useEVM(),
+    const walletProviders: WalletProvider[] = [
+        useEVM({ network }),
         useStarknet(),
-        useSolana()
+        useSolana({ network }),
+        useTON(),
     ]
 
-    async function handleConnect(providerName: string, chain?: string | number | null) {
-        const provider = WalletProviders.find(provider => provider.name === providerName)
-        try {
-            await provider?.connectWallet(chain)
-        }
-        catch (e) {
-            toast.error("Couldn't connect the account")
-        }
-    }
+    const provider = network && resolveProvider(network, walletProviders, purpose)
 
-    const handleDisconnect = async (providerName: string, swap?: SwapItem) => {
-        const provider = WalletProviders.find(provider => provider.name === providerName)
-        try {
-            if (swap?.source_exchange) {
-                const apiClient = new LayerSwapApiClient()
-                await apiClient.DisconnectExchangeAsync(swap.id, "coinbase")
-            }
-            else {
-                await provider?.disconnectWallet()
-            }
-        }
-        catch (e) {
-            toast.error("Couldn't disconnect the account")
-        }
-    }
+    const wallets = useMemo(() => {
+        let connectedWallets: Wallet[] = [];
+        walletProviders.filter(p => !p.isWrapper).forEach((wallet) => {
+            const w = wallet.connectedWallets;
+            connectedWallets = w ? [...connectedWallets, ...w] : [...connectedWallets];
+        });
+        return connectedWallets;
+    }, [walletProviders]);
 
-    const handleReconnect = async (providerName: string, chain?: string | number) => {
-        const provider = WalletProviders.find(provider => provider.name === providerName)
-        try {
-            await provider?.reconnectWallet(chain)
-        }
-        catch {
-            toast.error("Couldn't reconnect the account")
-        }
-    }
-
-    const getConnectedWallets = () => {
-        let connectedWallets: Wallet[] = []
-
-        WalletProviders.forEach(wallet => {
-            const w = wallet.getConnectedWallet()
-            connectedWallets = w && [...connectedWallets, w] || [...connectedWallets]
-        })
-
-        return connectedWallets
-    }
-
-    const getProviderByName = (providerName: string) => {
-        const provider = WalletProviders.find(provider => provider.name === providerName)
-        return provider
-    }
-
-    const getWithdrawalProvider = (network: Network) => {
-        const provider = WalletProviders.find(provider => provider.withdrawalSupportedNetworks.includes(network.name))
-        return provider
-    }
-
-    const getAutofillProvider = (network: Network) => {
-        const provider = WalletProviders.find(provider => provider?.autofillSupportedNetworks?.includes(network.name))
-        return provider
-    }
-
-    const getSourceProvider = (network: Network) => {
-        const provider = WalletProviders.find(provider => provider?.asSourceSupportedNetworks?.includes(network.name))
-        return provider
+    const getProvider = (network: Network, purpose: WalletPurpose) => {
+        return network && resolveProvider(network, walletProviders, purpose)
     }
 
     return {
-        wallets: getConnectedWallets(),
-        connectWallet: handleConnect,
-        disconnectWallet: handleDisconnect,
-        reconnectWallet: handleReconnect,
-        getWithdrawalProvider,
-        getAutofillProvider,
-        getSourceProvider,
-        getProviderByName
+        wallets,
+        provider,
+        providers: walletProviders,
+        getProvider
+    }
+}
+
+const resolveProvider = (network: Network | undefined, walletProviders: WalletProvider[], purpose?: WalletPurpose) => {
+    if (!purpose || !network) return
+    switch (purpose) {
+        case "withdrawal":
+            return walletProviders.find(provider => provider.withdrawalSupportedNetworks?.includes(network.name))
+        case "autofil":
+            return walletProviders.find(provider => provider.autofillSupportedNetworks?.includes(network.name))
+        case "asSource":
+            return walletProviders.find(provider => provider.asSourceSupportedNetworks?.includes(network.name))
     }
 }

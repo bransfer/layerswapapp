@@ -7,13 +7,13 @@ type Props = {
     className?: string;
 }
 
-const AddressIcon: FC<Props> = ({ address, size, className}) => {
+const AddressIcon: FC<Props> = ({ address, size, className }) => {
     const ref = useRef<HTMLDivElement>(null)
     useEffect(() => {
         if (address && ref.current) {
             ref.current.innerHTML = "";
             const iconElement = Jazzicon(size, parseInt(address.slice(2, 10), 16))
-            if(iconElement){
+            if (iconElement) {
                 iconElement.style.display = 'block'
                 iconElement.style.width = "100%"
                 iconElement.style.height = "100%"
@@ -22,6 +22,6 @@ const AddressIcon: FC<Props> = ({ address, size, className}) => {
         }
     }, [address, size]);
 
-    return <div className={className}  ref={ref as any} />
+    return <div className={className} ref={ref as any} />
 }
 export default AddressIcon

@@ -1,9 +1,11 @@
-import { useWalletModal } from "@solana/wallet-adapter-react-ui"
-import { WalletProvider } from "../../../hooks/useWallet"
 import KnownInternalNames from "../../knownIds"
+import { resolveWalletConnectorIcon } from "../utils/resolveWalletIcon"
+import { Network } from "../../../Models/Network"
+import { InternalConnector, Wallet, WalletProvider } from "../../../Models/WalletProvider"
+import { useMemo } from "react"
+import { useConnectModal } from "../../../components/WalletModal"
 import { AnchorWallet, useAnchorWallet, useConnection, useWallet } from "@solana/wallet-adapter-react"
-import resolveWalletConnectorIcon from "../utils/resolveWalletIcon"
-import { CommitmentParams, CreatePreHTLCParams, LockParams, RefundParams } from "../phtlc"
+import { ClaimParams, CommitmentParams, CreatePreHTLCParams, LockParams, RefundParams } from "../phtlc"
 import { AnchorHtlc } from "./anchorHTLC"
 import { AnchorProvider, Program, setProvider } from '@coral-xyz/anchor'
 import { PublicKey } from "@solana/web3.js"
@@ -12,36 +14,100 @@ import { NetworkType, Token } from "../../../Models/Network"
 import { useCallback } from "react"
 import { lockTransactionBuilder, phtlcTransactionBuilder } from "./transactionBuilder"
 
-export default function useSolana(): WalletProvider {
-    const withdrawalSupportedNetworks = [KnownInternalNames.Networks.SolanaMainnet, KnownInternalNames.Networks.SolanaDevnet]
-    const name = 'solana'
-    const { publicKey, disconnect, wallet, signTransaction } = useWallet();
-    const { setVisible } = useWalletModal();
+const solanaNames = [KnownInternalNames.Networks.SolanaMainnet, KnownInternalNames.Networks.SolanaDevnet, KnownInternalNames.Networks.SolanaTestnet]
+
+export default function useSolana({ network }: { network: Network | undefined }): WalletProvider {
+
+    const commonSupportedNetworks = [
+        KnownInternalNames.Networks.SolanaMainnet,
+        KnownInternalNames.Networks.SolanaDevnet,
+        KnownInternalNames.Networks.EclipseTestnet,
+        KnownInternalNames.Networks.EclipseMainnet
+    ]
+
+    const name = 'Solana'
+    const id = 'solana'
+    const { disconnect, wallet: solanaWallet, select, wallets, signTransaction } = useWallet();
+    const publicKey = solanaWallet?.adapter.publicKey
+    const { networks } = useSettingsState()
+
+    const connectedWallet = wallets.find(w => w.adapter.connected === true)
+    const connectedAddress = connectedWallet?.adapter.publicKey?.toBase58()
+    const connectedAdapterName = connectedWallet?.adapter.name
+
     const { connection } = useConnection();
     const anchorWallet = useAnchorWallet();
-    const { networks } = useSettingsState()
     const solana = networks.find(n => n.type === NetworkType.Solana)
 
-    const provider = anchorWallet && new AnchorProvider(connection, anchorWallet);
-    if (provider) setProvider(provider);
+    const anchorProvider = anchorWallet && new AnchorProvider(connection, anchorWallet);
+    if (anchorProvider) setProvider(anchorProvider);
 
-    const program = (provider && solana?.metadata?.htlc_token_contract) ? new Program(AnchorHtlc(solana?.metadata?.htlc_token_contract), provider) : null;
+    const program = (anchorProvider && solana?.metadata?.htlc_token_contract) ? new Program(AnchorHtlc(solana?.metadata?.htlc_token_contract), anchorProvider) : null;
 
-    const getWallet = () => {
-        if (publicKey) {
-            const address = publicKey?.toBase58()
-            return {
-                address: address,
-                connector: wallet?.adapter?.name,
-                providerName: name,
-                chainId: solana?.chain_id,
-                icon: resolveWalletConnectorIcon({ connector: String(wallet?.adapter.name), address: address })
-            }
+    const connectedWallets = useMemo(() => {
+
+        if (network?.name.toLowerCase().startsWith('eclipse') && !(connectedAdapterName?.toLowerCase() === "backpack" || connectedAdapterName?.toLowerCase() === "nightly")) {
+            return undefined
+        }
+
+        const wallet: Wallet | undefined = (connectedAddress && connectedAdapterName) ? {
+            id: connectedAdapterName,
+            address: connectedAddress,
+            displayName: `${connectedWallet?.adapter.name} - Solana`,
+            providerName: name,
+            icon: resolveWalletConnectorIcon({ connector: String(connectedAdapterName), address: connectedAddress, iconUrl: connectedWallet?.adapter.icon }),
+            disconnect,
+            connect: () => connectWallet(),
+            isActive: true,
+            addresses: [connectedAddress],
+            withdrawalSupportedNetworks: commonSupportedNetworks,
+            asSourceSupportedNetworks: commonSupportedNetworks,
+            autofillSupportedNetworks: commonSupportedNetworks,
+            networkIcon: networks.find(n => solanaNames.some(name => name === n.name))?.logo
+        } : undefined
+
+        if (wallet) {
+            return [wallet]
+        }
+
+    }, [network, connectedAddress, connectedAdapterName])
+
+    const { connect } = useConnectModal()
+
+    const connectWallet = async () => {
+        try {
+            return await connect(provider)
+        }
+        catch (e) {
+            console.log(e)
         }
     }
 
-    const connectWallet = () => {
-        return setVisible && setVisible(true)
+    const connectConnector = async ({ connector }: { connector: InternalConnector }) => {
+        const solanaConnector = wallets.find(w => w.adapter.name === connector.name)
+        if (!solanaConnector) throw new Error('Connector not found')
+        select(solanaConnector.adapter.name)
+        await solanaConnector.adapter.connect()
+
+        const connectedWallet = wallets.find(w => w.adapter.connected === true)
+        const connectedAddress = connectedWallet?.adapter.publicKey?.toBase58()
+        const wallet: Wallet | undefined = connectedAddress && connectedWallet ? {
+            id: connectedWallet.adapter.name,
+            address: connectedAddress,
+            displayName: `${connectedWallet?.adapter.name} - Solana`,
+            providerName: name,
+            icon: resolveWalletConnectorIcon({ connector: String(connectedWallet?.adapter.name), address: connectedAddress, iconUrl: connectedWallet?.adapter.icon }),
+            disconnect,
+            connect: () => connectWallet(),
+            isActive: true,
+            addresses: [connectedAddress],
+            withdrawalSupportedNetworks: commonSupportedNetworks,
+            asSourceSupportedNetworks: commonSupportedNetworks,
+            autofillSupportedNetworks: commonSupportedNetworks,
+            networkIcon: networks.find(n => solanaNames.some(name => name === n.name))?.logo
+        } : undefined
+
+        return wallet
     }
 
     const disconnectWallet = async () => {
@@ -53,10 +119,32 @@ export default function useSolana(): WalletProvider {
         }
     }
 
-    const reconnectWallet = async () => {
-        await disconnectWallet()
-        connectWallet()
-    }
+    const availableWalletsForConnect = useMemo(() => {
+        const connectors: InternalConnector[] = [];
+        const solNetwork = network?.name?.toLowerCase().includes('eclipse') ? 'eclipse' : 'solana'
+
+        for (const wallet of wallets) {
+
+            const internalConnector: InternalConnector = {
+                name: wallet.adapter.name,
+                id: wallet.adapter.name,
+                icon: wallet.adapter.icon,
+                type: wallet.readyState === 'Installed' ? 'injected' : 'other'
+            }
+
+            if (solNetwork === 'eclipse') {
+                if (!(wallet.adapter.name.toLowerCase() === "backpack" || wallet.adapter.name.toLowerCase() === "nightly")) {
+                    continue
+                } else {
+                    connectors.push(internalConnector)
+                }
+            } else {
+                connectors.push(internalConnector)
+            }
+        }
+
+        return connectors;
+    }, [wallets]);
 
     const createPreHTLC = useCallback(async (params: CreatePreHTLCParams): Promise<{ hash: string; commitId: string; } | null | undefined> => {
         if (!program || !publicKey || !solana) return null
@@ -190,27 +278,59 @@ export default function useSolana(): WalletProvider {
         return { result: result }
     }
 
-    const claim = () => {
-        throw new Error('Not implemented')
+    const claim = async (params: ClaimParams) => {
+        const { sourceAsset, id, secret } = params
+
+        if (!program || !sourceAsset?.contract || !publicKey) return
+
+        const tokenContract = new PublicKey(sourceAsset.contract);
+        const idBuffer = Buffer.from(id.replace('0x', ''), 'hex');
+        const secretBuffer = Buffer.from(secret.toString().replace('0x', ''), 'hex');
+        const getAssociatedTokenAddress = (await import('@solana/spl-token')).getAssociatedTokenAddress;
+        const senderTokenAddress = await getAssociatedTokenAddress(new PublicKey(sourceAsset.contract), publicKey);
+
+        let [htlc, htlcBump] = idBuffer && PublicKey.findProgramAddressSync(
+            [idBuffer],
+            program.programId
+        );
+        let [htlcTokenAccount, bump3] = idBuffer && PublicKey.findProgramAddressSync(
+            [Buffer.from("htlc_token_account"), idBuffer],
+            program.programId
+        );
+
+        await program.methods.redeem(idBuffer, secretBuffer, htlcBump).
+            accountsPartial({
+                userSigning: publicKey,
+                htlc: htlc,
+                htlcTokenAccount: htlcTokenAccount,
+                sender: publicKey,
+                tokenContract: tokenContract,
+                srcReceiverTokenAccount: senderTokenAddress,
+            })
+            .rpc();
     }
 
-    return {
-        getConnectedWallet: getWallet,
+    const provider = {
+        connectedWallets: connectedWallets,
+        activeWallet: connectedWallets?.[0],
         connectWallet,
-        disconnectWallet,
-        reconnectWallet,
-        withdrawalSupportedNetworks,
-        autofillSupportedNetworks: withdrawalSupportedNetworks,
-        asSourceSupportedNetworks: withdrawalSupportedNetworks,
+        connectConnector,
+        disconnectWallets: disconnectWallet,
+        availableWalletsForConnect,
+        withdrawalSupportedNetworks: commonSupportedNetworks,
+        autofillSupportedNetworks: commonSupportedNetworks,
+        asSourceSupportedNetworks: commonSupportedNetworks,
         name,
+        id,
 
         createPreHTLC,
         getDetails,
         addLock,
         refund,
-
         claim,
     }
+
+    return provider
 }
 
 

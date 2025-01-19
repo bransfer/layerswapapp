@@ -9,7 +9,7 @@ const ExchangeNote = ({ destinationAsset, destinationExchange, destination }: { 
     if (!destinationAsset || !destinationExchange || !destination) return
 
     return (
-        <div className='text-left p-4 bg-secondary-800 text-primary-text rounded-lg border border-secondary-500 basis-full mt-3 w-full'>
+        <div className='text-left p-4 bg-secondary-800 text-primary-text rounded-lg border border-secondary-500 mt-3 w-full'>
             <div className="flex items-center">
                 <Info className='h-5 w-5 text-primary-600 mr-3' />
                 <label className="block text-sm md:text-base font-medium leading-6">How to find your {destinationExchange.display_name} deposit address</label>

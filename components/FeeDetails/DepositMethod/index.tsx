@@ -1,19 +1,32 @@
 import { useFormikContext } from "formik";
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useRef } from "react";
 import { SwapFormValues } from "../../DTOs/SwapFormValues";
 import { Network } from "../../../Models/Network";
 import { Popover, PopoverContent, PopoverTrigger } from "../../shadcn/popover";
 import WalletIcon from "../../icons/WalletIcon";
-import { AlignLeft, ChevronDown, ChevronUp } from "lucide-react"
+import { AlignLeft, ChevronDown } from "lucide-react"
 import { motion } from "framer-motion";
 import { useDepositMethod } from "../../../context/depositMethodContext";
 import { useQueryState } from "../../../context/query";
 import KnownInternalNames from "../../../lib/knownIds";
+import { useSwapDataUpdate } from "../../../context/swap";
 
 const variants = {
     open: { rotate: 180 },
     closed: { rotate: 0 },
 }
+
+const depositMethods = [
+    {
+        id: 'wallet',
+        display_name: 'Wallet'
+    },
+    {
+        id: 'deposit_address',
+        display_name: 'Deposit address'
+    }
+]
+
 
 const DepositMethodComponent: FC = () => {
     const {
@@ -21,40 +34,32 @@ const DepositMethodComponent: FC = () => {
         setFieldValue,
     } = useFormikContext<SwapFormValues>();
     const { setShowModal, showModal } = useDepositMethod()
-
     const { depositMethod: defaultDepositMethod, hideDepositMethod, appName } = useQueryState()
     const { from, depositMethod, fromExchange } = values
     const name = 'depositMethod'
 
-    const depositMethods = [
-        {
-            id: 'wallet',
-            display_name: 'Wallet'
-        },
-        {
-            id: 'deposit_address',
-            display_name: 'Deposit address'
-        }
-    ]
-
     const menuItems = from && GenerateDepositMethodMenuItems(from, depositMethods, appName)
+
     const defaultMethod = menuItems?.find(i => i.id === defaultDepositMethod)
+    const menuItemsRef = useRef<DepositMethod[] | undefined>()
+    menuItemsRef.current = menuItems
 
     useEffect(() => {
-        if (defaultMethod && (depositMethod !== defaultMethod?.id))
-            setFieldValue(name, defaultMethod?.id, true)
-        else if (!depositMethod)
-            setFieldValue(name, menuItems?.find(i => i.id === 'wallet')?.id, true)
-        else if (!menuItems?.find(i => i.id === depositMethod))
-            setFieldValue(name, menuItems?.[0]?.id, true)
-    }, [menuItems])
-
-    useEffect(() => {
-        if (fromExchange)
+        const first = menuItemsRef.current?.[0]?.id
+        if (fromExchange) {
             setFieldValue(name, 'deposit_address', true)
-        else if (!fromExchange && !defaultMethod)
-            setFieldValue(name, 'wallet', true)
-    }, [fromExchange])
+            return
+        }
+        else if (defaultMethod) {
+            setFieldValue(name, defaultMethod?.id, true)
+            return
+        }
+        else if (!(menuItems?.find(i => i.id === depositMethod))) {
+            setFieldValue(name, first, true)
+            return
+        }
+    }, [from, appName, fromExchange])
+
 
     const handleSelect = useCallback((item: string) => {
         setFieldValue(name, item, true)
@@ -69,9 +74,9 @@ const DepositMethodComponent: FC = () => {
         return null
 
     return (
-        <div className="relative w-full mb-1.5">
+        <div className="relative w-full mb-1">
             <Popover open={showModal} onOpenChange={setShowModal}>
-                <PopoverTrigger className="font-semibold text-secondary-text text-xs flex items-center space-x-1">
+                <PopoverTrigger className="font-semibold text-secondary-text text-xs flex items-center space-x-1 p-2">
                     <span> Transfer via </span> <span>{selectedMethod?.toLowerCase()}</span> <motion.div
                         animate={showModal ? "open" : "closed"}
                         variants={variants}
@@ -162,17 +167,12 @@ function GenerateDepositMethodMenuItems(network: Network, depositMethods: Deposi
 
     const sourceIsArbitrumOne = network.name?.toUpperCase() === KnownInternalNames.Networks.ArbitrumMainnet?.toUpperCase()
         || network.name === KnownInternalNames.Networks.ArbitrumGoerli?.toUpperCase()
-    const sourceIsSynquote = appName === "ea7df14a1597407f9f755f05e25bab42" && sourceIsArbitrumOne
-
-    if (sourceIsSynquote) {
+    const sourceIsSynquoteArbitrumOne = appName === "ea7df14a1597407f9f755f05e25bab42" && sourceIsArbitrumOne
+    if (sourceIsSynquoteArbitrumOne) {
         return depositMethods.filter(m => m.id === 'deposit_address')
     }
 
-    return network.deposit_methods.map(m => ({
-        id: m,
-        display_name: depositMethods.find(dp => dp.id === m)?.display_name!
-    }));
-
+    return depositMethods.filter(m => network?.deposit_methods?.some(dm => dm === m.id))
 }
 
 export default DepositMethodComponent

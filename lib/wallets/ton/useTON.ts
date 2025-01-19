@@ -1,10 +1,5 @@
-import { useTonConnectUI, useTonWallet } from "@tonconnect/ui-react"
 import KnownInternalNames from "../../knownIds";
-import { Wallet } from "../../../stores/walletStore";
-import { WalletProvider } from "../../../hooks/useWallet";
-import TON from "../../../components/icons/Wallets/TON";
-import { useEffect, useState } from "react";
-import { CommitmentParams, CreatePreHTLCParams, LockParams, RefundParams } from "../phtlc";
+import { ClaimParams, CommitmentParams, CreatePreHTLCParams, LockParams, RefundParams } from "../phtlc";
 import { Address, beginCell, Cell, toNano } from "@ton/ton"
 import { commitTransactionBuilder } from "./transactionBuilder";
 import { Commit } from "../../../Models/PHTLC";
@@ -12,41 +7,97 @@ import { hexToBigInt } from "viem";
 import { useSettingsState } from "../../../context/settings";
 import { retryUntilFecth } from "../../retry";
 import { getTONDetails } from "./getters";
+import { ConnectedWallet, useTonConnectUI, useTonWallet } from "@tonconnect/ui-react"
+import { Wallet, WalletProvider } from "../../../Models/WalletProvider";
+import { resolveWalletConnectorIcon } from "../utils/resolveWalletIcon";
 
 export default function useTON(): WalletProvider {
-
-    const withdrawalSupportedNetworks = [KnownInternalNames.Networks.TONMainnet, KnownInternalNames.Networks.TONTestnet]
-    const name = 'ton'
-    const wallet = useTonWallet();
+    const commonSupportedNetworks = [
+        KnownInternalNames.Networks.TONMainnet,
+        KnownInternalNames.Networks.TONTestnet
+    ]
     const [tonConnectUI] = useTonConnectUI();
-    const [shouldConnect, setShouldConnect] = useState(false)
+    const tonWallet = useTonWallet();
     const { networks } = useSettingsState()
 
-    useEffect(() => {
-        if (shouldConnect) {
-            connectWallet()
-            setShouldConnect(false)
-        }
-    }, [shouldConnect])
+    const name = 'TON'
+    const id = 'ton'
 
-    const getWallet = () => {
-        if (wallet) {
-            const w: Wallet = {
-                address: Address.parse(wallet.account.address).toString({ bounceable: false }),
-                connector: 'TON',
-                providerName: name,
-                icon: TON,
-                chainId: 'tontestnet'//TODO check if it is correct
-            }
-            return w
+    const address = tonWallet?.account && Address.parse(tonWallet.account.address).toString({ bounceable: false })
+    const iconUrl = tonWallet?.["imageUrl"] as string
+    const wallet_id = tonWallet?.["name"] || tonWallet?.device.appName
+
+    const wallet: Wallet | undefined = tonWallet && address ? {
+        id: wallet_id,
+        displayName: `${wallet_id} - Ton`,
+        addresses: [address],
+        address,
+        providerName: id,
+        isActive: true,
+        icon: resolveWalletConnectorIcon({ connector: name, address, iconUrl }),
+        disconnect: () => disconnectWallets(),
+        connect: () => connectWallet(),
+        withdrawalSupportedNetworks: commonSupportedNetworks,
+        autofillSupportedNetworks: commonSupportedNetworks,
+        asSourceSupportedNetworks: commonSupportedNetworks,
+        networkIcon: networks.find(n => commonSupportedNetworks.some(name => name === n.name))?.logo
+    } : undefined
+
+    const connectWallet = async () => {
+
+        if (tonWallet) {
+            await disconnectWallets()
         }
+
+        function connectAndWaitForStatusChange() {
+            return new Promise((resolve, reject) => {
+                try {
+                    // Initiate the connection
+                    tonConnectUI.openModal();
+
+                    // Listen for the status change
+                    tonConnectUI.onStatusChange((status) => {
+                        if (status) resolve(status); // Resolve the promise with the status
+                    });
+                } catch (error) {
+                    console.error('Error connecting:', error);
+                    reject(error); // Reject the promise if an exception is thrown
+                }
+            });
+        }
+
+        const result: Wallet | undefined = await connectAndWaitForStatusChange()
+            .then((status: ConnectedWallet) => {
+                const connectedAddress = Address.parse(status.account.address).toString({ bounceable: false })
+                const connectedName = status.device.appName
+                const wallet: Wallet | undefined = status && connectedAddress ? {
+                    id: connectedName,
+                    displayName: `${connectedName} - Ton`,
+                    addresses: [connectedAddress],
+                    address: connectedAddress,
+                    providerName: id,
+                    isActive: true,
+                    icon: resolveWalletConnectorIcon({ connector: connectedName, address: connectedAddress }),
+                    disconnect: () => disconnectWallets(),
+                    connect: () => connectWallet(),
+                    withdrawalSupportedNetworks: commonSupportedNetworks,
+                    autofillSupportedNetworks: commonSupportedNetworks,
+                    asSourceSupportedNetworks: commonSupportedNetworks,
+                    networkIcon: networks.find(n => commonSupportedNetworks.some(name => name === n.name))?.logo
+                } : undefined
+
+                return wallet ? wallet : undefined
+            })
+            .catch((error) => {
+                console.error('Promise rejected with error:', error);
+                return undefined
+            });
+
+        return result
+
     }
 
-    const connectWallet = () => {
-        return tonConnectUI.openModal()
-    }
-
-    const disconnectWallet = async () => {
+    const disconnectWallets = async () => {
         try {
             await tonConnectUI.disconnect()
         }
@@ -55,24 +106,20 @@ export default function useTON(): WalletProvider {
         }
     }
 
-    const reconnectWallet = async () => {
-        try {
-            await disconnectWallet()
-            setShouldConnect(true)
-        }
-        catch (e) {
-            console.log(e)
-        }
-    }
+    // const availableWalletsForConnect: InternalConnector[] | undefined = tonWallets?.map(w => ({
+    //     id: w.appName,
+    //     name: w.name,
+    //     icon: w.imageUrl,
+    // }))
 
     const createPreHTLC = async (params: CreatePreHTLCParams) => {
 
-        if (!wallet?.account.publicKey) return
+        if (!tonWallet?.account.publicKey) return
 
         const tx = await commitTransactionBuilder({
             wallet: {
-                address: wallet.account.address,
-                publicKey: wallet.account.publicKey
+                address: tonWallet.account.address,
+                publicKey: tonWallet.account.publicKey
             },
             ...params
         })
@@ -193,20 +240,44 @@ export default function useTON(): WalletProvider {
         return result
     }
 
-    const claim = () => {
-        throw new Error('Not implemented')
+    const claim = async (params: ClaimParams) => {
+        const { id, secret, contractAddress } = params
+
+        const opcode = 1972220037
+
+        const body = beginCell()
+            .storeUint(opcode, 32)
+            .storeInt(hexToBigInt(id as `0x${string}`), 257)
+            .storeInt(hexToBigInt(secret as `0x${string}`), 257)
+            .endCell();
+
+        const tx = {
+            validUntil: Math.floor(Date.now() / 1000) + 360,
+            messages: [
+                {
+                    address: contractAddress,
+                    amount: toNano('0.1').toString(),
+                    payload: body.toBoc().toString("base64")
+                }
+            ]
+        }
+
+        await tonConnectUI.sendTransaction(tx)
     }
 
 
-    return {
-        getConnectedWallet: getWallet,
+    const provider = {
         connectWallet,
-        disconnectWallet,
-        reconnectWallet,
-        withdrawalSupportedNetworks,
-        autofillSupportedNetworks: withdrawalSupportedNetworks,
-        asSourceSupportedNetworks: withdrawalSupportedNetworks,
+        disconnectWallets,
+        // availableWalletsForConnect,
+        activeAccountAddress: wallet?.address,
+        connectedWallets: wallet ? [wallet] : undefined,
+        activeWallet: wallet,
+        withdrawalSupportedNetworks: commonSupportedNetworks,
+        autofillSupportedNetworks: commonSupportedNetworks,
+        asSourceSupportedNetworks: commonSupportedNetworks,
         name,
+        id,
 
         createPreHTLC,
         getDetails,
@@ -214,6 +285,8 @@ export default function useTON(): WalletProvider {
         refund,
         claim
     }
+
+    return provider
 }
 
 type Events = {

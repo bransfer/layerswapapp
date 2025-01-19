@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react"
+import GoHomeButton from "../utils/GoHome";
+import { useMeasure } from "@uidotdev/usehooks";
 
 const variants = {
     enter: () => {
@@ -30,28 +32,17 @@ type FooterProps = {
 }
 
 const Footer = ({ children, hidden, sticky = true }: FooterProps) => {
-    const [height, setHeight] = useState(0)
-    const ref = useRef<HTMLDivElement>(null)
+    let [footerRef, { height }] = useMeasure();
 
-    useEffect(() => {
-        setHeight(Number(ref?.current?.clientHeight))
-    }, [])
-
-    const handleAnimationEnd = (variant) => {
-        if (variant == "center") {
-            setHeight(Number(ref?.current?.clientHeight))
-        }
-    }
     return (
         sticky ?
             <>
                 <motion.div
-                    onAnimationComplete={handleAnimationEnd}
-                    ref={ref}
+                    ref={footerRef}
                     transition={{
                         duration: 0.15,
                     }}
-                    custom={{ direction: "back" ? -1 : 1, width: 100 }}
+                    custom={{ direction: -1, width: 100 }}
                     variants={variants}
                     className={`text-primary-text text-base mt-3        
                         max-sm:fixed
@@ -62,8 +53,11 @@ const Footer = ({ children, hidden, sticky = true }: FooterProps) => {
                         max-sm:shadow-widget-footer 
                         max-sm:p-4 
                         max-sm:px-6 
-                        max-sm:w-full ${hidden ? 'adnimation-slide-out' : ''}`}>
+                        max-sm:w-full ${hidden ? 'animation-slide-out' : ''}`}>
                     {children}
+                    <div className="flex justify-center  text-primary-text-placeholder">
+                        <span className="text-xs content-center footerLogo mt-2.5">Powered by</span> <GoHomeButton className='footerLogo ml-1 mt-2.5 fill-primary-text-placeholder h-5 w-auto cursor-pointer' />
+                    </div>
                 </motion.div>
 
                 <div style={{ height: `${height}px` }}

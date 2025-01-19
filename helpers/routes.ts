@@ -45,7 +45,7 @@ export const resolveNetworkRoutesURL = (direction: SwapDirection, values: SwapFo
             :
             resolveRoutesURLForSelectedToken({ direction, network: undefined, token: undefined, includes: { unavailable: true, unmatched: true } })
     }
-    else if (!selectedExchange) {
+    else {
         const selectednetwork = direction === "from" ? to : from
         const selectedToken = direction === "from" ? toCurrency?.symbol : fromCurrency?.symbol
         return resolveRoutesURLForSelectedToken({ direction, network: selectednetwork?.name, token: selectedToken, includes: { unmatched: true, unavailable: true } })
@@ -63,6 +63,12 @@ export const resolveRoutesURLForSelectedToken = ({ direction, network, token, in
         include_swaps,
         include_unavailable,
         ...(network ?
+            {
+                [direction === 'to' ? 'source_network' : 'destination_network']: network,
+            }
+            : {}
+        ),
+        ...(network && token ?
             {
                 [direction === 'to' ? 'source_network' : 'destination_network']: network,
             }

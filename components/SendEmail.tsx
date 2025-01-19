@@ -16,10 +16,10 @@ type EmailFormValues = {
 
 type Props = {
     onSend: (email: string) => void;
-    disclosureLogin?: boolean;
+    compactLogin?: boolean;
 }
 
-const SendEmail: FC<Props> = ({ onSend, disclosureLogin }) => {
+const SendEmail: FC<Props> = ({ onSend, compactLogin }) => {
     const { codeRequested, tempEmail } = useAuthState()
     const { setCodeRequested, updateTempEmail } = useAuthDataUpdate();
     const initialValues: EmailFormValues = { email: tempEmail ?? "" };
@@ -77,54 +77,42 @@ const SendEmail: FC<Props> = ({ onSend, disclosureLogin }) => {
                 {({ isValid, isSubmitting }) => (
                     <Form autoComplete='true' className='w-full h-full'>
                         {
-                            disclosureLogin ?
+                            compactLogin ?
                                 <div>
-                                    <Disclosure>
-                                        {({ open }) => (
-                                            <>
-                                                <Disclosure.Button className="w-full text-left text-base font-light">
-                                                    <div className='flex items-center justify-between'>
-                                                        <p className='text-xl text-primary-text'>
-                                                            Sign in with email
-                                                        </p>
-                                                        <div className='bg-secondary-500 hover:bg-secondary-500 p-0.5 rounded-md duration-200 transition'>
-                                                            <ChevronDown
-                                                                className={`${open ? 'rotate-180 transform' : ''
-                                                                    } h-5 text-secondary-text`}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <p className='mt-2 text-left text-secondary-text'>
-                                                        Securely store your exchange accounts, access your full transfer history and more.
-                                                    </p>
-                                                </Disclosure.Button>
-                                                <Disclosure.Panel className="text-sm text-secondary-text font-normal mt-4">
-                                                    <div className='grid gap-4 grid-cols-5  items-center'>
-                                                        <div className="relative rounded-md shadow-sm col-span-3">
-                                                            <Field name="email">
-                                                                {({ field }) => (
-                                                                    <input
-                                                                        {...field}
-                                                                        id='email'
-                                                                        placeholder="john@example.com"
-                                                                        autoComplete="email"
-                                                                        type="email"
-                                                                        className="h-12 pb-1 pt-0 text-primary-text  focus:ring-primary focus:border-primary border-secondary-500 pr-42 block
+                                    <div className="w-full text-left text-base font-light">
+                                        <div className='flex items-center justify-between'>
+                                            <p className='text-xl text-primary-text'>
+                                                Sign in with email
+                                            </p>
+                                        </div>
+                                        <p className='mt-2 text-left text-secondary-text'>
+                                            Securely store your exchange accounts, access your full transfer history and more.
+                                        </p>
+                                    </div>
+                                    <div className="text-sm text-secondary-text font-normal mt-4">
+                                        <div className='grid gap-4 grid-cols-5  items-center'>
+                                            <div className="relative rounded-md shadow-sm col-span-3">
+                                                <Field name="email">
+                                                    {({ field }) => (
+                                                        <input
+                                                            {...field}
+                                                            id='email'
+                                                            placeholder="john@example.com"
+                                                            autoComplete="email"
+                                                            type="email"
+                                                            className="h-12 pb-1 pt-0 text-primary-text  focus:ring-primary focus:border-primary border-secondary-500 pr-42 block
                                                    placeholder:text-secondary-text placeholder:text-sm placeholder:font-normal placeholder:opacity-50 bg-secondary-700 w-full font-semibold rounded-md"
-                                                                    />
-                                                                )}
-                                                            </Field>
-                                                        </div>
-                                                        <div className='col-start-4 col-span-2'>
-                                                            <SubmitButton isDisabled={!isValid} isSubmitting={isSubmitting} >
-                                                                Continue
-                                                            </SubmitButton>
-                                                        </div>
-                                                    </div>
-                                                </Disclosure.Panel>
-                                            </>
-                                        )}
-                                    </Disclosure>
+                                                        />
+                                                    )}
+                                                </Field>
+                                            </div>
+                                            <div className='col-start-4 col-span-2'>
+                                                <SubmitButton isDisabled={!isValid} isSubmitting={isSubmitting} >
+                                                    Continue
+                                                </SubmitButton>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 :
                                 <div className='h-full flex flex-col justify-between'>

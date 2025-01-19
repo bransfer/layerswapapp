@@ -46,7 +46,7 @@ export function useDepositMethod() {
     const data = useContext(DepositMethodContext as Context<DepositMethodState>);
 
     if (data === null) {
-        throw new Error('useFee must be used within a FeeProvider');
+        throw new Error('useDepositMethod must be used within a DepositMethodProvider');
     }
 
     return data;

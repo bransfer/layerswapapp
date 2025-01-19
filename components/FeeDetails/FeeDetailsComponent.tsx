@@ -12,7 +12,8 @@ const Item = (function Item({ children, icon }: FeeDetailsItemProps) {
         <div
             className={`gap-4 flex relative items-center outline-none w-full text-primary-text px-4 py-3`}
         >
-            {icon &&
+            {
+                icon &&
                 <div>
                     {icon}
                 </div>

@@ -1,13 +1,14 @@
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import { useSwitchChain } from "wagmi";
 import WalletIcon from "../../../../icons/WalletIcon";
-import WalletMessage from "./message";
 import { ActionData } from "./sharedTypes";
 import SubmitButton, { SubmitButtonProps } from "../../../../buttons/submitButton";
 import useWallet from "../../../../../hooks/useWallet";
 import { useSwapDataState } from "../../../../../context/swap";
 import ManualTransferNote from "./manualTransferNote";
 import toast from "react-hot-toast";
+import { Loader2 } from "lucide-react";
+import WalletMessage from "../../messages/Message";
 
 export const ConnectWalletButton: FC<SubmitButtonProps> = ({ ...props }) => {
     const { swapResponse } = useSwapDataState()
@@ -15,10 +16,7 @@ export const ConnectWalletButton: FC<SubmitButtonProps> = ({ ...props }) => {
     const { source_network } = swap || {}
     const [loading, setLoading] = useState(false)
 
-    const { getWithdrawalProvider: getProvider } = useWallet()
-    const provider = useMemo(() => {
-        return source_network && getProvider(source_network)
-    }, [source_network, getProvider])
+    const { provider } = useWallet(source_network, 'withdrawal')
 
     const clickHandler = useCallback(async () => {
         try {
@@ -26,7 +24,7 @@ export const ConnectWalletButton: FC<SubmitButtonProps> = ({ ...props }) => {
 
             if (!provider) throw new Error(`No provider from ${source_network?.name}`)
 
-            await provider.connectWallet(provider?.name)
+            await provider.connectWallet()
         }
         catch (e) {
             toast.error(e.message)
@@ -39,7 +37,9 @@ export const ConnectWalletButton: FC<SubmitButtonProps> = ({ ...props }) => {
 
     return <ButtonWrapper
         onClick={props.onClick ?? clickHandler}
-        icon={props.icon ?? <WalletIcon className="stroke-2 w-6 h-6" />}
+        icon={loading ? <Loader2 className="h-6 w-6 animate-spin" /> : (props.icon ?? <WalletIcon className="stroke-2 w-6 h-6" />)}
+        isDisabled={loading || props.isDisabled}
+        isSubmitting={loading || props.isSubmitting}
         {...props}
     >
         Send from wallet
@@ -89,7 +89,7 @@ export const ChangeNetworkButton: FC<{ chainId: number, network: string }> = ({ 
             >
                 {
                     error ? <span>Try again</span>
-                        : <span>Send from wallet</span>
+                        : <span>Switch network</span>
                 }
             </ButtonWrapper>
         }
@@ -108,12 +108,13 @@ export const ButtonWrapper: FC<SubmitButtonProps> = ({
             text_align='center'
             buttonStyle='filled'
             size="medium"
+            type="button"
             {...props}
         >
             {props.children}
         </SubmitButton>
         {
-            source_network?.deposit_methods.some(m => m === 'deposit_address') &&
+            source_network?.deposit_methods?.some(m => m === 'deposit_address') &&
             <ManualTransferNote />
         }
     </div>

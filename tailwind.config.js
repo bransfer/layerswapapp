@@ -70,6 +70,7 @@ module.exports = {
         'height': 'height'
       },
       animation: {
+        'reverse-spin': 'reverse-spin 1s linear infinite',
         'spin-slow': 'spin 3s linear infinite',
         'fade-in': 'fade-in 0.5s ease-in',
         'fade-in-down': 'fade-in-down 0.5s ease-in',
@@ -88,6 +89,11 @@ module.exports = {
         gauge_fill: "gauge_fill 1s ease forwards",
       },
       keyframes: {
+        "reverse-spin": {
+          from: {
+            transform: 'rotate(360deg)'
+          }
+        },
         "accordion-down": {
           from: { height: 0 },
           to: { height: "var(--radix-accordion-content-height)" },
@@ -216,6 +222,7 @@ module.exports = {
       backgroundColor: ["disabled"],
       translate: ["hover"],
       display: ["group-hover"],
+      fill: ['hover', 'focus']
     },
   },
   plugins: [

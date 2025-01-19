@@ -3,7 +3,6 @@ import { useSwapDataState, useSwapDataUpdate } from "../context/swap";
 import SwapDetails from "./Swap";
 import { Widget } from "./Widget/Index";
 import NotFound from "./Swap/NotFound";
-import { BalancesDataProvider } from "../context/balances";
 
 const SwapWithdrawal: FC = () => {
     const { swapResponse: swap, swapApiError } = useSwapDataState()
@@ -24,9 +23,7 @@ const SwapWithdrawal: FC = () => {
 
 
     return (
-        <BalancesDataProvider>
-            <SwapDetails type="widget" />
-        </BalancesDataProvider>
+        <SwapDetails type="widget" />
     )
 };
 

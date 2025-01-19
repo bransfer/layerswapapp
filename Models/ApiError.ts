@@ -4,6 +4,7 @@ export type ApiError = {
     metadata: {
         AvailableTransactionAmount: number
         RemainingLimitPeriod: string
+        ActivationUrl: string
     }
 }
 

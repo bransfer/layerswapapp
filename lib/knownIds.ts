@@ -54,6 +54,8 @@ export default class KnownInternalNames {
 
         public static readonly OptimismMainnet: string = "OPTIMISM_MAINNET";
 
+        public static readonly OptimismSepolia: string = "OPTIMISM_SEPOLIA";
+
         public static readonly OptimismGoerli: string = "OPTIMISM_GOERLI";
 
         public static readonly OptimismKovan: string = "OPTIMISM_KOVAN";
@@ -169,6 +171,24 @@ export default class KnownInternalNames {
         public static readonly ParadexTestnet: string = "PARADEX_TESTNET"
 
         public static readonly ParadexMainnet: string = "PARADEX_MAINNET"
+
+        public static readonly FuelMainnet: string = "FUEL_MAINNET"
+
+        public static readonly FuelTestnet: string = "FUEL_TESTNET"
+
+        public static readonly FuelDevnet: string = "FUEL_DEVNET"
+
+        public static readonly TronMainnet: string = "TRON_MAINNET"
+
+        public static readonly TronTestnet: string = "TRON_TESTNET"
+
+        public static readonly EclipseTestnet: string = "ECLIPSE_TESTNET"
+
+        public static readonly EclipseMainnet: string = "ECLIPSE_MAINNET"
+
+        public static readonly SophonMainnet: string = "SOPHON_MAINNET"
+        
+        public static readonly SophonSepolia: string = "SOPHON_SEPOLIA"
 
     }
 

@@ -10,6 +10,8 @@ import { isValidAddress } from "../../../lib/address/validator";
 import { useSwapDepositHintClicked } from "../../../stores/swapTransactionStore";
 import { Exchange } from "../../../Models/Exchange";
 import Link from "next/link";
+import CopyButton from "../../buttons/copyButton";
+import useWindowDimensions from "../../../hooks/useWindowDimensions";
 
 const ManualTransfer: FC = () => {
     const { swapResponse, depositActionsResponse } = useSwapDataState()
@@ -39,7 +41,7 @@ const ManualTransfer: FC = () => {
                         </p>
                     </div>
                 </div>
-                <SubmitButton isDisabled={false} isSubmitting={false} size="medium" onClick={handleCloseNote}>
+                <SubmitButton type="button" size="medium" onClick={handleCloseNote}>
                     OK
                 </SubmitButton>
             </div>
@@ -51,9 +53,9 @@ const ManualTransfer: FC = () => {
 }
 
 const TransferInvoice: FC<{ deposit_address?: string }> = ({ deposit_address }) => {
-
     const { swapResponse: swapResponse } = useSwapDataState()
     const { swap, quote: swapQuote } = swapResponse || {}
+    const { isMobile } = useWindowDimensions()
 
     const minAllowedAmount = swapQuote?.min_receive_amount
 
@@ -145,7 +147,9 @@ const TransferInvoice: FC<{ deposit_address?: string }> = ({ deposit_address }) 
                         </span>
                         {source_token?.contract && isValidAddress(source_token.contract, source_network) &&
                             <span className="text-xs text-secondary-text flex items-center leading-3">
-                                {shortenAddress(source_token?.contract)}
+                                <CopyButton iconSize={isMobile ? 20 : 16} toCopy={source_token?.contract} iconClassName="hidden" className='hover:underline no-underline text-secondary-text' >
+                                    {shortenAddress(source_token?.contract)}
+                                </CopyButton>
                             </span>
                         }
                     </div>

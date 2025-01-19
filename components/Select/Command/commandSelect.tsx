@@ -23,6 +23,7 @@ export interface CommandSelectProps extends SelectProps {
     isLoading: boolean;
     modalHeight?: LeafletHeight;
     modalContent?: React.ReactNode;
+    header?: string;
 }
 
 export class SelectMenuItemGroup {
@@ -34,16 +35,20 @@ export class SelectMenuItemGroup {
     items: ISelectMenuItem[];
 }
 
-export default function CommandSelect({ values, value, setValue, show, setShow, searchHint, valueGrouper, isLoading, modalHeight = 'full', modalContent }: CommandSelectProps) {
+export default function CommandSelect({ values, setValue, show, setShow, searchHint, valueGrouper, isLoading, modalHeight = 'full', modalContent, header }: CommandSelectProps) {
     const { isDesktop } = useWindowDimensions();
 
     let groups: SelectMenuItemGroup[] = valueGrouper(values);
     const handleSelectValue = useCallback((item: ISelectMenuItem) => {
-        setValue(item)
-        setShow(false)
-    }, [setValue])
+        setValue(item);
+        setShow(false);
+    }, [setValue, setShow]);
+
     return (
         <Modal height={modalHeight} show={show} setShow={setShow} modalId='comandSelect'>
+            {header ? <div className="absolute top-4 left-8 text-lg text-secondary-text font-semibold">
+                <div>{header}</div>
+            </div> : <></>}
             {show ?
                 <CommandWrapper>
                     {searchHint && <CommandInput autoFocus={isDesktop} placeholder={searchHint} />}
@@ -56,8 +61,8 @@ export default function CommandSelect({ values, value, setValue, show, setShow, 
                                     <CommandGroup key={group.name} heading={group.name}>
                                         {group.items.map(item => {
                                             return (
-                                                <CommandItem className='!rounded-componentRoundness -mx-1' disabled={!item.isAvailable.value} value={item.name} key={item.id} onSelect={() => handleSelectValue(item)}>
-                                                    <SelectItem item={item} /> 
+                                                <CommandItem className='!rounded-componentRoundness -mx-1' value={item.id} key={item.id} onSelect={() => handleSelectValue(item)}>
+                                                    <SelectItem item={item} />
                                                 </CommandItem>
                                             )
                                         })

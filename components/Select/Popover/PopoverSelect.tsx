@@ -10,7 +10,7 @@ export default function PopoverSelect({ values, value, setValue }: SelectProps) 
             <CommandList>
                 {values.map((item, index) => {
 
-                    const shouldGroupped = !upperValue && item.isAvailable.value && item.isAvailable.disabledReason && index !== 0;
+                    const shouldGroupped = !upperValue && item.isAvailable && index !== 0;
 
                     if (shouldGroupped) {
                         upperValue = true;
@@ -18,7 +18,6 @@ export default function PopoverSelect({ values, value, setValue }: SelectProps) 
 
                     return (
                         <CommandItem
-                            disabled={!item.isAvailable.value}
                             value={item.id}
                             key={item.id}
                             onSelect={() => {
@@ -32,10 +31,4 @@ export default function PopoverSelect({ values, value, setValue }: SelectProps) 
             </CommandList>
         </CommandWrapper>
     )
-}
-
-export enum LayerDisabledReason {
-    LockNetworkIsTrue = 'LockNetworkIsTrue',
-    InsufficientLiquidity = 'Temporarily disabled. Please check later.',
-    InvalidRoute = 'InvalidRoute'
 }

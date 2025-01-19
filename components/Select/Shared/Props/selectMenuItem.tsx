@@ -1,32 +1,24 @@
-import { CurrencyDisabledReason } from "../../../Input/CurrencyFormField";
-import { LayerDisabledReason } from "../../Popover/PopoverSelect";
-
 export class SelectMenuItem<T> implements ISelectMenuItem {
     id: string;
     name: string;
     order: number;
     imgSrc: string;
-    displayName?: string | undefined;
-    isAvailable: {
-        value: boolean;
-        disabledReason?: LayerDisabledReason | CurrencyDisabledReason | null
-    };
+    displayName?: React.ReactNode;
+    isAvailable: boolean;
     group?: string;
     details?: JSX.Element | JSX.Element[];
     badge?: JSX.Element | JSX.Element[];
+    leftIcon?: JSX.Element | JSX.Element[];
     baseObject: T;
-    constructor(baseObject: T, id: string, name: string, order: number, imgSrc: string, group?: string, details?: JSX.Element | JSX.Element[]) {
+    constructor(baseObject: T, id: string, name: string, order: number, imgSrc: string, isAvailable: boolean, group?: string, details?: JSX.Element | JSX.Element[]) {
         this.baseObject = baseObject;
         this.id = id;
         this.name = name;
         this.order = order;
         this.imgSrc = imgSrc;
         this.group = group;
-        this.details = details
-        this.isAvailable = {
-            value: true,
-            disabledReason: null
-        }
+        this.details = details;
+        this.isAvailable = isAvailable
     }
 }
 
@@ -34,13 +26,11 @@ export interface ISelectMenuItem {
     id: string;
     name: string;
     imgSrc: string;
-    displayName?: string | undefined;
+    displayName?: React.ReactNode;
     group?: string;
-    isAvailable: {
-        value: boolean;
-        disabledReason?: LayerDisabledReason | CurrencyDisabledReason | null
-    };
+    isAvailable: boolean;
     details?: JSX.Element | JSX.Element[];
     badge?: JSX.Element | JSX.Element[];
+    leftIcon?: JSX.Element | JSX.Element[];
     order?: number;
 }

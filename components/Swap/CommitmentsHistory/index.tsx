@@ -8,7 +8,6 @@ import { classNames } from "../../utils/classNames";
 import { useSettingsState } from "../../../context/settings";
 import useWallet from "../../../hooks/useWallet";
 import { Popover, PopoverContent, PopoverTrigger } from "../../shadcn/popover";
-import { Wallet } from "../../../stores/walletStore";
 import shortenAddress from "../../utils/ShortenAddress";
 import SpinIcon from "../../icons/spinIcon";
 import { SwapHistoryComponentSceleton } from "../../Sceletons";
@@ -20,6 +19,7 @@ import WalletIcon from "../../icons/WalletIcon";
 import StatusIcon from "./StatusIcons";
 import AppSettings from "../../../lib/AppSettings";
 import { truncateDecimals } from "../../utils/RoundDecimals";
+import { Wallet } from "../../../Models/WalletProvider";
 
 type CommitStatus = 'committed' | 'user_locked' | 'lp_locked' | 'completed' | 'refunded' | 'timelock_expired'
 
@@ -38,36 +38,36 @@ const commitStatusResolver = (commit: Commit, destination_details: Commit | unde
 export type HistoryCommit = Commit & { id: string, status: CommitStatus }
 
 function CommittmentsHistory() {
-    const [openSwapDetailsModal, setOpenSwapDetailsModal] = useState(false)
-    const [selectedCommit, setSelectedCommit] = useState<HistoryCommit | undefined>()
-    const [page, setPage] = useState(0)
-    const [isLastPage, setIsLastPage] = useState(false)
-    const [loading, setLoading] = useState(false)
-    const [allCommitIds, setAllCommitIds] = useState<{ [provider: string]: string[] } | undefined>(undefined)
-    const [allErc20CommIds, setAllErc20CommIds] = useState<{ [provider: string]: string[] } | undefined>(undefined)
-    const [allCommitments, setAllCommitments] = useState<{ [provider: string]: HistoryCommit[] } | undefined>(undefined)
+    // const [openSwapDetailsModal, setOpenSwapDetailsModal] = useState(false)
+    // const [selectedCommit, setSelectedCommit] = useState<HistoryCommit | undefined>()
+    // const [page, setPage] = useState(0)
+    // const [isLastPage, setIsLastPage] = useState(false)
+    // const [loading, setLoading] = useState(false)
+    // const [allCommitIds, setAllCommitIds] = useState<{ [provider: string]: string[] } | undefined>(undefined)
+    // const [allErc20CommIds, setAllErc20CommIds] = useState<{ [provider: string]: string[] } | undefined>(undefined)
+    // const [allCommitments, setAllCommitments] = useState<{ [provider: string]: HistoryCommit[] } | undefined>(undefined)
 
-    const router = useRouter();
-    const { wallets, getWithdrawalProvider, getProviderByName } = useWallet()
+    // const router = useRouter();
+    // const { wallets, getWithdrawalProvider, getProviderByName } = useWallet()
 
-    const providers = wallets.filter(wallet => wallet.providerName !== 'solana' && wallet.providerName !== 'ton')
+    // const providers = wallets.filter(wallet => wallet.providerName !== 'solana' && wallet.providerName !== 'ton')
 
-    const [selectedProvider, setSelectedProvider] = useState<string | undefined>(providers?.[0]?.connector)
+    // const [selectedProvider, setSelectedProvider] = useState<string | undefined>(providers?.[0]?.connector)
 
-    const commitIds = selectedProvider ? allCommitIds?.[selectedProvider] : null
-    const erc20CommIds = selectedProvider ? allErc20CommIds?.[selectedProvider] : null
-    const commitments = selectedProvider ? allCommitments?.[selectedProvider] : null
+    // const commitIds = selectedProvider ? allCommitIds?.[selectedProvider] : null
+    // const erc20CommIds = selectedProvider ? allErc20CommIds?.[selectedProvider] : null
+    // const commitments = selectedProvider ? allCommitments?.[selectedProvider] : null
 
-    const selectedWallet = providers.find(wallet => wallet.connector === selectedProvider)
+    // const selectedWallet = providers.find(wallet => wallet.connector === selectedProvider)
 
-    const source_provider = useMemo(() => {
-        return selectedWallet && getProviderByName(selectedWallet?.providerName)
-    }, [selectedWallet, getWithdrawalProvider])
+    // const source_provider = useMemo(() => {
+    //     return selectedWallet && getProviderByName(selectedWallet?.providerName)
+    // }, [selectedWallet, getWithdrawalProvider])
 
-    const { networks } = useSettingsState()
-    const activeNetwork = networks.find(network => network.chain_id == selectedWallet?.chainId)
+    // const { networks } = useSettingsState()
+    // const activeNetwork = networks.find(network => network.chain_id == selectedWallet?.chainId)
 
-    const PAGE_SIZE = 5
+    // const PAGE_SIZE = 5
 
     // const getCommitments = async (page: number, commitIds: string[], sourceAtomicContract: string, sourceType: 'native' | 'erc20') => {
     //     let commits: (HistoryCommit)[] = []
@@ -160,26 +160,27 @@ function CommittmentsHistory() {
     //     }
     // }, [providers])
 
-    if (providers.length === 0) return <HistoryWrapper>
-        <div className="absolute top-1/4 right-0 text-center w-full px-6">
-            <Scroll className='h-40 w-40 text-secondary-700 mx-auto' />
-            <p className="my-2 text-xl">It&apos;s empty here</p>
-            <p className="px-14 text-primary-text">Connect wallet to inspect your history</p>
-            <ConnectButton className="w-full mt-3">
-                <div className="border border-primary disabled:border-primary-900 items-center space-x-1 disabled:text-opacity-40 disabled:bg-primary-900 disabled:cursor-not-allowed relative w-full flex justify-center font-semibold rounded-componentRoundness transform hover:brightness-125 transition duration-200 ease-in-out bg-primary py-3 md:px-3 bg-primary/20 border-none text-primary px-4">
-                    <span className="order-first absolute left-0 inset-y-0 flex items-center pl-3">
-                        <WalletIcon className='stroke-2 w-6 h-6' strokeWidth={2} />
-                    </span>
-                    <span className="grow text-center">Connect a wallet</span>
-                </div>
-            </ConnectButton>
-        </div>
-    </HistoryWrapper>
+    // if (providers.length === 0) return <HistoryWrapper>
+    //     <div className="absolute top-1/4 right-0 text-center w-full px-6">
+    //         <Scroll className='h-40 w-40 text-secondary-700 mx-auto' />
+    //         <p className="my-2 text-xl">It&apos;s empty here</p>
+    //         <p className="px-14 text-primary-text">Connect wallet to inspect your history</p>
+    //         <ConnectButton className="w-full mt-3">
+    //             <div className="border border-primary disabled:border-primary-900 items-center space-x-1 disabled:text-opacity-40 disabled:bg-primary-900 disabled:cursor-not-allowed relative w-full flex justify-center font-semibold rounded-componentRoundness transform hover:brightness-125 transition duration-200 ease-in-out bg-primary py-3 md:px-3 bg-primary/20 border-none text-primary px-4">
+    //                 <span className="order-first absolute left-0 inset-y-0 flex items-center pl-3">
+    //                     <WalletIcon className='stroke-2 w-6 h-6' strokeWidth={2} />
+    //                 </span>
+    //                 <span className="grow text-center">Connect a wallet</span>
+    //             </div>
+    //         </ConnectButton>
+    //     </div>
+    // </HistoryWrapper>
 
     return (
-        <HistoryWrapper>
-            <WalletSelector wallets={providers} selectedWallet={selectedProvider} setSelectedWallet={setSelectedProvider} />
-            {/* {
+        <>
+            {/* <HistoryWrapper>
+             <WalletSelector wallets={providers} selectedWallet={selectedProvider} setSelectedWallet={setSelectedProvider} /> 
+            {
                 page == 0 && loading ?
                     <SwapHistoryComponentSceleton />
                     : <>
@@ -328,8 +329,10 @@ function CommittmentsHistory() {
                             </div>
                         </Modal>
                     </>
-            } */}
-        </HistoryWrapper>
+            } 
+        </HistoryWrapper> */}
+        </>
+
     )
 }
 
@@ -349,7 +352,7 @@ const WalletSelector: FC<WallectSelectorProps> = ({ wallets, selectedWallet, set
             </div>
         </PopoverTrigger>
         <PopoverContent className=' ml-2 mt-1 text-sm p-2 max-w border-none rounded-xl bg-secondary-600 max-w-72 md:max-w-96' align="start">
-            <div>
+            {/* <div>
                 {
                     wallets.map(wallet => <div key={wallet.address} className={classNames("flex items-center justify-between p-2 rounded-lg cursor-pointer hover:bg-secondary-700", selectedWallet === wallet.connector && 'bg-secondary-700')} onClick={() => {
                         wallet.connector && setSelectedWallet(wallet.connector)
@@ -360,7 +363,7 @@ const WalletSelector: FC<WallectSelectorProps> = ({ wallets, selectedWallet, set
 
                     </div>)
                 }
-            </div>
+            </div> */}
         </PopoverContent>
     </Popover>
 }

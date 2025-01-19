@@ -1,9 +1,7 @@
 import React from 'react'
-import { InferGetServerSidePropsType } from 'next';
-import { getServerSideProps } from '../helpers/getSettings';
 import NoCookies from '../components/NoCookies';
 
-export default function Salon({ settings }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function Salon() {
     return (
         <div className={`flex flex-col items-center min-h-screen overflow-hidden relative font-robo`}>
             <div className="w-full max-w-lg z-[1]">
@@ -16,5 +14,3 @@ export default function Salon({ settings }: InferGetServerSidePropsType<typeof g
         </div>
     )
 }
-
-export { getServerSideProps };

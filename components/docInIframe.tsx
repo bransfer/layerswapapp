@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { ExternalLink } from "lucide-react";
 import { DocInFrameSceleton } from "./Sceletons";
 

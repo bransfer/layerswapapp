@@ -21,7 +21,7 @@ export const ActivationTokenPicker = ({ availableBalances, defaultValue, onChang
             return {
                 id: symbol,
                 name: symbol,
-                isAvailable: { value: true },
+                isAvailable: true,
                 type: 'currency',
                 imgSrc: `${resource_storage_url}layerswap/currencies/${symbol.toLowerCase()}.png`,
                 baseObject: symbol,

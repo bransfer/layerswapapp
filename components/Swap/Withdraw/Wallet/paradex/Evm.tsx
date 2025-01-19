@@ -1,5 +1,4 @@
-import { ArrowLeftRight, WalletIcon } from 'lucide-react';
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useState } from 'react'
 import { ButtonWrapper, ChangeNetworkButton, ConnectWalletButton } from '../WalletTransfer/buttons';
 import useWallet from '../../../../../hooks/useWallet';
 import { WithdrawPageProps } from '../WalletTransferContent';
@@ -12,6 +11,7 @@ import { useSwapTransactionStore } from '../../../../../stores/swapTransactionSt
 import { BackendTransactionStatus } from '../../../../../lib/layerSwapApiClient';
 import { useEthersSigner } from '../../../../../lib/ethersToViem/ethers';
 import toast from 'react-hot-toast';
+import WalletIcon from '../../../../icons/WalletIcon';
 
 const ParadexWalletWithdrawStep: FC<WithdrawPageProps> = ({ amount, token, callData, swapId }) => {
 
@@ -22,13 +22,10 @@ const ParadexWalletWithdrawStep: FC<WithdrawPageProps> = ({ amount, token, callD
 
     const { setSwapTransaction } = useSwapTransactionStore();
 
-    const { getWithdrawalProvider: getProvider } = useWallet()
-    const provider = useMemo(() => {
-        return l1Network && getProvider(l1Network)
-    }, [l1Network, getProvider])
+    const { provider } = useWallet(l1Network, 'withdrawal')
     const { chain } = useAccount();
 
-    const wallet = provider?.getConnectedWallet()
+    const wallet = provider?.activeWallet
 
     const ethersSigner = useEthersSigner()
 
@@ -38,7 +35,7 @@ const ParadexWalletWithdrawStep: FC<WithdrawPageProps> = ({ amount, token, callD
 
         try {
 
-            const environment = process.env.NEXT_PUBLIC_API_VERSION === 'prod' ? 'prod' : 'testnet'
+            const environment = process.env.NEXT_PUBLIC_API_VERSION === 'sandbox' ? 'testnet' : 'prod'
             const config = await Paradex.Config.fetchConfig(environment);
 
             const paraclearProvider = new Paradex.ParaclearProvider.DefaultProvider(config);
@@ -106,7 +103,7 @@ const ParadexWalletWithdrawStep: FC<WithdrawPageProps> = ({ amount, token, callD
     }
 
     return (
-        <ButtonWrapper isDisabled={!!(loading || !ethersSigner || !callData)} isSubmitting={!!(loading || !ethersSigner || !callData)} onClick={handleTransfer} icon={<WalletIcon className="h-5 w-5 ml-2" aria-hidden="true" />} >
+        <ButtonWrapper isDisabled={!!(loading || !ethersSigner || !callData)} isSubmitting={!!(loading || !ethersSigner || !callData)} onClick={handleTransfer} icon={<WalletIcon className="h-5 w-5 stroke-2" aria-hidden="true" />} >
             Send from EVM wallet
         </ButtonWrapper>
     )

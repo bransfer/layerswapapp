@@ -1,7 +1,6 @@
 import { NetworkType } from "../../Models/Network"
 import { SwapStatus } from "../../Models/SwapStatus"
-import { SwapData } from "../../context/swap"
-import { SwapItem, BackendTransactionStatus, TransactionType, SwapResponse } from "../../lib/layerSwapApiClient"
+import { BackendTransactionStatus, TransactionType } from "../../lib/layerSwapApiClient"
 
 export const swap = {
     "addressConfirmed": false,

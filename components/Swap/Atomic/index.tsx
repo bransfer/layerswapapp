@@ -26,10 +26,11 @@ import ResizablePanel from "../../ResizablePanel";
 import useWallet from "../../../hooks/useWallet";
 import { DepositMethodProvider } from "../../../context/depositMethodContext";
 import { dynamicWithRetries } from "../../../lib/dynamicWithRetries";
-import AddressNoteModal from "../../Input/Address/AddressNote";
 import { addressFormat } from "../../../lib/address/formatter";
 import { useAddressesStore } from "../../../stores/addressesStore";
 import { AddressGroup } from "../../Input/Address/AddressPicker";
+import AddressNote from "../../Input/Address/AddressNote";
+import { useAsyncModal } from "../../../context/asyncModal";
 
 type NetworkToConnect = {
     DisplayName: string;
@@ -56,7 +57,6 @@ export default function Form() {
     const [networkToConnect, setNetworkToConnect] = useState<NetworkToConnect>();
     const router = useRouter();
     const { updateAuthData, setUserType } = useAuthDataUpdate()
-    const { getSourceProvider } = useWallet()
     const addresses = useAddressesStore(state => state.addresses)
 
     const settings = useSettingsState();
@@ -70,6 +70,8 @@ export default function Form() {
     const { swapResponse } = useSwapDataState()
     const { swap } = swapResponse || {}
     const { minAllowedAmount, maxAllowedAmount, updatePolling: pollFee, mutateLimits } = useFee()
+    const { getProvider } = useWallet()
+    const { getConfirmation } = useAsyncModal();
 
     const handleSubmit = useCallback(async (values: SwapFormValues) => {
         
@@ -80,8 +82,18 @@ export default function Form() {
             (addressFormat(query.destAddress?.toString(), to) === addressFormat(destination_address, to)) &&
             !(addresses.find(a => addressFormat(a.address, to) === addressFormat(destination_address, to) && a.group !== AddressGroup.FromQuery)) && !isAddressFromQueryConfirmed) {
 
-            setShowAddressNoteModal(true)
-            return
+            const confirmed = await getConfirmation({
+                content: <AddressNote partner={partner} values={values} />,
+                submitText: 'Confirm address',
+                dismissText: 'Cancel address'
+            })
+
+            if (confirmed) {
+                setIsAddressFromQueryConfirmed(true)
+            }
+            else if (!confirmed) {
+                return
+            }
         }
         try {
             if (!values.amount) {
@@ -103,8 +115,8 @@ export default function Form() {
                 throw new Error("No destination asset")
             }
 
-            const source_provider = values.from && getSourceProvider(values.from)
-            const destination_provider = values.from && getSourceProvider(values.from)
+            const source_provider = values.from && getProvider(values.from, 'withdrawal')
+            const destination_provider = values.from && getProvider(values.from, 'autofil')
 
             if (!source_provider) {
                 throw new Error("No source_provider")
@@ -144,7 +156,7 @@ export default function Form() {
         catch (error) {
             console.log(error)
         }
-    }, [createSwap, query, partner, router, updateAuthData, setUserType, swap, getSourceProvider])
+    }, [createSwap, query, partner, router, updateAuthData, setUserType, swap, getProvider])
 
     const initialValues: SwapFormValues = swapResponse ? generateSwapInitialValuesFromSwap(swapResponse, settings)
         : generateSwapInitialValues(settings, query)
@@ -201,7 +213,6 @@ export default function Form() {
         >
             <>
                 <SwapForm partner={partner} />
-                <AddressNoteModal partner={partner} openModal={showAddressNoteModal} setOpenModal={setShowAddressNoteModal} onConfirm={() => setIsAddressFromQueryConfirmed(true)} />
             </>
         </Formik>
     </DepositMethodProvider>

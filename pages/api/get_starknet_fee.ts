@@ -44,7 +44,7 @@ const getStarknetFee = async ({ nodeUrl, contractAddress, recipient, watchDogCon
         nodeUrl: nodeUrl,
     });
 
-    const configs = JSON.parse(process.env.NEXT_PUBLIC_STARKNET_FEE_CONFIGS || '')
+    const configs = process.env.NEXT_PUBLIC_STARKNET_FEE_CONFIGS && JSON.parse(process.env.NEXT_PUBLIC_STARKNET_FEE_CONFIGS) || ''
 
     const account = new Account(provider, configs.address, configs.private_key, '1');
 

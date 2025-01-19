@@ -1,278 +1,164 @@
 import { FC } from "react";
-import Message from "./Message";
-import AddressIcon from "../../AddressIcon";
 import { UserCommitAction, UserLockAction, UserRefundAction } from "./Actions/UserActions";
-import { useAtomicState } from "../../../context/atomicContext";
-import { motion } from "framer-motion";
+import { CommitStatus, useAtomicState } from "../../../context/atomicContext";
 import { LpLockingAssets } from "./Actions/LpLock";
 import { RedeemAction } from "./Actions/Redeem";
-import ActionStatus from "./Actions/ActionStatus";
-import useWallet from "../../../hooks/useWallet";
-import { ExternalLink } from "lucide-react";
+import ActionStatus from "./Actions/Status/ActionStatus";
 import SubmitButton from "../../buttons/submitButton";
-import { Network } from "../../../Models/Network";
-import TimelockTimer from "./TimelockTimer";
-import { truncateDecimals } from "../../utils/RoundDecimals";
+import TimelockTimer from "./Timer";
+import shortenAddress from "../../utils/ShortenAddress";
+import LoaderIcon from "../../icons/LoaderIcon";
+import LockFilledCircleIcon from "../../icons/LockFilledCircleIcon";
+import CheckedIcon from "../../icons/CheckedIcon";
+import LockIcon from "../../icons/LockIcon";
+import Link from "next/link";
 
-export enum Progress {
-    Commit = 'commit',
-    LpLock = 'lp_lock',
-    Lock = 'lock',
-    Redeem = 'redeem',
-    Refund = 'refund',
+const RequestStep: FC = () => {
+    const { sourceDetails, commitId, commitTxId, source_network, commitFromApi } = useAtomicState()
+
+    const lpLockTx = commitFromApi?.transactions.find(t => t.type === 'lock')
+
+    const commtting = (commitId && !sourceDetails) ? true : false;
+    const commited = (sourceDetails || lpLockTx) ? true : false;
+
+    const title = commited ? "Requested" : "Request"
+    const description = commitTxId ? <p><span>Transaction ID:</span> <a target="_blank" className="underline hover:no-underline" href={source_network?.transaction_explorer_template.replace('{0}', commitTxId)}>{shortenAddress(commitTxId)}</a></p> : <>Initiates a swap process with the solver</>
+    return <Step
+        step={1}
+        title={title}
+        description={description}
+        active={true}
+        completed={commited}
+        loading={commtting && !commited}
+    />
+
 }
 
-const Committed = ({ walletIcon, asset, amount }: { walletIcon?: JSX.Element, asset: string | undefined, amount: number | undefined }) => <Message
-    title="Committed"
-    description={<p><span>You committed</span> <span className="underline decoration-dotted"><span>{amount}</span> <span>{asset}</span></span> <span>on the source network</span></p>}
-    isLast={true}
-    source="from"
-    sourceIcon={walletIcon}
-/>
-const AssetsLockedByLP = ({ address, destination_network, tx_id, asset, amount }: { address: string | undefined, destination_network: Network | undefined, tx_id: string | undefined, asset: string | undefined, amount: number | undefined }) => <Message
-    title="LP Assets Locked"
-    description={
-        <div>
-            <p>
-                <span>Liqudity provider locked</span> <span className="underline decoration-dotted"><span>{amount}</span> <span>{asset}</span></span> <span>for you.</span>
-            </p>
-            {
-                destination_network && tx_id &&
-                <a target="_blank" className="inline-flex items-center gap-1" href={destination_network?.transaction_explorer_template.replace('{0}', tx_id)}>
-                    <span className="underline hover:no-underline">View transaction</span>
-                    <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-            }
-        </div>
-    }
-    isLast={true}
-    source="to"
-    sourceIcon={address && <AddressIcon className="scale-150 h-3 w-3" address={address} size={12} />}
-/>
-const AssetsLockedByUser = ({ walletIcon }: { walletIcon?: JSX.Element }) => <Message
-    title="Locked"
-    description="You locked assets on the source network"
-    isLast={true}
-    source="from"
-    sourceIcon={walletIcon}
-/>
-const AssetsSent = ({ address, destination_network, tx_id }: { address: string | undefined, destination_network: Network | undefined, tx_id: string | undefined }) => <Message
-    title="Assets sent"
-    description={
-        <div>
-            <p>
-                Your assets are sent to the destination address.
-            </p>
-            {
-                destination_network && tx_id &&
-                <a target="_blank" className="inline-flex items-center gap-1" href={destination_network?.transaction_explorer_template.replace('{0}', tx_id)}>
-                    <span className="underline hover:no-underline">View transaction</span>
-                    <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-            }
-        </div>
-    }
-    isLast={true}
-    source="to"
-    sourceIcon={address && <AddressIcon className="scale-150 h-3 w-3" address={address} size={12} />}
-/>
-const LpPlng = ({ address }: { address: string | undefined }) => <Message
-    title={<div className="flex space-x-1 font-bold">
-        <div className="animate-bounce delay-100">.</div>
-        <div className="animate-bounce delay-150">.</div>
-        <div className="animate-bounce delay-300">.</div>
-    </div>}
-    isLast={true}
-    source="to"
-    sourceIcon={address && <AddressIcon className="scale-150 h-3 w-3" address={address} size={12} />}
-/>
+const SignAndConfirmStep: FC = () => {
+    const { sourceDetails, destinationDetails, source_network, destination_network, commitFromApi, commitStatus } = useAtomicState()
 
-const UserCommitting = ({ walletIcon }: { walletIcon?: JSX.Element }) => <Message
-    title={<div className="flex gap-2">
-        <>Committing your funds for bridging</>
-        <div className="flex space-x-1 font-bold">
-            <div className="animate-bounce delay-100">.</div>
-            <div className="animate-bounce delay-150">.</div>
-            <div className="animate-bounce delay-300">.</div>
-        </div>
-    </div>}
-    isLast={true}
-    source="from"
-    sourceIcon={walletIcon}
-/>
-const UserLocking = ({ walletIcon }: { walletIcon?: JSX.Element }) => <Message
-    title={<div className="flex gap-2">
-        <>Locking your funds for LP</>
-        <div className="flex space-x-1 font-bold">
-            <div className="animate-bounce delay-100">.</div>
-            <div className="animate-bounce delay-150">.</div>
-            <div className="animate-bounce delay-300">.</div>
-        </div>
-    </div>}
-    isLast={true}
-    source="from"
-    sourceIcon={walletIcon}
-/>
-const RefundCanClaim = ({ walletIcon }: { walletIcon?: JSX.Element }) => <Message
-    title='Timelock expired - refund available.'
-    description='Claim your funds now.'
-    isLast={true}
-    source="from"
-    sourceIcon={walletIcon}
-/>
-const RefundRequested = ({ walletIcon }: { walletIcon?: JSX.Element }) => <Message
-    title={<div className="flex gap-2">
-        <>Refunding</>
-        <div className="flex space-x-1 font-bold">
-            <div className="animate-bounce delay-100">.</div>
-            <div className="animate-bounce delay-150">.</div>
-            <div className="animate-bounce delay-300">.</div>
-        </div>
-    </div>}
-    isLast={true}
-    source="from"
-    sourceIcon={walletIcon}
-/>
-const RefundCompleted = ({ walletIcon, source_network, tx_id }: { walletIcon?: JSX.Element, source_network: Network | undefined, tx_id: string | undefined }) => <Message
-    title='Refunded'
-    description={<div>
-        {
-            source_network && tx_id &&
-            <div>
-                <p>Funds have been successfully refunded.</p>
-                <a target="_blank" className="inline-flex items-center gap-1" href={source_network?.transaction_explorer_template.replace('{0}', tx_id)}>
-                    <span className="underline hover:no-underline">View transaction</span>
-                    <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-            </div>
-        }
-    </div>}
-    isLast={true}
-    source="from"
-    sourceIcon={walletIcon}
-/>
-
-export const ResolveMessages: FC = () => {
-
-    const { sourceDetails, destinationDetails, commitId, source_network, userLocked: userInitiatedLock, isTimelockExpired, completedRefundHash, destination_network, source_asset, destination_asset, commitFromApi, amount } = useAtomicState()
-
-    const lpLockTransaction = commitFromApi?.transactions.find(t => t.type === 'lock')
+    const lpLockTx = commitFromApi?.transactions.find(t => t.type === 'lock')
     const lpRedeemTransaction = commitFromApi?.transactions.find(t => t.type === 'redeem' && t.network === destination_network?.name)
+    const addLockSigTx = commitFromApi?.transactions.find(t => t.type === 'addlocksig')
+    const commited = (sourceDetails || lpLockTx) ? true : false;
 
-    const commtting = commitId ? true : false;
-    const commited = sourceDetails ? true : false;
+    const assetsLocked = !!(sourceDetails?.hashlock && destinationDetails?.hashlock) || commitStatus === CommitStatus.AssetsLocked || commitStatus === CommitStatus.RedeemCompleted;
+    const loading = commitStatus === CommitStatus.UserLocked
+
+    const title = assetsLocked ? "Signed & Confirmed" : "Sign & Confirm"
+    const description = (assetsLocked)
+        ? <div className="inline-flex gap-3">
+            {
+                lpLockTx && destination_network &&
+                <div className="inline-flex gap-1">
+                    <p>Solver:</p> <Link className="underline hover:no-underline" target="_blank" href={destination_network?.transaction_explorer_template.replace('{0}', lpLockTx?.hash)}>{shortenAddress(lpLockTx.hash)}</Link>
+                </div>
+            }
+            {
+                addLockSigTx && source_network &&
+                <div className="inline-flex gap-1">
+                    <p>You:</p> <Link className="underline hover:no-underline" target="_blank" href={source_network?.transaction_explorer_template.replace('{0}', addLockSigTx?.hash)}>{shortenAddress(addLockSigTx.hash)}</Link>
+                </div>
+            }
+        </div>
+        : <>Initiates a swap process with the solver</>
+
+    const completed = !!(sourceDetails?.hashlock && destinationDetails?.hashlock) || !!lpRedeemTransaction?.hash || commitStatus === CommitStatus.RedeemCompleted || commitStatus === CommitStatus.AssetsLocked
+
+    return <Step
+        step={2}
+        title={title}
+        description={description}
+        active={commited}
+        completed={completed}
+        loading={loading}
+    >
+        <SolverStatus />
+    </Step>
+}
+
+const SolverStatus: FC = () => {
+    const { commitId, sourceDetails, destinationDetails, commitFromApi, destination_network, commitStatus } = useAtomicState()
+
+    const lpLockTx = commitFromApi?.transactions.find(t => t.type === 'lock')
+
+    const commited = commitId ? true : false;
     const lpLockDetected = destinationDetails?.hashlock ? true : false;
 
-    const assetsLocked = sourceDetails?.hashlock && destinationDetails?.hashlock ? true : false;
-
-    const redeemCompleted = (destinationDetails?.claimed == 3 ? true : false) || lpRedeemTransaction?.hash;
-    const { getWithdrawalProvider } = useWallet()
-    const source_provider = source_network && getWithdrawalProvider(source_network)
-    const wallet = source_provider?.getConnectedWallet()
-
-    const lp_address = source_network?.metadata.lp_address
-
-    const WalletIcon = wallet && <wallet.icon className="w-5 h-5 rounded-full bg-secondary-800 border-secondary-400" />
-
-    const commitAmount = truncateDecimals(sourceDetails?.amount, source_asset?.precision) || amount
-    const destinationDetailsAmount = truncateDecimals(destinationDetails?.amount, destination_asset?.precision) || commitFromApi?.receive_amount
-
-    if (redeemCompleted) {
-        return <div className="flex w-full grow flex-col space-y-2" id='atomicSwapCompleted' >
-            <Committed walletIcon={WalletIcon} amount={commitAmount} asset={source_asset?.symbol} />
-            <AssetsLockedByLP address={lp_address} destination_network={destination_network} tx_id={lpLockTransaction?.hash} amount={destinationDetailsAmount} asset={destination_asset?.symbol} />
-            <AssetsLockedByUser walletIcon={WalletIcon} />
-            <AssetsSent address={lp_address} destination_network={destination_network} tx_id={lpRedeemTransaction?.hash} />
-        </div >
-    }
-    if (isTimelockExpired) {
-        if (sourceDetails?.hashlock) {
-            return <div>
-                <Committed walletIcon={WalletIcon} amount={commitAmount} asset={source_asset?.symbol} />
-                <AssetsLockedByLP address={lp_address} destination_network={destination_network} tx_id={lpLockTransaction?.hash} amount={destinationDetailsAmount} asset={destination_asset?.symbol} />
-                <AssetsLockedByUser walletIcon={WalletIcon} />
-                {
-                    sourceDetails?.claimed == 2 ?
-                        <RefundCompleted walletIcon={WalletIcon} source_network={source_network} tx_id={completedRefundHash} />
-                        :
-                        completedRefundHash ?
-                            <RefundRequested walletIcon={WalletIcon} />
-                            :
-                            <RefundCanClaim walletIcon={WalletIcon} />
-                }
-            </div>
-        }
-        else {
-            return <div className="flex w-full grow flex-col space-y-2" >
-                <Committed walletIcon={WalletIcon} amount={commitAmount} asset={source_asset?.symbol} />
-                {
-                    sourceDetails?.claimed == 2 ?
-                        <RefundCompleted walletIcon={WalletIcon} source_network={source_network} tx_id={completedRefundHash} />
-                        :
-                        completedRefundHash ?
-                            <RefundRequested walletIcon={WalletIcon} />
-                            :
-                            <RefundCanClaim walletIcon={WalletIcon} />
-                }
-            </div>
-        }
-    }
-    if (assetsLocked) {
-        return <div className="flex w-full grow flex-col space-y-2" >
-            <Committed walletIcon={WalletIcon} amount={commitAmount} asset={source_asset?.symbol} />
-            <AssetsLockedByLP address={lp_address} destination_network={destination_network} tx_id={lpLockTransaction?.hash} amount={destinationDetailsAmount} asset={destination_asset?.symbol} />
-            <AssetsLockedByUser walletIcon={WalletIcon} />
-            <LpPlng address={lp_address} />
-        </div>
-    }
-    if (userInitiatedLock) {
-        return <div className="flex w-full grow flex-col space-y-2" >
-            <Committed walletIcon={WalletIcon} amount={commitAmount} asset={source_asset?.symbol} />
-            <AssetsLockedByLP address={lp_address} destination_network={destination_network} tx_id={lpLockTransaction?.hash} amount={destinationDetailsAmount} asset={destination_asset?.symbol} />
-            <UserLocking walletIcon={WalletIcon} />
-        </div >
-    }
+    if (sourceDetails?.hashlock && destinationDetails?.hashlock || !commited || !(commitStatus == CommitStatus.LpLockDetected || commitStatus == CommitStatus.Commited))
+        return null
+    //TODO: add the timer
     if (lpLockDetected) {
-        return <div className="flex w-full grow flex-col space-y-2" >
-            <Committed walletIcon={WalletIcon} amount={commitAmount} asset={source_asset?.symbol} />
-            <AssetsLockedByLP address={lp_address} destination_network={destination_network} tx_id={lpLockTransaction?.hash} amount={destinationDetailsAmount} asset={destination_asset?.symbol} />
-        </div >
-    }
-    if (commited) {
-        return <div className="flex w-full grow flex-col space-y-2" >
-            <Committed walletIcon={WalletIcon} amount={commitAmount} asset={source_asset?.symbol} />
-            <LpPlng address={lp_address} />
-        </div >
-    }
-    if (commtting) {
-        return <div className="flex w-full grow flex-col space-y-2" >
-            <UserCommitting walletIcon={WalletIcon} />
+        if (destinationDetails?.fetchedByLightClient) {
+            return <div className="px-1 pt-3 w-full">
+                <div className="text-xs text-primary-text-placeholder">
+                    <div className="flex w-full justify-between items-center">
+                        <p className="text-primary-text text-base">Solver locked assets</p>
+                        <div className="text-xs font-medium text-green-500 flex items-center gap-1">
+                            <p>Light Client</p>
+                            <LockIcon className="h-4 w-4 text-green-500" />
+                        </div>
+                    </div>
+                    {
+                        lpLockTx && destination_network &&
+                        <div>
+                            <span>ID:</span> <a target="_blank" href={destination_network.transaction_explorer_template.replace('{0}', lpLockTx.hash)} className="underline hover:no-underline">{shortenAddress(lpLockTx.hash)}</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        return <div className="pl-1 inline-flex items-center gap-4 pt-3 w-full">
+            <LockFilledCircleIcon className="h-7 w-7" />
+
+            <div className="text-xs text-primary-text-placeholder">
+                <span className="text-primary-text text-base">Solver locked assets</span>
+                {
+                    lpLockTx && destination_network &&
+                    <>
+                        <span className="text-primary-text text-base ml-1">-</span> <span>Transaction ID:</span> <a target="_blank" href={destination_network.transaction_explorer_template.replace('{0}', lpLockTx.hash)} className="underline hover:no-underline">{shortenAddress(lpLockTx.hash)}</a>
+                    </>
+                }
+            </div>
         </div>
     }
-    return <>
-        <div>
-            <h1 className="mt-2 text-xl font-bold tracking-tight text-primary-text flex gap-1 items-center">New Atomic Bridging Protocol</h1>
-            <p className="mt-3 mb-5 text-md leading-1 text-secondary-text ">
-                <span>Experience fully permissionless and trustless bridging without relying on any third party. For enhanced security, the bridging process uses</span> <span className="font-bold">two transactions</span>
-            </p>
-            <a className="mt-6 text-sm  cursor-pointer leading-1 text-primary hover:underline flex items-center gap-1"
-                href="https://layerswap.notion.site/" target="_blank" rel="noreferrer"
-            >
-                <span>Learn more about the protocol</span> <ExternalLink className="w-4 h-4" />
-            </a>
+
+    return <div className="p-1 mt-2 w-full">
+        <p className="p-1">Solver is locking assets</p>
+        <div className="loader-line" />
+    </div>
+}
+
+
+export const ResolveMessages: FC<{ timelock: number | undefined, showTimer: boolean, allComplete: boolean }> = ({ timelock, showTimer, allComplete }) => {
+    //TODO: add loading steps
+    return <div className="space-y-2">
+        <div className="flex items-center w-full justify-between text-primary-text-placeholder text-sm">
+            {
+                !allComplete &&
+                <>
+                    <p>
+                        Follow the steps to complete swap
+                    </p>
+                    {
+                        timelock && showTimer &&
+                        <TimelockTimer timelock={timelock} />
+                    }
+                </>
+            }
         </div>
-    </>
+        <div className="space-y-4">
+            <RequestStep />
+            <SignAndConfirmStep />
+        </div>
+    </div>
 }
 const ResolveAction: FC = () => {
-    const { sourceDetails, destinationDetails, destination_network, error, setError, isTimelockExpired, commitFromApi } = useAtomicState()
-
+    const { sourceDetails, destination_network, error, setError, commitStatus, commitFromApi, refundTxId, source_network } = useAtomicState()
     const lpRedeemTransaction = commitFromApi?.transactions.find(t => t.type === 'redeem' && t.network === destination_network?.name)
 
-    const commited = sourceDetails ? true : false;
-    const lpLockDetected = destinationDetails?.hashlock ? true : false;
-    const assetsLocked = sourceDetails?.hashlock && destinationDetails?.hashlock ? true : false;
-    const redeemCompleted = (destinationDetails?.claimed == 3 ? true : false) || lpRedeemTransaction?.hash;
-
+    //TODO: remove lp actions just disable the button
     if (error) {
         return <div className="w-full flex flex-col gap-4">
             <div className="flex w-full grow flex-col space-y-2" >
@@ -285,119 +171,100 @@ const ResolveAction: FC = () => {
                 Try again
             </SubmitButton>
         </div>
-
     }
-    if (redeemCompleted) {
-        return <div className="flex w-full grow flex-col space-y-2" >
-            <ActionStatus
-                status="success"
-                title='Transaction Completed'
-            />
-        </div>
+    if (commitStatus === CommitStatus.RedeemCompleted) {
+        return <ActionStatus
+            status="success"
+            title={
+                <div className="flex flex-col space-y-0">
+                    <p className="text-base leading-5 font-medium">Transaction Completed</p>
+                    {
+                        lpRedeemTransaction && destination_network &&
+                        <div className="text-sm ">
+                            <span>ID:</span>  <Link className="underline hover:no-underline" target="_blank" href={destination_network?.transaction_explorer_template.replace('{0}', lpRedeemTransaction.hash)}>{shortenAddress(lpRedeemTransaction?.hash)}</Link>
+                        </div>
+                    }
+                </div>
+            }
+        />
     }
-    if (isTimelockExpired) {
+    if (commitStatus === CommitStatus.TimelockExpired) {
         if (sourceDetails?.claimed == 2) {
-            return <div className="flex w-full grow flex-col space-y-2" >
-                <ActionStatus
-                    status="success"
-                    title='Refund Completed'
-                />
-            </div>
+            return <ActionStatus
+                status="success"
+                title={
+                    <div className="flex flex-col space-y-0">
+                        <p className="text-base leading-5 font-medium">Refund Completed</p>
+                        {
+                            refundTxId && source_network &&
+                            <div className="text-sm ">
+                                <span>ID:</span>  <Link className="underline hover:no-underline" target="_blank" href={source_network?.transaction_explorer_template.replace('{0}', refundTxId)}>{shortenAddress(refundTxId)}</Link>
+                            </div>
+                        }
+                    </div>
+                }
+            />
         }
         else {
-            return <div className="flex w-full grow flex-col space-y-2" >
-                <UserRefundAction />
-            </div>
+            return <UserRefundAction />
         }
     }
-    if (assetsLocked) {
-        return <div className="flex w-full grow flex-col space-y-2" >
-            <RedeemAction />
-        </div>
+    if (commitStatus === CommitStatus.AssetsLocked) {
+        return <RedeemAction />
     }
-    if (lpLockDetected) {
-        return <div className="flex w-full grow flex-col space-y-2" >
-            <UserLockAction />
-        </div>
+    if (commitStatus === CommitStatus.LpLockDetected || commitStatus === CommitStatus.UserLocked) {
+        return <UserLockAction />
     }
-    if (commited) {
-        return <div className="flex w-full grow flex-col space-y-2" >
-            <LpLockingAssets />
-        </div>
+    if (commitStatus === CommitStatus.Commited) {
+        return <LpLockingAssets />
     }
-    return <div className="flex w-full grow flex-col space-y-2" >
-        <UserCommitAction />
-    </div>
+    return <UserCommitAction />
 }
 
+export const Actions: FC = () => {
+    const { destinationDetails, sourceDetails, commitFromApi, destination_network, commitStatus } = useAtomicState()
 
-export const ActionsWithProgressbar: FC = () => {
-    const { destinationDetails, isTimelockExpired, sourceDetails, commitFromApi, destination_network } = useAtomicState()
-
-    let currentStep = 1
-    let actiontext = 'Commit'
-    let firstStep = "5%"
-    let secondStep = "0%"
-    if (sourceDetails) {
-        firstStep = "80%"
-    }
-    if (destinationDetails?.hashlock) {
-        firstStep = "100%"
-        secondStep = "10%"
-        currentStep = 2
-        actiontext = 'Lock'
-    }
-    if (sourceDetails?.hashlock) {
-        firstStep = "100%"
-        secondStep = "80%"
-        currentStep = 2
-    }
     const lpRedeemTransaction = commitFromApi?.transactions.find(t => t.type === 'redeem' && t.network === destination_network?.name)
 
-    const allDone = ((sourceDetails?.hashlock && destinationDetails?.claimed == 3) || lpRedeemTransaction?.hash) ? true : false
-    const showSteps = !allDone && !isTimelockExpired
+    const allDone = ((sourceDetails?.hashlock && destinationDetails?.claimed == 3) || lpRedeemTransaction?.hash || sourceDetails?.claimed == 2) ? true : false
+    const showTimer = !allDone && commitStatus !== CommitStatus.TimelockExpired
     const timelock = sourceDetails?.timelock || sourceDetails?.timelock
 
     return <div className="space-y-4">
-        {
-            showSteps &&
-            <div className="space-y-1.5 relative">
-                <div className="flex w-full justify-between items-center">
-                    {
-                        allDone ?
-                            <div className="text-secondary-text text-xs">
-                                Completed
-                            </div>
-                            :
-                            <div className="text-secondary-text text-xs w-full">
-                                <>Step </> <>{currentStep}</><>/2 - </><>{actiontext}</>
-                            </div>
-                    }
-                    {
-                        timelock && Number(timelock) - (Date.now() / 1000) > 0 && sourceDetails?.claimed == 1 &&
-                        <TimelockTimer timelock={Number(timelock) - (Date.now() / 1000)} />
-                    }
-                </div>
-                <div className="flex space-x-1">
-                    <div className="w-full relative">
-                        <div className="h-1 w-full bg-secondary-600 rounded-md"></div>
-                        <motion.div
-                            className="h-1 absolute bg-primary rounded-md top-0"
-                            animate={{ width: firstStep }}
-                            initial={{ width: "0" }}
-                        />
-                    </div>
-                    <div className="w-full relative">
-                        <div className="h-1 w-full bg-secondary-600 rounded-md"></div>
-                        <motion.div
-                            className="h-1 absolute bg-primary rounded-md top-0"
-                            animate={{ width: secondStep }}
-                            initial={{ width: "0" }}
-                        />
-                    </div>
-                </div>
-            </div>
-        }
+        <ResolveMessages timelock={timelock} showTimer={showTimer} allComplete={allDone} />
         <ResolveAction />
+    </div>
+}
+
+type StepProps = {
+    step: number;
+    title: string;
+    description: JSX.Element | string;
+    children?: JSX.Element | JSX.Element[];
+    active: boolean;
+    completed?: boolean
+    loading?: boolean
+}
+const Step: FC<StepProps> = ({ step, title, description, active, children, completed, loading }) => {
+    return <div className={`flex flex-col w-full bg-secondary-600 rounded-componentRoundness p-2 ${!active ? 'opacity-40' : ''}`}>
+        {/* TODO: text colors for none active steps */}
+        <div className="flex items-center gap-3">
+            <div className="w-10 h-9 text-center content-center bg-secondary-400 rounded-md grow">{step}</div>
+            <div className="inline-flex items-center justify-between w-full">
+                <div>
+                    <div className="text-primary-text text-base leading-5">{title}</div>
+                    <div className="text-xs text-primary-text-placeholder">{description}</div>
+                </div>
+                {
+                    completed &&
+                    <CheckedIcon className="h-6 w-6 mr-3" />
+                }
+                {
+                    loading &&
+                    <LoaderIcon className="animate-reverse-spin h-6 w-6 mr-3" />
+                }
+            </div>
+        </div>
+        {children}
     </div>
 }

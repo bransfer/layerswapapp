@@ -1,12 +1,10 @@
 import { useRouter } from "next/router"
-import { FC } from "react"
+import { FC, useCallback } from "react"
 import Image from 'next/image'
 import { Gift } from "lucide-react"
 import LayerSwapApiClient, { Campaign } from "../../../lib/layerSwapApiClient"
 import useSWR from "swr"
 import { ApiResponse } from "../../../Models/ApiResponse"
-import { useAccount } from "wagmi"
-import RainbowKit from "../../Swap/Withdraw/Wallet/RainbowKit"
 import SubmitButton from "../../buttons/submitButton";
 import WalletIcon from "../../icons/WalletIcon";
 import LinkWrapper from "../../LinkWraapper";
@@ -14,18 +12,25 @@ import { Widget } from "../../Widget/Index";
 import Leaderboard from "./Leaderboard"
 import Rewards from "./Rewards";
 import SpinIcon from "../../icons/spinIcon"
+import useWallet from "../../../hooks/useWallet"
 
 function CampaignDetails() {
-
     const router = useRouter();
     const camapaignName = router.query.campaign?.toString()
-
-    const { isConnected } = useAccount();
 
     const apiClient = new LayerSwapApiClient()
     const { data: campaignsData, isLoading } = useSWR<ApiResponse<Campaign[]>>('/campaigns', apiClient.fetcher)
     const campaign = campaignsData?.data?.find(c => c.name === camapaignName)
     const network = campaign?.network
+
+    const { provider } = useWallet(network, 'autofil')
+
+    const handleConnect = useCallback(async () => {
+        await provider?.connectWallet()
+    }, [provider, network])
+
+    const wallet = provider?.activeWallet
+    const isConnected = !!wallet?.address
 
     if (isLoading) {
         return <Loading />
@@ -66,11 +71,9 @@ function CampaignDetails() {
                 {
                     !isConnected &&
                     <Widget.Footer>
-                        <RainbowKit>
-                            <SubmitButton isDisabled={false} isSubmitting={false} icon={<WalletIcon className="stroke-2 w-6 h-6" />}>
-                                Connect a wallet
-                            </SubmitButton>
-                        </RainbowKit>
+                        <SubmitButton isDisabled={false} isSubmitting={false} onClick={handleConnect} icon={<WalletIcon className="stroke-2 w-6 h-6" />}>
+                            Connect a wallet
+                        </SubmitButton>
                     </Widget.Footer>
                 }
             </>

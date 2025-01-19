@@ -29,7 +29,7 @@ const Widget = ({ children, className, hideMenu }: Props) => {
    const handleBack = router.pathname === "/" ? null : goBack
 
    return <>
-      <div className={`bg-secondary-900 md:shadow-card rounded-containerRoundness w-full sm:overflow-hidden relative ${AppSettings.ApiVersion === 'sandbox' && 'border-t-[2px] border-[#D95E1B]'}`}>
+      <div id='widget' className={`bg-secondary-900 md:shadow-card rounded-containerRoundness w-full sm:overflow-hidden relative ${AppSettings.ApiVersion === 'sandbox' && 'border-t-[2px] border-[#D95E1B]'}`}>
          <div className="relative z-20 pb-1 sm:pb-0">
             {
                AppSettings.ApiVersion === 'sandbox' &&

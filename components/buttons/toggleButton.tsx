@@ -1,19 +1,19 @@
 import { FC } from 'react'
-import { Field, FieldProps } from 'formik'
 import { Switch } from '@headlessui/react'
 import { classNames } from '../utils/classNames';
 
 export class ToggleButtonProps {
     value: boolean;
     onChange: (isChecked: boolean) => void;
-    name?: string;
+    disabled?: boolean;
 }
 
-const ToggleButton: FC<ToggleButtonProps> = ({ name, onChange, value }) => {
+const ToggleButton: FC<ToggleButtonProps> = ({ onChange, value, disabled = false }) => {
     return (
         <Switch
             checked={value}
             onChange={onChange}
+            disabled={disabled}
             className={classNames(
                 value ? 'bg-primary' : 'bg-secondary-500',
                 'relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none'

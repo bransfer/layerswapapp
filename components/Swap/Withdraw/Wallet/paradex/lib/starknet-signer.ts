@@ -2,6 +2,9 @@ import { keyDerivation } from '@starkware-industries/starkware-crypto-utils';
 import type { Signature, SignerInterface, TypedData } from 'starknet';
 import * as Starknet from 'starknet';
 
+import { STARKNET_MAINNET_CHAIN_ID } from './constants';
+import { AccountSupport } from './starknet-account-support';
+
 export type { SignerInterface as Signer, TypedData, Signature };
 
 export function buildStarknetStarkKeyTypedData(
@@ -49,27 +52,85 @@ export async function getStarkKeypairFromStarknetSignature(
   return [privateKey, publicKey];
 }
 
-/**
- * Extracts the R segment from a Starknet signature for key derivation.
- *  * ArgentX signatures have 2 segments: [R, S]
- *  * Braavos signatures have 3 segments: [Recovery, R, S]
- */
-export function getSeedFromStarknetSignature(
-  signature: Starknet.Signature,
-): string {
-  const segments = Starknet.stark.signatureToHexArray(signature);
+export async function getAccountSupport(
+  account: Starknet.AccountInterface,
+  starknetProvider: Starknet.ProviderInterface,
+): Promise<AccountSupport> {
+  const classHash = await getAccountClassHash(
+    starknetProvider,
+    account.address,
+  );
 
-  if (segments.length === 2) {
-    const [r, _s] = segments;
-    if (r == null) throw new Error('Starknet signature is missing R segment');
-    return r;
+  const contract = await buildAccountContract(
+    starknetProvider,
+    account.address,
+  );
+
+  const accountSupport = new AccountSupport(contract, classHash);
+
+  try {
+    const supportCheckResult = await accountSupport.check();
+
+    if (!supportCheckResult.ok) {
+      const message =
+        supportCheckResult.reason ??
+        'Unspecified error checking account support';
+      throw new Error(message);
+    }
+  } catch (cause) {
+    const message = 'Error checking account support. Please try again.';
+    throw new Error(message);
   }
 
-  if (segments.length === 3) {
-    const [_recovery, r, _s] = segments;
-    if (r == null) throw new Error('Starknet signature is missing R segment');
-    return r;
-  }
+  return accountSupport;
+}
 
-  throw new Error('Invalid Starknet signature');
+const RPC_NODES_MAINNET: readonly string[] = [
+  'https://starknet-mainnet.public.blastapi.io',
+  'https://free-rpc.nethermind.io/mainnet-juno',
+];
+const RPC_NODES_TESTNET: readonly string[] = [
+  'https://starknet-sepolia.public.blastapi.io',
+  'https://free-rpc.nethermind.io/sepolia-juno',
+];
+
+export function getPublicProvider(chainId: string): Starknet.ProviderInterface {
+  const nodes =
+    chainId === STARKNET_MAINNET_CHAIN_ID
+      ? RPC_NODES_MAINNET
+      : RPC_NODES_TESTNET;
+
+  const randIdx = Math.floor(Math.random() * nodes.length);
+  const node = nodes[randIdx];
+  if (node == null) throw new Error('No public provider defined');
+  const provider = new Starknet.RpcProvider({ nodeUrl: node });
+  return provider;
+}
+
+async function getAccountClassHash(
+  provider: Starknet.ProviderInterface,
+  accountAddress: string,
+): Promise<string> {
+  try {
+    const classHash = await provider.getClassHashAt(accountAddress);
+    return classHash;
+  } catch (cause) {
+    const message =
+      'Cannot determine account type. Make sure your' +
+      ' account contract is deployed and try again.';
+    throw new Error(message);
+  }
+}
+
+async function buildAccountContract(
+  provider: Starknet.ProviderInterface,
+  accountAddress: string,
+): Promise<Starknet.Contract> {
+  const accountClass = await provider.getClassAt(accountAddress);
+  const contract = new Starknet.Contract(
+    accountClass.abi,
+    accountAddress,
+    provider,
+  );
+  return contract;
 }

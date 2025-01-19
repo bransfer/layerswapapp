@@ -29,21 +29,18 @@ const Wizard: FC<Props> = ({ children, wizardId }) => {
 
    const width = positionPercent || 0
    return <>
-      <div className={noToolBar ? `` : ` bg-secondary-900 md:shadow-card rounded-lg w-full sm:overflow-hidden relative`}>
+      <div id='widget' className={noToolBar ? `w-full h-full` : ` bg-secondary-900 md:shadow-card rounded-lg w-full sm:overflow-hidden relative`}>
          <div className="relative">
             {!noToolBar && <div className="overflow-hidden h-1 flex rounded-t-lg bg-secondary-500">
                <div style={{ width: `${width}%`, transition: 'width 1s' }} className="shadow-none flex flex-col whitespace-nowrap justify-center bg-primary"></div>
             </div>}
          </div>
          {!hideMenu && <HeaderWithMenu goBack={goBack} />}
-         <div className='text-center text-xl text-secondary-100'>
-
-         </div>
-         <div className={noToolBar ? 'relative' : `relative px-6 `}>
-            <div className="flex items-start"
+         <div className={noToolBar ? 'relative w-full h-full' : `relative px-6 `}>
+            <div className="flex items-start w-full h-full"
                ref={wrapper}>
                <AnimatePresence initial={false} custom={{ direction: moving === "forward" ? 1 : -1, width: wrapperWidth }}>
-                  <div className={`flex flex-nowrap`} key={wizardId}>
+                  <div className={`flex flex-nowrap h-full`} key={wizardId}>
                      {children}
                   </div>
                </AnimatePresence>

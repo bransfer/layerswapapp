@@ -1,35 +1,46 @@
 import { SwapFormValues } from '../DTOs/SwapFormValues';
-import { Dispatch, FC, SetStateAction, useMemo } from 'react';
+import { Dispatch, FC, SetStateAction } from 'react';
 import useWallet from '../../hooks/useWallet';
-import { useBalancesState } from '../../context/balances';
 import Modal from '../modal/modal';
 import { Fuel } from 'lucide-react';
-import { truncateDecimals } from '../utils/RoundDecimals';
+import { roundDecimals, truncateDecimals } from '../utils/RoundDecimals';
 import SubmitButton from '../buttons/submitButton';
-import { Quote } from '../../lib/layerSwapApiClient';
+import SecondaryButton from '../buttons/secondaryButton';
+import { useFormikContext } from 'formik';
+import { useFee } from '../../context/feeContext';
+import useSWRBalance from '../../lib/balances/useSWRBalance';
+import { useSwapDataState } from '../../context/swap';
 
 type RefuelModalProps = {
-    values: SwapFormValues
     openModal: boolean,
     setOpenModal: Dispatch<SetStateAction<boolean>>
-    fee: Quote | undefined
 }
 
-const RefuelModal: FC<RefuelModalProps> = ({ values, openModal, setOpenModal, fee }) => {
+const RefuelModal: FC<RefuelModalProps> = ({ openModal, setOpenModal }) => {
+    const {
+        values,
+        setFieldValue
+    } = useFormikContext<SwapFormValues>();
 
-    const { to } = values || {};
+    const { to, toCurrency, refuel, destination_address } = values || {};
 
-    const { getAutofillProvider: getProvider } = useWallet()
-    const { balances } = useBalancesState()
-
-    const provider = useMemo(() => {
-        return values?.to && getProvider(values?.to)
-    }, [values?.to, getProvider])
+    const { fee } = useFee()
 
     const nativeAsset = to?.token
-    const connectedWallet = provider?.getConnectedWallet()
-    const destNativeTokenBalance = balances[connectedWallet?.address || '']?.find(b => b.token === nativeAsset?.symbol && b.network === to?.name)
-    const amountInUsd = (destNativeTokenBalance && nativeAsset) ? (destNativeTokenBalance.amount * nativeAsset.price_in_usd).toFixed(2) : undefined
+    const token_usd_price = fee?.quote?.destination_network?.token?.price_in_usd || nativeAsset?.price_in_usd
+
+    const { balance } = useSWRBalance(destination_address, to)
+    const destNativeTokenBalance = balance?.find(b => b.token === nativeAsset?.symbol && b.network === to?.name)
+    const amountInUsd = (destNativeTokenBalance && token_usd_price) ? (destNativeTokenBalance.amount * token_usd_price).toFixed(2) : undefined
+
+    const closeModal = () => {
+        setOpenModal(false)
+    }
+
+    const enabldeRefuel = () => {
+        setFieldValue('refuel', true)
+        setOpenModal(false)
+    }
 
     return (
         <Modal height="fit" show={openModal} setShow={setOpenModal} modalId={"refuel"}>
@@ -40,7 +51,7 @@ const RefuelModal: FC<RefuelModalProps> = ({ values, openModal, setOpenModal, fe
                 <div className="text-center max-w-72">
                     <p className="text-2xl">About Refuel</p>
                     <p className="text-secondary-text">
-                        <span>You will get a small amount of</span> <span>{nativeAsset?.symbol}</span> <span>that you can use to pay for gas fees.</span>
+                        <span>You can get a small amount of</span> <span>{nativeAsset?.symbol}</span> <span>that can be used for covering gas fees on</span> <span>{to?.display_name}.</span>
                     </p>
                 </div>
                 {
@@ -51,32 +62,40 @@ const RefuelModal: FC<RefuelModalProps> = ({ values, openModal, setOpenModal, fe
                             <div className="gap-4 flex relative items-center outline-none w-full text-primary-text px-4 py-3">
                                 <div className="flex items-center justify-between w-full">
                                     <div className="text-secondary-text">
-                                        <span>You have</span>
+                                        <span>Your current balance</span>
                                     </div>
-                                    <p>
+                                    <p className='text-end'>
                                         <span>{truncateDecimals(destNativeTokenBalance.amount, nativeAsset?.precision)} {nativeAsset?.symbol}</span> <span className="text-secondary-text">(${amountInUsd})</span>
                                     </p>
                                 </div>
                             </div>
                         }
                         {
-                            values.refuel &&
+                            toCurrency?.refuel && nativeAsset &&
                             <div className="gap-4 flex relative items-center outline-none w-full text-primary-text px-4 py-3">
                                 <div className="flex items-center justify-between w-full">
                                     <div className="text-secondary-text">
                                         You will receive
                                     </div>
                                     <p>
-                                        <span>{fee?.refuel?.amount} {nativeAsset?.symbol}</span> <span className="text-secondary-text">(${fee?.refuel?.amount_in_usd})</span>
+                                        <span>{roundDecimals(toCurrency.refuel?.amount, nativeAsset.precision)} {nativeAsset?.symbol}</span> <span className="text-secondary-text">(${toCurrency.refuel?.amount_in_usd})</span>
                                     </p>
                                 </div>
                             </div>
                         }
                     </div>
                 }
-                <SubmitButton type="button" onClick={() => setOpenModal(false)} isDisabled={false} isSubmitting={false}>
-                    OK
-                </SubmitButton>
+                <div className='flex flex-col gap-3 w-full h-full'>
+                    {
+                        !refuel &&
+                        <SubmitButton type="button" onClick={enabldeRefuel}>
+                            Enable Refuel
+                        </SubmitButton>
+                    }
+                    <SecondaryButton type="button" className='h-full w-full py-3' onClick={closeModal}>
+                        Close
+                    </SecondaryButton>
+                </div>
             </div>
         </Modal>
     )

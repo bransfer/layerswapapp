@@ -1,17 +1,16 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import useWallet from "../../../../hooks/useWallet";
 import { useAtomicState } from "../../../../context/atomicContext";
-import ActionStatus from "./ActionStatus";
+import ActionStatus from "./Status/ActionStatus";
 import { WalletActionButton } from "../buttons";
 import posthog from "posthog-js";
+import ButtonStatus from "./Status/ButtonStatus";
+import { useRouter } from "next/router";
 
 export const UserCommitAction: FC = () => {
     const { source_network, destination_network, amount, address, source_asset, destination_asset, onCommit, commitId, setSourceDetails, setError } = useAtomicState();
-    const { getWithdrawalProvider } = useWallet()
-    const source_provider = source_network && getWithdrawalProvider(source_network)
-    const destination_provider = destination_network && getWithdrawalProvider(destination_network)
-    const wallet = source_provider?.getConnectedWallet()
-    const requestingCommit = useRef(false)
+    const { provider } = useWallet(source_network, 'withdrawal')
+    const wallet = provider?.activeWallet
 
     const atomicContract = (source_asset?.contract ? source_network?.metadata.htlc_token_contract : source_network?.metadata.htlc_native_contract) as `0x${string}`
 
@@ -35,14 +34,11 @@ export const UserCommitAction: FC = () => {
             if (!destination_asset) {
                 throw new Error("No destination asset")
             }
-            if (!source_provider) {
+            if (!provider) {
                 throw new Error("No source_provider")
             }
-            if (!destination_provider) {
-                throw new Error("No destination_provider")
-            }
 
-            const { commitId } = await source_provider.createPreHTLC({
+            const { commitId, hash } = await provider.createPreHTLC({
                 address,
                 amount: amount.toString(),
                 destinationChain: destination_network.name,
@@ -55,8 +51,8 @@ export const UserCommitAction: FC = () => {
                 atomicContract: atomicContract,
                 chainId: source_network.chain_id,
             }) || {}
-            if (commitId) {
-                onCommit(commitId)
+            if (commitId && hash) {
+                onCommit(commitId, hash)
 
                 posthog.capture("Commit", {
                     commitId: commitId,
@@ -76,15 +72,15 @@ export const UserCommitAction: FC = () => {
 
     useEffect(() => {
         let commitHandler: any = undefined
-        if (source_network && commitId && !requestingCommit.current) {
+        if (source_network && commitId) {
             (async () => {
                 commitHandler = setInterval(async () => {
                     if (!source_network?.chain_id)
                         throw Error("No chain id")
-                    if (!source_provider)
+                    if (!provider)
                         throw new Error("No source provider")
 
-                    const data = await source_provider.getDetails({
+                    const data = await provider.getDetails({
                         type: source_asset?.contract ? 'erc20' : 'native',
                         chainId: source_network.chain_id,
                         id: commitId,
@@ -100,25 +96,29 @@ export const UserCommitAction: FC = () => {
         return () => {
             clearInterval(commitHandler)
         }
-    }, [source_network])
+    }, [source_network, commitId])
 
     if (!source_network) return <></>
 
     return <div className="font-normal flex flex-col w-full relative z-10 space-y-4 grow">
         {
             commitId ?
-                <ActionStatus
-                    status="pending"
-                    title='Waiting for confirmations'
-                />
+                <ButtonStatus
+                    isDisabled={true}
+                >
+                    Confirm in wallet
+                </ButtonStatus>
                 :
-                source_network.chain_id && <WalletActionButton
+                source_network.chain_id &&
+                <WalletActionButton
                     activeChain={wallet?.chainId}
                     isConnected={!!wallet}
                     network={source_network}
                     networkChainId={source_network.chain_id}
                     onClick={handleCommit}
-                >Commit</WalletActionButton>
+                >
+                    Commit
+                </WalletActionButton>
         }
     </div>
 }
@@ -127,10 +127,9 @@ export const UserCommitAction: FC = () => {
 export const UserLockAction: FC = () => {
     const { source_network, commitId, sourceDetails, setSourceDetails, setUserLocked, userLocked, setError, source_asset, destinationDetails } = useAtomicState()
 
-    const { getWithdrawalProvider } = useWallet()
+    const { provider } = useWallet(source_network, 'withdrawal')
 
-    const source_provider = source_network && getWithdrawalProvider(source_network)
-    const wallet = source_provider?.getConnectedWallet()
+    const wallet = provider?.activeWallet
 
     const atomicContract = (source_asset?.contract ? source_network?.metadata.htlc_token_contract : source_network?.metadata.htlc_native_contract) as `0x${string}`
 
@@ -138,12 +137,12 @@ export const UserLockAction: FC = () => {
         try {
             if (!source_network?.chain_id)
                 throw Error("No chain id")
-            if (!source_provider)
+            if (!provider)
                 throw new Error("No source provider")
             if (!destinationDetails?.hashlock)
                 throw new Error("No destination hashlock")
 
-            await source_provider.addLock({
+            await provider.addLock({
                 type: source_asset?.contract ? 'erc20' : 'native',
                 chainId: source_network.chain_id,
                 id: commitId as string,
@@ -177,10 +176,10 @@ export const UserLockAction: FC = () => {
                 commitHandler = setInterval(async () => {
                     if (!source_network?.chain_id)
                         throw Error("No chain id")
-                    if (!source_provider)
+                    if (!provider)
                         throw new Error("No source provider")
 
-                    const data = await source_provider.getDetails({
+                    const data = await provider.getDetails({
                         type: source_asset?.contract ? 'erc20' : 'native',
                         chainId: source_network.chain_id,
                         id: commitId as string,
@@ -194,16 +193,16 @@ export const UserLockAction: FC = () => {
             })()
         }
         return () => clearInterval(commitHandler)
-    }, [source_provider])
-
+    }, [provider])
 
     return <div className="font-normal flex flex-col w-full relative z-10 space-y-4 grow">
         {
             userLocked ?
-                <ActionStatus
-                    status="pending"
-                    title='Waiting for confirmations'
-                />
+                <ButtonStatus
+                    isDisabled={true}
+                >
+                    Sign & Confirm
+                </ButtonStatus>
                 :
                 source_network && <WalletActionButton
                     activeChain={wallet?.chainId}
@@ -212,7 +211,7 @@ export const UserLockAction: FC = () => {
                     networkChainId={source_network.chain_id}
                     onClick={handleLockAssets}
                 >
-                    Lock
+                    Sign & Confirm
                 </WalletActionButton>
         }
     </div>
@@ -220,14 +219,14 @@ export const UserLockAction: FC = () => {
 }
 
 export const UserRefundAction: FC = () => {
-    const { source_network, commitId, sourceDetails, setCompletedRefundHash, setSourceDetails, setError, source_asset, destination_network, destination_asset, setDestinationDetails } = useAtomicState()
-    const { getWithdrawalProvider } = useWallet()
+    const { source_network, commitId, sourceDetails, setSourceDetails, setError, source_asset, destination_network, destination_asset, setDestinationDetails } = useAtomicState()
+    const { getProvider } = useWallet()
     const [requestedRefund, setRequestedRefund] = useState(false)
+    const router = useRouter()
+    const source_provider = source_network && getProvider(source_network, 'withdrawal')
+    const destination_provider = destination_network && getProvider(destination_network, 'autofil')
 
-    const source_provider = source_network && getWithdrawalProvider(source_network)
-    const destination_provider = destination_network && getWithdrawalProvider(destination_network)
-
-    const wallet = source_provider?.getConnectedWallet()
+    const wallet = source_provider?.activeWallet
 
     const sourceAtomicContract = (source_asset?.contract ? source_network?.metadata.htlc_token_contract : source_network?.metadata.htlc_native_contract) as `0x${string}`
     const destinationAtomicContract = (destination_asset?.contract ? destination_network?.metadata.htlc_token_contract : destination_network?.metadata.htlc_native_contract) as `0x${string}`
@@ -257,7 +256,12 @@ export const UserRefundAction: FC = () => {
                 contractAddress: sourceAtomicContract
             })
 
-            setCompletedRefundHash(res)
+            if (res) {
+                router.replace({
+                    pathname: router.pathname,
+                    query: { ...router.query, refundTxId: res }
+                }, undefined, { shallow: true })
+            }
             setRequestedRefund(true)
         }
         catch (e) {

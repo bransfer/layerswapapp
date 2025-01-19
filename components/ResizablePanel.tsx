@@ -13,7 +13,7 @@ export default function ResizablePanel({ children, className }: { children: Reac
             <AnimatePresence initial={false}>
                 <div
                     ref={ref}
-                    className={`${className}`}
+                    className={className}
                 >
                     {children}
                 </div>

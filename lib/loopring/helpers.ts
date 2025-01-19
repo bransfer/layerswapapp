@@ -6,8 +6,7 @@ import { parseUnits } from 'viem';
 import { AccountInfo, ExchangeInfo, KEY_MESSAGE, LOOPRING_URLs, LpFee, OffchainFeeReqType, OriginTransferRequestV3, UnlockedAccount } from "./defs";
 import { generateKey, getEdDSASig, getTransferTypedData, getUpdateAccountEcdsaTypedData, get_EddsaSig_Transfer } from "./utils";
 import { Token } from "../../Models/Network";
-import { Config, createConfig, http } from "wagmi";
-import { mainnet, sepolia } from "wagmi/chains";
+import { Config } from "wagmi";
 
 type UnlockApiRes = {
     apiKey: string;
@@ -19,14 +18,6 @@ type UnlockApiRes = {
         message: string
     }
 }
-
-const config = createConfig({
-    chains: [mainnet, sepolia],
-    transports: {
-        [mainnet.id]: http(),
-        [sepolia.id]: http(),
-    },
-})
 
 export async function unlockAccount(accInfo: AccountInfo, config: Config)
     : Promise<UnlockedAccount> {
@@ -132,7 +123,7 @@ export async function transfer
         call_data,
         token,
         unlockedAccount
-    }: TransferProps): Promise<TransferApiRes> {
+    }: TransferProps, config: Config): Promise<TransferApiRes> {
 
     const exchangeInfo = await getExchangeInfo();
     const { apiKey, eddsaKey } = unlockedAccount
@@ -166,12 +157,12 @@ export async function transfer
         ...(call_data ? { memo: call_data } : {}),
     }
 
-    return await submitInternalTransfer(req, apiKey, eddsaKey.sk)
+    return await submitInternalTransfer(req, apiKey, eddsaKey.sk, config)
 }
 
 
 async function submitInternalTransfer
-    (req: OriginTransferRequestV3, apiKey: string, eddsaKey: string)
+    (req: OriginTransferRequestV3, apiKey: string, eddsaKey: string, config: Config)
     : Promise<TransferApiRes> {
 
     const typedData = getTransferTypedData(req, LoopringAPI.CHAIN)
@@ -201,7 +192,7 @@ export async function activateAccount
     ({
         token,
         accInfo
-    }: ActivateAccountProps)
+    }: ActivateAccountProps, config: Config)
     : Promise<{ x: string; y: string }> {
 
     const exchangeInfo = await getExchangeInfo();
